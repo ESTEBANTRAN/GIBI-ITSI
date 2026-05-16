@@ -131,8 +131,21 @@ class AdminBienestarController extends BaseController
                 'page' => $pagina
             ];
 
-            // Contar total de registros
+            // Obtener período actual para filtro predeterminado
+            $periodoActual = $this->periodoModel->getPeriodoActualReal();
+            $periodoFiltroId = $filtros['periodo_id'];
+            
+            // Si no se especifica período, usar el actual por defecto
+            if (empty($periodoFiltroId) && $periodoActual) {
+                $periodoFiltroId = $periodoActual['id'];
+                $filtros['periodo_id'] = $periodoFiltroId;
+            }
+
+            // Contar total de registros con filtro de período
             $sqlCount = "SELECT COUNT(*) as total FROM v_fichas_admin";
+            if ($periodoFiltroId) {
+                $sqlCount .= " WHERE periodo_id = " . intval($periodoFiltroId);
+            }
             $totalRegistros = $this->db->query($sqlCount)->getRow()->total;
             $totalPaginas = ceil($totalRegistros / $porPagina);
             
@@ -142,14 +155,14 @@ class AdminBienestarController extends BaseController
             
             // Debug temporal: Obtener datos directamente si el servicio no funciona
             if (empty($fichas)) {
-                $sqlFichas = "SELECT * FROM v_fichas_admin LIMIT $porPagina OFFSET $offset";
+                $sqlFichas = "SELECT * FROM v_fichas_admin";
+                if ($periodoFiltroId) {
+                    $sqlFichas .= " WHERE periodo_id = " . intval($periodoFiltroId);
+                }
+                $sqlFichas .= " LIMIT $porPagina OFFSET $offset";
                 $fichas = $this->db->query($sqlFichas)->getResultArray();
                 log_message('debug', 'Usando consulta directa con paginación, fichas: ' . count($fichas));
             }
-            
-            // Debug: Log para verificar datos
-            log_message('debug', 'Fichas encontradas: ' . count($fichas));
-            log_message('debug', 'Filtros aplicados: ' . json_encode($filtros));
 
             // Obtener datos para filtros
             $periodos = $this->periodoModel->findAll();
@@ -1880,6 +1893,14 @@ class AdminBienestarController extends BaseController
             $pagina = $this->request->getGet('page') ?? 1;
             $offset = ($pagina - 1) * $porPagina;
             
+            // Obtener período de filtro del request (solo si el admin lo especifica)
+            $periodoFiltroId = $this->request->getGet('periodo_id');
+
+            $whereClause = "";
+            if (!empty($periodoFiltroId)) {
+                $whereClause = " WHERE sb.periodo_id = " . intval($periodoFiltroId);
+            }
+
             // Contar total de registros
             $sqlCount = "
                 SELECT COUNT(*) as total
@@ -1888,11 +1909,12 @@ class AdminBienestarController extends BaseController
                 LEFT JOIN carreras c ON c.id = u.carrera_id 
                 JOIN becas b ON b.id = sb.beca_id 
                 JOIN periodos_academicos pa ON pa.id = sb.periodo_id
+                $whereClause
             ";
             $totalRegistros = $this->db->query($sqlCount)->getRow()->total;
             $totalPaginas = ceil($totalRegistros / $porPagina);
             
-            // SQL DIRECTO para evitar problemas con CodeIgniter ORM + LIMIT para paginación
+            // SQL DIRECTO para obtener solicitudes con paginación
             $sqlSolicitudes = "
                 SELECT 
                     sb.id, sb.estudiante_id, sb.beca_id, sb.periodo_id,
@@ -1908,17 +1930,34 @@ class AdminBienestarController extends BaseController
                 LEFT JOIN carreras c ON c.id = u.carrera_id 
                 JOIN becas b ON b.id = sb.beca_id 
                 JOIN periodos_academicos pa ON pa.id = sb.periodo_id
+                $whereClause
                 ORDER BY sb.fecha_solicitud DESC
                 LIMIT $porPagina OFFSET $offset
             ";
             
             $solicitudes = $this->db->query($sqlSolicitudes)->getResultArray();
             
-            // DEBUG: Log para verificar datos
-            log_message('debug', 'Solicitudes obtenidas: ' . count($solicitudes));
-            if (!empty($solicitudes)) {
-                log_message('debug', 'Primera solicitud: ' . json_encode($solicitudes[0]));
+            // Para cada solicitud, obtener conteo real de documentos subidos
+            foreach ($solicitudes as &$sol) {
+                $docStats = $this->db->table('documentos_solicitud_becas')
+                    ->select("
+                        COUNT(*) as total,
+                        SUM(CASE WHEN estado != 'Pendiente' THEN 1 ELSE 0 END) as subidos,
+                        SUM(CASE WHEN estado = 'Aprobado' THEN 1 ELSE 0 END) as aprobados,
+                        SUM(CASE WHEN estado = 'En Revision' THEN 1 ELSE 0 END) as en_revision,
+                        SUM(CASE WHEN estado = 'Rechazado' THEN 1 ELSE 0 END) as rechazados
+                    ")
+                    ->where('solicitud_beca_id', $sol['id'])
+                    ->get()
+                    ->getRowArray();
+                
+                $sol['docs_total'] = $docStats['total'] ?? 0;
+                $sol['docs_subidos'] = $docStats['subidos'] ?? 0;
+                $sol['docs_aprobados'] = $docStats['aprobados'] ?? 0;
+                $sol['docs_en_revision'] = $docStats['en_revision'] ?? 0;
+                $sol['docs_rechazados'] = $docStats['rechazados'] ?? 0;
             }
+            unset($sol);
 
             // SQL directo para filtros
             $sqlTiposBecas = "SELECT DISTINCT tipo_beca FROM becas";
@@ -1926,6 +1965,9 @@ class AdminBienestarController extends BaseController
             
             $sqlCarreras = "SELECT DISTINCT carrera FROM usuarios WHERE carrera IS NOT NULL";
             $carreras = $this->db->query($sqlCarreras)->getResultArray();
+            
+            // Obtener todos los períodos para el dropdown de filtro
+            $periodos = $this->periodoModel->orderBy('fecha_inicio', 'DESC')->findAll();
             
             // SQL directo para estadísticas
             $sqlEstadisticasEstado = "
@@ -1956,6 +1998,8 @@ class AdminBienestarController extends BaseController
                 'solicitudes' => $solicitudes,
                 'tipos_becas' => array_column($tiposBecas, 'tipo_beca'),
                 'carreras' => array_column($carreras, 'carrera'),
+                'periodos' => $periodos,
+                'periodo_filtro_id' => $periodoFiltroId,
                 'estadisticas_estado' => $estadisticasEstado,
                 'estadisticas_progreso' => $estadisticasProgreso,
                 'usuario' => $this->getUsuarioActual(),
@@ -1974,6 +2018,8 @@ class AdminBienestarController extends BaseController
                 'solicitudes' => [],
                 'tipos_becas' => [],
                 'carreras' => [],
+                'periodos' => [],
+                'periodo_filtro_id' => null,
                 'usuario' => $this->getUsuarioActual(),
                 'error' => 'Error cargando solicitudes'
             ]);
@@ -2263,26 +2309,27 @@ class AdminBienestarController extends BaseController
                 ->getResultArray();
 
             $totalDocumentos = 0;
+            $documentosSubidos = 0;
             $documentosAprobados = 0;
-            $documentosRevisados = 0;
 
             foreach ($estados as $estado) {
                 $totalDocumentos += $estado['total'];
+                if ($estado['estado'] !== 'Pendiente') {
+                    $documentosSubidos += $estado['total'];
+                }
                 if ($estado['estado'] === 'Aprobado') {
                     $documentosAprobados += $estado['total'];
                 }
-                if (in_array($estado['estado'], ['En Revision', 'Aprobado', 'Rechazado'])) {
-                    $documentosRevisados += $estado['total'];
-                }
             }
 
-            $porcentajeAvance = $totalDocumentos > 0 ? round(($documentosAprobados / $totalDocumentos) * 100, 1) : 0;
+            // Porcentaje basado en documentos subidos
+            $porcentajeAvance = $totalDocumentos > 0 ? round(($documentosSubidos / $totalDocumentos) * 100, 1) : 0;
 
             // Actualizar solicitud
             $this->db->table('solicitudes_becas')
                 ->where('id', $solicitudId)
                 ->update([
-                    'documentos_revisados' => $documentosRevisados,
+                    'documentos_revisados' => $documentosSubidos,
                     'total_documentos' => $totalDocumentos,
                     'porcentaje_avance' => $porcentajeAvance
                 ]);

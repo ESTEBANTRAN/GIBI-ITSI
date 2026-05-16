@@ -186,14 +186,25 @@
                                             <td>
                                                 <?php if (isset($solicitud['progreso_documentos'])): ?>
                                                     <div class="progress mb-1" style="height: 6px;">
-                                                        <div class="progress-bar" role="progressbar" 
-                                                             style="width: <?= $solicitud['progreso_documentos']['porcentaje'] ?>%"
-                                                             aria-valuenow="<?= $solicitud['progreso_documentos']['porcentaje'] ?>" 
-                                                             aria-valuemin="0" aria-valuemax="100">
+                                                        <div class="progress-bar bg-success" role="progressbar" 
+                                                             style="width: <?= $solicitud['progreso_documentos']['porcentaje_aprobados'] ?? 0 ?>%"
+                                                             title="Aprobados: <?= $solicitud['progreso_documentos']['aprobados'] ?>">
+                                                        </div>
+                                                        <?php 
+                                                        $pctEnRevision = $solicitud['progreso_documentos']['total'] > 0 
+                                                            ? round(($solicitud['progreso_documentos']['en_revision'] / $solicitud['progreso_documentos']['total']) * 100, 1) 
+                                                            : 0;
+                                                        ?>
+                                                        <div class="progress-bar bg-warning" role="progressbar" 
+                                                             style="width: <?= $pctEnRevision ?>%"
+                                                             title="En revisión: <?= $solicitud['progreso_documentos']['en_revision'] ?>">
                                                         </div>
                                                     </div>
                                                     <small class="text-muted">
-                                                        <?= $solicitud['progreso_documentos']['aprobados'] ?>/<?= $solicitud['progreso_documentos']['total'] ?> documentos
+                                                        <?= $solicitud['progreso_documentos']['subidos'] ?>/<?= $solicitud['progreso_documentos']['total'] ?> subidos
+                                                        <?php if ($solicitud['progreso_documentos']['aprobados'] > 0): ?>
+                                                            <span class="text-success">(<?= $solicitud['progreso_documentos']['aprobados'] ?> aprobados)</span>
+                                                        <?php endif; ?>
                                                     </small>
                                                 <?php else: ?>
                                                     <span class="text-muted">Sin documentos</span>

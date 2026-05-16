@@ -1,0 +1,432 @@
+================================================================================
+    RECURSOS A SOLICITAR AL ITSI PARA ADAPTACIÓN DEL SISTEMA GIBI-ITSI
+    A LA BASE DE DATOS REAL DEL INSTITUTO
+================================================================================
+Fecha: 31 de marzo de 2026
+Sistema: GIBI-ITSI (Gestión Integral de Bienestar Institucional)
+Propósito: Migración de datos ficticios a datos reales del ITSI
+================================================================================
+
+
+================================================================================
+                    1. DATOS DE ESTUDIANTES (PRIORIDAD ALTA)
+================================================================================
+
+Tabla del sistema: `usuarios` (estudiantes tienen rol_id = 1)
+
+Solicitar:
+  - Lista completa de estudiantes activos con los siguientes campos:
+    * Número de cédula (campo obligatorio, usado como login)
+    * Nombres completos
+    * Apellidos completos
+    * Correo electrónico institucional
+    * Número de teléfono / celular
+    * Dirección domiciliaria
+    * Carrera a la que pertenecen
+    * Semestre/nivel actual que cursan
+    * Estado del estudiante (Activo/Inactivo/Suspendido)
+    * Fecha de registro/matrícula
+
+  Nota: Las contraseñas NO se solicitan. El sistema genera hashes seguros
+  con bcrypt ($2y$10$). Se puede establecer una contraseña por defecto
+  (ej: el número de cédula) que cada estudiante cambiará al primer acceso.
+
+
+================================================================================
+                    2. DATOS DE CARRERAS (PRIORIDAD ALTA)
+================================================================================
+
+Tabla del sistema: `carreras`
+
+Solicitar:
+  - Lista completa de carreras ofertadas por el ITSI:
+    * Nombre oficial de la carrera
+    * Código o abreviatura de la carrera
+    * Número de semestres/niveles de la carrera
+    * Estado (activa o inactiva)
+
+  Carreras actuales en el sistema (de prueba):
+    - Atención Integral Adultos Mayores
+    - Desarrollo de Software
+    - Diseño Gráfico
+    - Administración
+    - Marketing Digital y Comercio Electrónico
+    - Redes y Telecomunicaciones
+    - Desarrollo y Análisis de Software (Virtual)
+    - Ingeniería Informática
+    - Ingeniería Industrial
+    - Contabilidad
+    - Marketing
+
+  PREGUNTA IMPORTANTE:
+  ¿Cuáles de estas carreras son reales y cuáles deben eliminarse/corregirse?
+  ¿Hay carreras adicionales que no están listadas?
+
+
+================================================================================
+                    3. PERIODOS ACADÉMICOS (PRIORIDAD ALTA)
+================================================================================
+
+Tabla del sistema: `periodos_academicos`
+
+Solicitar:
+  - Lista de períodos académicos (actuales y pasados relevantes):
+    * Nombre del período (ej: "2025-2026 Semestre I")
+    * Fecha de inicio del período
+    * Fecha de fin del período
+    * Estado (Activo/Inactivo)
+    * ¿El período permite subir fichas socioeconómicas?
+    * ¿El período permite solicitar becas?
+    * Límite de fichas socioeconómicas para el período (si aplica)
+    * Límite de becas para el período (si aplica)
+    * Descripción del período (opcional)
+
+  PREGUNTA IMPORTANTE:
+  ¿Cómo nombra el ITSI sus períodos académicos?
+  (Ej: "2025-1", "Octubre 2025 - Marzo 2026", etc.)
+
+
+================================================================================
+                    4. DATOS DEL PERSONAL ADMINISTRATIVO (PRIORIDAD ALTA)
+================================================================================
+
+Tablas del sistema: `usuarios` (roles 2 y 4) y `roles`
+
+Solicitar:
+  - Lista del personal del departamento de Bienestar Estudiantil:
+    * Nombre completo
+    * Cédula
+    * Correo electrónico institucional
+    * Cargo / función en el departamento
+    * Teléfono
+
+  - Lista de personal con acceso de Super Administrador (si aplica):
+    * Nombre completo
+    * Cédula
+    * Correo electrónico institucional
+
+  PREGUNTA IMPORTANTE:
+  ¿Qué roles adicionales maneja el ITSI además de Estudiante, Admin Bienestar
+  y Super Admin? En la BD actual existen roles adicionales sin definir:
+    - Rol ID 6: Super Administrador (?)
+    - Rol ID 7: Admin Talento Humano (?)
+    - Rol ID 8: Docente (?)
+    - Rol ID 9: Admin (?)
+    - Rol ID 10: Directivo (?)
+    - Rol ID 11: Auxiliar (?)
+  ¿Cuáles de estos roles son reales y se usan en el ITSI?
+
+
+================================================================================
+        5. INFORMACIÓN DE BECAS Y SUS REQUISITOS (PRIORIDAD ALTA)
+================================================================================
+
+Tablas del sistema: `becas`, `becas_documentos_requisitos`
+
+Solicitar:
+
+A) CATÁLOGO DE BECAS DEL ITSI:
+  - Lista de todas las becas que ofrece el ITSI:
+    * Nombre oficial de la beca
+    * Descripción de la beca
+    * Tipo de beca (Académica, Económica, Deportiva, Cultural, Investigación, Otros)
+    * Requisitos generales (texto descriptivo)
+    * Puntaje mínimo requerido (si aplica)
+    * Monto de la beca (si aplica)
+    * Número de cupos disponibles (si aplica)
+    * Período de vigencia (fechas de inicio y fin)
+
+B) DOCUMENTOS REQUISITOS POR CADA BECA:
+  - Para cada beca, lista de documentos que el estudiante debe presentar:
+    * Nombre del documento (ej: "Certificado de Promedio Académico")
+    * Descripción del documento
+    * Tipo de documento (PDF, Imagen, etc.)
+    * ¿Es obligatorio? (Sí/No)
+    * Orden de verificación/revisión
+
+  Becas actuales en el sistema (de prueba):
+    - Beca Excelencia Académica
+    - Beca Socioeconómica
+    - Beca Deportiva
+    - Beca Cultural
+    - Beca Investigación
+    - Beca Liderazgo
+    - Beca Apoyo Económico
+
+  PREGUNTAS IMPORTANTES:
+  ¿Cuáles de estas becas existen realmente en el ITSI?
+  ¿Hay becas adicionales que no están listadas?
+  ¿Cuáles son los montos reales asignados a cada beca?
+  ¿Cuáles son los documentos específicos que el ITSI solicita por cada beca?
+  ¿Existe un reglamento de becas que se pueda consultar?
+
+
+================================================================================
+        6. CATEGORÍAS DE SOLICITUDES DE AYUDA (PRIORIDAD MEDIA)
+================================================================================
+
+Tabla del sistema: `categorias_solicitud_ayuda`
+
+Solicitar:
+  - ¿Qué categorías de solicitudes de ayuda maneja Bienestar Estudiantil?
+    (actualmente el sistema tiene estas categorías de prueba)
+    * Académicas
+    * Económicas
+    * Salud
+    * Vivienda
+    * Sociales
+    * Técnicas
+    * Otro Asunto
+
+  PREGUNTA: ¿Son estas categorías correctas o el ITSI maneja otras?
+  Para cada categoría se necesita:
+    * Nombre
+    * Descripción
+    * Color representativo (opcional)
+    * Ícono (opcional)
+    * Orden de aparición
+
+
+================================================================================
+        7. FICHA SOCIOECONÓMICA (PRIORIDAD ALTA)
+================================================================================
+
+Tabla del sistema: `fichas_socioeconomicas` (almacena datos en campo JSON)
+
+Solicitar:
+  - Formato/plantilla oficial de la ficha socioeconómica del ITSI:
+    * ¿Qué campos/secciones contiene la ficha real del ITSI?
+    * ¿Es igual a la que está programada en el sistema o hay diferencias?
+
+  Campos programados actualmente en el sistema:
+    SECCIÓN 1 - DATOS PERSONALES:
+      - Apellidos y nombres
+      - Nacionalidad
+      - Cédula
+      - Lugar y fecha de nacimiento
+      - Edad
+      - Estado civil
+      - Ciudad, barrio, calles
+      - Etnia
+      - Situación laboral
+      - Teléfonos (domicilio, trabajo, celular)
+      - Email
+      - Con quién vive
+      - Padres separados (Sí/No)
+
+    SECCIÓN 2 - DATOS ACADÉMICOS:
+      - Colegio de graduación
+      - Ciudad y provincia del colegio
+      - Tipo de colegio (Fiscal/Particular/Fiscomisional)
+      - Año de grado
+      - Carrera
+      - Nivel que ingresa
+      - Modalidad
+      - Estudia otra carrera
+      - Forma de pago
+      - Información de inglés
+
+    SECCIÓN 3 - DATOS DEL REPRESENTANTE/DEPENDIENTE:
+      - Nombres y cédula del dependiente
+      - Parentesco
+      - Dirección, parroquia
+      - Profesión, trabajo
+      - Teléfonos y email
+
+    SECCIÓN 4 - DATOS FAMILIARES:
+      - Tabla de miembros de familia (nombre, parentesco, edad, 
+        estado civil, ocupación, institución, ingresos, observaciones)
+
+    SECCIÓN 5 - SITUACIÓN ECONÓMICA:
+      - Total ingresos familiares
+      - Total gastos familiares
+      - Diferencia ingresos-egresos
+
+    SECCIÓN 6 - VIVIENDA:
+      - Tipo de vivienda (Propia/Arrendada/etc.)
+      - Tipo de construcción
+      - Material de construcción
+      - Servicios básicos
+      - Vehículo propio
+      - Otras propiedades
+      - Cuentas bancarias
+
+    SECCIÓN 7 - SITUACIÓN ESPECIAL:
+      - Préstamos
+      - Enfermedad grave
+      - Discapacidad (carnet CONADIS, porcentaje)
+      - Familiar emigrante
+
+    SECCIÓN 8 - COMENTARIOS:
+      - Comentarios del estudiante
+
+  PREGUNTA IMPORTANTE:
+  ¿Es este formato exactamente igual al que usa el ITSI?
+  ¿Hay campos adicionales o campos que sobran?
+  ¿Existe un documento PDF/Word con el formato oficial de la ficha?
+
+
+================================================================================
+            8. DATOS DE CONFIGURACIÓN DEL SISTEMA (PRIORIDAD MEDIA)
+================================================================================
+
+Solicitar:
+  - Logo oficial del ITSI (para el sistema web y generación de PDFs)
+  - Nombre oficial completo de la institución
+  - Dirección de la institución
+  - Teléfonos de contacto
+  - Correo electrónico institucional de contacto
+  - Sitio web oficial
+  - Nombre oficial del departamento de Bienestar Estudiantil
+  - Datos del responsable del departamento de Bienestar
+
+
+================================================================================
+        9. RESPUESTAS PREDEFINIDAS PARA SOLICITUDES (PRIORIDAD BAJA)
+================================================================================
+
+Tabla del sistema: `respuestas_predefinidas`
+
+Solicitar:
+  - ¿El departamento de Bienestar maneja respuestas predefinidas
+    para solicitudes frecuentes?
+  - Si es así, lista de respuestas predefinidas:
+    * Nombre de la respuesta
+    * Categoría
+    * Contenido/plantilla de la respuesta
+
+
+================================================================================
+        10. COMPETENCIAS Y CATEGORÍAS DE EVALUACIÓN (PRIORIDAD BAJA)
+================================================================================
+
+Tablas del sistema: `categorias_evaluacion`, `competencias`
+
+Solicitar:
+  - ¿El ITSI utiliza un sistema de evaluación por competencias?
+  - Si es así:
+    * Lista de categorías de evaluación (nombre, descripción, peso)
+    * Lista de competencias (nombre, descripción, categoría, nivel requerido)
+
+  NOTA: Estas tablas existen en la BD pero no parecen estar integradas
+  completamente en las funcionalidades actuales del sistema.
+
+
+================================================================================
+        11. INFORMACIÓN ADICIONAL REQUERIDA (NO BD)
+================================================================================
+
+Además de los datos de la base de datos, solicitar:
+
+A) DOCUMENTACIÓN DE BECAS:
+  - Reglamento oficial de becas del ITSI
+  - Criterios de selección y ponderación para cada tipo de beca
+  - Proceso actual de asignación de becas (flujo de aprobación)
+  - Formatos de documentos que los estudiantes deben presentar
+  - Montos y porcentajes de becas
+
+B) DOCUMENTACIÓN DE BIENESTAR ESTUDIANTIL:
+  - Estructura organizacional del departamento de Bienestar
+  - Servicios que ofrece el departamento (psicología, salud, 
+    trabajo social, orientación académica)
+  - Protocolos de atención al estudiante
+  - Formularios oficiales que se utilizan
+
+C) INFORMACIÓN TÉCNICA:
+  - ¿El ITSI tiene algún sistema existente (ERP, SGA) del cual se puedan
+    importar datos de estudiantes automáticamente?
+  - ¿Existe una API o base de datos donde se consulten los promedios
+    académicos de los estudiantes?
+  - ¿El correo institucional sigue algún patrón?
+    (ej: nombre.apellido@itsi.edu.ec)
+  - ¿El sistema debe integrarse con alguna plataforma existente?
+
+D) REGLAS DE NEGOCIO:
+  - ¿Un estudiante puede solicitar más de una beca por período?
+  - ¿La ficha socioeconómica debe renovarse cada período?
+  - ¿Hay fechas límite específicas para solicitudes de becas?
+  - ¿Qué porcentaje de discapacidad califica para becas especiales?
+  - ¿Existe un puntaje mínimo universal o varía por beca?
+
+
+================================================================================
+                        RESUMEN DE TABLAS DE LA BD
+================================================================================
+
+El sistema utiliza la base de datos `bienestar_estudiantil_db` con las
+siguientes tablas y vistas. Al lado se indica qué datos reales se necesitan:
+
+TABLAS PRINCIPALES (26):
+┌────────────────────────────────────────────────────────────────────────────┐
+│ TABLA                            │ DATOS REALES NECESARIOS               │
+├──────────────────────────────────┼────────────────────────────────────────┤
+│ usuarios                         │ SÍ - Estudiantes y personal admin     │
+│ roles                            │ SÍ - Roles reales del ITSI            │
+│ carreras                         │ SÍ - Carreras reales del ITSI         │
+│ periodos_academicos              │ SÍ - Períodos reales                  │
+│ becas                            │ SÍ - Becas reales del ITSI            │
+│ becas_documentos_requisitos      │ SÍ - Documentos requeridos por beca   │
+│ fichas_socioeconomicas           │ PARCIAL - Formato de la ficha         │
+│ solicitudes_becas                │ NO - Se generarán con el uso          │
+│ solicitudes_becas_documentos     │ NO - Se generarán con el uso          │
+│ documentos_solicitud_becas       │ NO - Se generarán con el uso          │
+│ documentos                       │ NO - Se generarán cuando se suban     │
+│ estudiantes_habilitacion_becas   │ NO - Se genera automáticamente         │
+│ fichas_becas_relacion            │ NO - Se genera automáticamente         │
+│ solicitudes_ayuda                │ NO - Se generarán con el uso          │
+│ solicitudes_ayuda_mejorada       │ NO - Se generarán con el uso          │
+│ respuestas_solicitudes_ayuda     │ NO - Se generarán con el uso          │
+│ categorias_solicitud_ayuda       │ SÍ - Categorías reales                │
+│ categorias_evaluacion            │ CONSULTAR si se usa                   │
+│ competencias                     │ CONSULTAR si se usa                   │
+│ citas                            │ NO - Se generarán con el uso          │
+│ historial_estados_becas          │ NO - Se genera automáticamente         │
+│ flujo_aprobacion_documentos      │ NO - Se genera automáticamente         │
+│ notificaciones_becas             │ NO - Se generan automáticamente        │
+│ observaciones_fichas             │ NO - Se generarán con el uso          │
+│ logs                             │ NO - Se generan automáticamente        │
+│ pdf_codigos_verificacion         │ NO - Se generan automáticamente        │
+│ respuestas_predefinidas          │ OPCIONAL - Si tienen predefinidas     │
+└────────────────────────────────────────────────────────────────────────────┘
+
+VISTAS (7) - No necesitan datos, se recrean automáticamente:
+  - v_becas_completas
+  - v_dashboard_admin_bienestar
+  - v_estadisticas_sistema
+  - v_fichas_admin
+  - v_fichas_socioeconomicas_completa
+  - v_solicitudes_becas_completas
+  - v_solicitudes_becas_detallada
+
+TRIGGERS (3) - No necesitan datos, se recrean automáticamente:
+  - tr_actualizar_documentos_revisados (en documentos_solicitud_becas)
+  - tr_ficha_completada_habilitar_becas (en fichas_socioeconomicas)
+  - actualizar_porcentaje_avance_beca (en solicitudes_becas_documentos)
+  - validar_comentario_rechazo (en fichas_socioeconomicas)
+
+
+================================================================================
+                    PRIORIDAD DE SOLICITUD
+================================================================================
+
+ALTA (imprescindible para funcionar):
+  1. Datos de estudiantes (cédula, nombre, apellido, email, carrera, semestre)
+  2. Catálogo de carreras reales
+  3. Períodos académicos reales
+  4. Personal de Bienestar Estudiantil
+  5. Catálogo de becas y sus requisitos documentales
+  6. Formato oficial de la ficha socioeconómica
+
+MEDIA (necesario para configuración completa):
+  7. Categorías de solicitudes de ayuda
+  8. Datos institucionales (logo, nombre, contacto)
+  9. Roles y permisos del personal
+
+BAJA (pueden configurarse después):
+  10. Respuestas predefinidas
+  11. Competencias y categorías de evaluación
+  12. Formato de plantillas PDF
+
+================================================================================
+                            FIN DEL DOCUMENTO
+================================================================================

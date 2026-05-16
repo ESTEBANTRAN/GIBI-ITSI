@@ -448,4 +448,38 @@ class PeriodoAcademicoModel extends Model
         
         return $this->update($periodoId, ['fichas_creadas' => $nuevoContador]);
     }
+    /**
+     * Obtener el período académico actual REAL.
+     * Usa múltiples criterios: vigente_estudiantes, estado, rango de fechas.
+     * Útil para filtrar datos que solo deben mostrarse en el período vigente.
+     */
+    public function getPeriodoActualReal()
+    {
+        // Primero: período marcado como vigente para estudiantes y dentro del rango de fechas
+        $periodo = $this->where('vigente_estudiantes', 1)
+                       ->where('activo', 1)
+                       ->where('estado', 'Activo')
+                       ->first();
+        
+        if ($periodo) {
+            return $periodo;
+        }
+
+        // Segundo: período activo dentro del rango de fechas actual
+        $periodo = $this->where('activo', 1)
+                       ->where('estado', 'Activo')
+                       ->where('fecha_inicio <=', date('Y-m-d'))
+                       ->where('fecha_fin >=', date('Y-m-d'))
+                       ->first();
+        
+        if ($periodo) {
+            return $periodo;
+        }
+
+        // Tercero: último período activo (fallback)
+        return $this->where('activo', 1)
+                    ->where('estado', 'Activo')
+                    ->orderBy('fecha_inicio', 'DESC')
+                    ->first();
+    }
 } 

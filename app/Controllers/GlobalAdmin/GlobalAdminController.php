@@ -91,6 +91,13 @@ class GlobalAdminController extends BaseController
                 'total_roles' => 0,
                 'cambio_usuarios' => 0,
                 'cambio_activos' => 0,
+                'estadisticas_bienestar' => [
+                    'fichas_total' => 0,
+                    'fichas_aprobadas' => 0,
+                    'becas_activas' => 0,
+                    'solicitudes_pendientes' => 0,
+                    'ayudas_pendientes' => 0
+                ],
                 'backups_recientes' => [],
                 'sistema_info' => [
                     'version' => '1.0.0',

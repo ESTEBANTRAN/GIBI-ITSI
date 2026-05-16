@@ -35,6 +35,11 @@ class Filters extends BaseFilters
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
         'auth'          => \App\Filters\AuthFilter::class,
+        // === Filtros de Seguridad ITSI ===
+        'securityheaders' => \App\Filters\SecurityHeadersFilter::class,
+        'ratelimit'       => \App\Filters\RateLimitFilter::class,
+        'role'            => \App\Filters\RoleFilter::class,
+        'xssfilter'       => \App\Filters\XssFilter::class,
     ];
 
     /**
@@ -70,13 +75,14 @@ class Filters extends BaseFilters
      */
     public array $globals = [
         'before' => [
+            'xssfilter',    // Protección XSS en todas las peticiones
             // 'honeypot',
             // 'csrf',
             // 'invalidchars',
         ],
         'after' => [
+            'securityheaders', // Headers de seguridad en todas las respuestas
             // 'honeypot',
-            // 'secureheaders',
         ],
     ];
 
@@ -104,5 +110,23 @@ class Filters extends BaseFilters
      *
      * @var array<string, array<string, list<string>>>
      */
-    public array $filters = [];
+    public array $filters = [
+        'auth' => ['before' => [
+            'admin-bienestar/*',
+            'global-admin/*',
+            'super-admin/*',
+            'estudiante/*',
+            'dashboard',
+        ]],
+        'role:2' => ['before' => [
+            'admin-bienestar/*',
+        ]],
+        'role:4' => ['before' => [
+            'global-admin/*',
+            'super-admin/*',
+        ]],
+        'role:1' => ['before' => [
+            'estudiante/*',
+        ]],
+    ];
 }

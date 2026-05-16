@@ -7,23 +7,23 @@ use CodeIgniter\Router\RouteCollection;
  */
 $routes->get('/', 'AuthController::index');
 $routes->get('/login', 'AuthController::index');
-$routes->post('auth/attemptLogin', 'AuthController::attemptLogin');
+$routes->post('auth/attemptLogin', 'AuthController::attemptLogin', ['filter' => 'ratelimit:10,900']);
 
-// Ruta para limpiar sesiones (temporal)
-$routes->get('clear-session', 'ClearSessionController::index');
+// Ruta para limpiar sesiones (solo en desarrollo)
+// $routes->get('clear-session', 'ClearSessionController::index');
 
-// Ruta de prueba para verificar el sistema
-$routes->get('test', 'TestController::index');
-$routes->get('test-global-admin', 'TestGlobalAdminController::index');
+// Rutas de prueba DESHABILITADAS en producción
+// $routes->get('test', 'TestController::index');
+// $routes->get('test-global-admin', 'TestGlobalAdminController::index');
 
-$routes->get('dashboard', 'DashboardController::index');
-$routes->get('admin-bienestar', 'DashboardController::adminBienestar');
-$routes->get('ficha', 'FichaController::index');
-$routes->get('becas', 'BecaController::index');
-$routes->get('solicitudes', 'SolicitudController::index');
-$routes->get('fichas', 'FichaController::adminIndex');
-$routes->get('solicitudes-becas', 'BecaController::adminIndex');
-$routes->get('reportes', 'ReporteController::index');
+$routes->get('dashboard', 'DashboardController::index', ['filter' => 'auth']);
+$routes->get('admin-bienestar', 'DashboardController::adminBienestar', ['filter' => 'auth']);
+$routes->get('ficha', 'FichaController::index', ['filter' => 'auth']);
+$routes->get('becas', 'BecaController::index', ['filter' => 'auth']);
+$routes->get('solicitudes', 'SolicitudController::index', ['filter' => 'auth']);
+$routes->get('fichas', 'FichaController::adminIndex', ['filter' => 'auth']);
+$routes->get('solicitudes-becas', 'BecaController::adminIndex', ['filter' => 'auth']);
+$routes->get('reportes', 'ReporteController::index', ['filter' => 'auth']);
 
 // Rutas para estadísticas del dashboard
 $routes->get('dashboard/estadisticas', 'DashboardController::getEstadisticas');
@@ -59,11 +59,9 @@ $routes->post('admin-bienestar/rechazar-documento', 'AdminBienestarController::r
 $routes->post('admin-bienestar/aprobar-solicitud-beca', 'AdminBienestarController::aprobarSolicitudBeca');
 $routes->post('admin-bienestar/rechazar-solicitud-beca', 'AdminBienestarController::rechazarSolicitudBeca');
 $routes->get('admin-bienestar/ver-documento/(:num)', 'AdminBienestarController::verDocumento/$1');
-$routes->post('admin-bienestar/aprobar-solicitud-beca', 'AdminBienestarController::aprobarSolicitudBeca');
-$routes->post('admin-bienestar/rechazar-solicitud-beca', 'AdminBienestarController::rechazarSolicitudBeca');
 
 // Rutas del Super Admin
-$routes->group('super-admin', ['filter' => 'auth'], function($routes) {
+$routes->group('super-admin', ['filter' => ['auth', 'role:4']], function($routes) {
     $routes->get('/', 'SuperAdminController::index');
     $routes->get('dashboard', 'SuperAdminController::index');
     $routes->get('gestion-roles', 'SuperAdminController::gestionRoles');
@@ -139,7 +137,7 @@ $routes->post('admin-bienestar/cuenta/eliminarCuenta', 'AdminBienestarController
 $routes->get('admin-bienestar/cuenta/exportarDatos', 'AdminBienestarController::exportarDatos');
 
 // Rutas para GlobalAdmin (Super Administrador)
-$routes->group('global-admin', ['filter' => 'auth'], function($routes) {
+$routes->group('global-admin', ['filter' => ['auth', 'role:4']], function($routes) {
     $routes->get('dashboard', 'GlobalAdmin\GlobalAdminController::dashboard');
     $routes->get('usuarios', 'GlobalAdmin\GlobalAdminController::gestionUsuarios');
     $routes->get('roles', 'GlobalAdmin\GlobalAdminController::gestionRoles');
@@ -169,8 +167,9 @@ $routes->group('global-admin', ['filter' => 'auth'], function($routes) {
     $routes->post('eliminar-usuario', 'GlobalAdmin\GlobalAdminController::eliminarUsuario');
     $routes->get('obtener-usuario/(:num)', 'GlobalAdmin\GlobalAdminController::obtenerUsuario/$1');
     $routes->get('exportar-usuarios-pdf', 'GlobalAdmin\GlobalAdminController::exportarUsuariosPDF');
-    $routes->get('test-busqueda', 'GlobalAdmin\GlobalAdminController::testBusqueda');
-    $routes->get('test-busqueda-detallada', 'GlobalAdmin\GlobalAdminController::testBusquedaDetallada');
+    // Rutas de test DESHABILITADAS
+    // $routes->get('test-busqueda', 'GlobalAdmin\GlobalAdminController::testBusqueda');
+    // $routes->get('test-busqueda-detallada', 'GlobalAdmin\GlobalAdminController::testBusquedaDetallada');
 
     // Rutas para métricas avanzadas de SuperAdmin
     $routes->get('metricas-rendimiento', 'GlobalAdmin\GlobalAdminController::getMetricasRendimiento');
@@ -321,14 +320,15 @@ $routes->get('admin-bienestar/exportar-becas-pdf', 'AdminBienestarController::ex
 // Rutas para AdminBienestar - Gestión de Solicitudes de Becas
 $routes->get('admin-bienestar/solicitudes-becas', 'AdminBienestarController::solicitudesBecas');
 $routes->get('admin-bienestar/obtener-solicitudes-becas', 'AdminBienestarController::obtenerSolicitudesBecas');
-$routes->get('admin-bienestar/test-solicitudes', 'AdminBienestarController::testSolicitudes');
-$routes->get('admin-bienestar/test-solicitudes-becas', 'AdminBienestarController::testSolicitudesBecas');
-$routes->get('admin-bienestar/test-periodos-academicos', 'AdminBienestarController::testPeriodosAcademicos');
-$routes->get('admin-bienestar/insertar-datos-prueba', 'AdminBienestarController::insertarDatosPrueba');
-$routes->get('admin-bienestar/test-simple-view', 'AdminBienestarController::testSimpleView');
-$routes->get('admin-bienestar/test-publico', 'AdminBienestarController::testPublico');
-$routes->get('admin-bienestar/test-publico-view', 'AdminBienestarController::testPublicoView');
-$routes->get('admin-bienestar/test-correcciones', 'AdminBienestarController::testCorrecciones');
+// Rutas de test/debug DESHABILITADAS en producción
+// $routes->get('admin-bienestar/test-solicitudes', 'AdminBienestarController::testSolicitudes');
+// $routes->get('admin-bienestar/test-solicitudes-becas', 'AdminBienestarController::testSolicitudesBecas');
+// $routes->get('admin-bienestar/test-periodos-academicos', 'AdminBienestarController::testPeriodosAcademicos');
+// $routes->get('admin-bienestar/insertar-datos-prueba', 'AdminBienestarController::insertarDatosPrueba');
+// $routes->get('admin-bienestar/test-simple-view', 'AdminBienestarController::testSimpleView');
+// $routes->get('admin-bienestar/test-publico', 'AdminBienestarController::testPublico');
+// $routes->get('admin-bienestar/test-publico-view', 'AdminBienestarController::testPublicoView');
+// $routes->get('admin-bienestar/test-correcciones', 'AdminBienestarController::testCorrecciones');
 $routes->post('admin-bienestar/aprobar-solicitud-beca', 'AdminBienestarController::aprobarSolicitudBeca');
 $routes->post('admin-bienestar/rechazar-solicitud-beca', 'AdminBienestarController::rechazarSolicitudBeca');
 $routes->post('admin-bienestar/colocar-lista-espera', 'AdminBienestarController::colocarListaEspera');
@@ -374,8 +374,8 @@ $routes->get('admin-bienestar/reportes-becas', 'AdminBienestarController::report
 $routes->get('admin-bienestar/obtener-estadisticas-becas', 'AdminBienestarController::obtenerEstadisticasBecas');
 $routes->get('admin-bienestar/exportar-reporte-becas', 'AdminBienestarController::exportarReporteBecas');
 
-// Rutas de prueba para debugging
-$routes->get('estudiante/test-crear-ficha', 'EstudianteController::testCrearFicha');
+// Rutas de prueba DESHABILITADAS
+// $routes->get('estudiante/test-crear-ficha', 'EstudianteController::testCrearFicha');
 
 // Rutas para sistema mejorado de becas estudiantiles
 $routes->get('estudiante/verificar-habilitacion-becas', 'EstudianteController::verificarHabilitacionBecas');
@@ -383,8 +383,8 @@ $routes->get('estudiante/solicitud-beca/(:num)', 'EstudianteController::detalleS
 $routes->get('estudiante/documentos-beca/(:num)', 'EstudianteController::documentosBeca/$1');
 $routes->get('estudiante/detalleBeca/(:num)', 'EstudianteController::detalleBeca/$1');
 $routes->get('estudiante/solicitudes-ayuda-mejorada', 'EstudianteController::solicitudesAyudaMejorada');
-$routes->get('admin-bienestar/test-layout', 'AdminBienestarController::testLayout');
-$routes->get('admin-bienestar/test-simple', 'AdminBienestarController::testSimple');
+// $routes->get('admin-bienestar/test-layout', 'AdminBienestarController::testLayout');
+// $routes->get('admin-bienestar/test-simple', 'AdminBienestarController::testSimple');
 
 // Rutas adicionales para el sistema de becas
 $routes->get('admin-bienestar/obtener-periodos-academicos', 'AdminBienestarController::obtenerPeriodosAcademicos');

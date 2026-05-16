@@ -146,11 +146,24 @@
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-md-3">
+                    <label for="filtroPeriodo" class="form-label">Período Académico</label>
+                    <select class="form-select" id="filtroPeriodo" onchange="filtrarPorPeriodo()">
+                        <option value="">Todos los períodos</option>
+                        <?php if (!empty($periodos)): ?>
+                            <?php foreach ($periodos as $periodo): ?>
+                                <option value="<?= $periodo['id'] ?>" <?= (isset($periodo_filtro_id) && $periodo_filtro_id == $periodo['id']) ? 'selected' : '' ?>>
+                                    <?= esc($periodo['nombre']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
+                <div class="col-md-3">
                     <label for="filtroEstado" class="form-label">Estado</label>
                     <select class="form-select" id="filtroEstado" onchange="aplicarFiltros()">
                         <option value="">Todos los estados</option>
-                        <option value="Pendiente">Pendientes</option>
-                        <option value="En Revision">En Revisión</option>
+                        <option value="Postulada">Postuladas</option>
+                        <option value="En Revisión">En Revisión</option>
                         <option value="Documentos Aprobados">Documentos Aprobados</option>
                         <option value="Aprobada">Aprobadas</option>
                         <option value="Rechazada">Rechazadas</option>
@@ -170,18 +183,6 @@
                 </div>
                 
                 <div class="col-md-3">
-                    <label for="filtroCarrera" class="form-label">Carrera</label>
-                    <select class="form-select" id="filtroCarrera" onchange="aplicarFiltros()">
-                        <option value="">Todas las carreras</option>
-                        <?php if (!empty($carreras)): ?>
-                            <?php foreach ($carreras as $carrera): ?>
-                                <option value="<?= esc($carrera) ?>"><?= esc($carrera) ?></option>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </select>
-                </div>
-                
-                <div class="col-md-3">
                     <label for="busquedaEstudiante" class="form-label">Buscar Estudiante</label>
                     <div class="input-group">
                         <input type="text" class="form-control" id="busquedaEstudiante" 
@@ -195,34 +196,34 @@
             
             <div class="row g-3 mt-2">
                 <div class="col-md-3">
+                    <label for="filtroCarrera" class="form-label">Carrera</label>
+                    <select class="form-select" id="filtroCarrera" onchange="aplicarFiltros()">
+                        <option value="">Todas las carreras</option>
+                        <?php if (!empty($carreras)): ?>
+                            <?php foreach ($carreras as $carrera): ?>
+                                <option value="<?= esc($carrera) ?>"><?= esc($carrera) ?></option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
+                
+                <div class="col-md-3">
                     <label for="ordenarPor" class="form-label">Ordenar por</label>
                     <select class="form-select" id="ordenarPor" onchange="aplicarFiltros()">
                         <option value="fecha_desc">Fecha (Más reciente)</option>
                         <option value="fecha_asc">Fecha (Más antigua)</option>
                         <option value="nombre_asc">Nombre A-Z</option>
                         <option value="nombre_desc">Nombre Z-A</option>
-                        <option value="urgencia">Urgencia</option>
-                    </select>
-                </div>
-                
-                <div class="col-md-3">
-                    <label for="filtroFecha" class="form-label">Rango de Fechas</label>
-                    <select class="form-select" id="filtroFecha" onchange="aplicarFiltros()">
-                        <option value="">Todas las fechas</option>
-                        <option value="hoy">Hoy</option>
-                        <option value="ayer">Ayer</option>
-                        <option value="semana">Esta semana</option>
-                        <option value="mes">Este mes</option>
                     </select>
                 </div>
                 
                 <div class="col-md-6 d-flex align-items-end">
                     <div class="btn-group" role="group">
                         <button type="button" class="btn btn-outline-primary" onclick="verSoloPendientes()">
-                            <i class="bi bi-clock"></i> Solo Pendientes
+                            <i class="bi bi-clock"></i> Solo Postuladas
                         </button>
-                        <button type="button" class="btn btn-outline-warning" onclick="verUrgentes()">
-                            <i class="bi bi-exclamation-triangle"></i> Urgentes
+                        <button type="button" class="btn btn-outline-warning" onclick="verEnRevision()">
+                            <i class="bi bi-search"></i> En Revisión
                         </button>
                         <button type="button" class="btn btn-outline-success" onclick="verListosAprobacion()">
                             <i class="bi bi-check-circle"></i> Listos para Aprobar
@@ -326,23 +327,25 @@
                                     <td>
                                         <div class="progress mb-2" style="height: 8px;">
                                             <?php 
-                                            $progreso = isset($solicitud['documentos_revisados'], $solicitud['total_documentos']) && $solicitud['total_documentos'] > 0 
-                                                ? ($solicitud['documentos_revisados'] / $solicitud['total_documentos']) * 100 
-                                                : 0;
-                                            $progresoClass = $progreso >= 100 ? 'bg-success' : ($progreso >= 50 ? 'bg-warning' : 'bg-danger');
+                                            $docsTotal = $solicitud['docs_total'] ?? $solicitud['total_documentos'] ?? 0;
+                                            $docsSubidos = $solicitud['docs_subidos'] ?? $solicitud['documentos_revisados'] ?? 0;
+                                            $docsAprobados = $solicitud['docs_aprobados'] ?? 0;
+                                            $docsEnRevision = $solicitud['docs_en_revision'] ?? 0;
+                                            
+                                            $pctAprobados = $docsTotal > 0 ? round(($docsAprobados / $docsTotal) * 100) : 0;
+                                            $pctEnRevision = $docsTotal > 0 ? round(($docsEnRevision / $docsTotal) * 100) : 0;
                                             ?>
-                                            <div class="progress-bar <?= $progresoClass ?>" 
-                                                 style="width: <?= $progreso ?>%"></div>
+                                            <div class="progress-bar bg-success" 
+                                                 style="width: <?= $pctAprobados ?>%" title="Aprobados: <?= $docsAprobados ?>"></div>
+                                            <div class="progress-bar bg-warning" 
+                                                 style="width: <?= $pctEnRevision ?>%" title="En revisión: <?= $docsEnRevision ?>"></div>
                                         </div>
                                         <small class="text-muted">
-                                            <?= $solicitud['documentos_revisados'] ?? 0 ?>/<?= $solicitud['total_documentos'] ?? 0 ?> revisados
+                                            <?= $docsSubidos ?>/<?= $docsTotal ?> subidos
+                                            <?php if ($docsAprobados > 0): ?>
+                                                <span class="text-success">(<?= $docsAprobados ?> aprobados)</span>
+                                            <?php endif; ?>
                                         </small>
-                                        
-                                        <?php if (isset($solicitud['documento_actual_revision'])): ?>
-                                            <br><small class="text-info">
-                                                <i class="bi bi-arrow-right"></i> Doc. <?= $solicitud['documento_actual_revision'] ?>
-                                            </small>
-                                        <?php endif; ?>
                                     </td>
                                     <td>
                                         <div>
@@ -592,7 +595,6 @@ function aplicarFiltros() {
     const beca = document.getElementById('filtroBeca').value;
     const carrera = document.getElementById('filtroCarrera').value;
     const busqueda = document.getElementById('busquedaEstudiante').value.toLowerCase();
-    const fecha = document.getElementById('filtroFecha').value;
     const orden = document.getElementById('ordenarPor').value;
     
     const filas = document.querySelectorAll('.solicitud-row');
@@ -616,35 +618,6 @@ function aplicarFiltros() {
             if (!textoCompleto.includes(busqueda)) mostrar = false;
         }
         
-        if (fecha) {
-            const fechaSolicitud = new Date(solicitud.fecha_solicitud);
-            const hoy = new Date();
-            let cumpleFiltroFecha = false;
-            
-            switch (fecha) {
-                case 'hoy':
-                    cumpleFiltroFecha = fechaSolicitud.toDateString() === hoy.toDateString();
-                    break;
-                case 'ayer':
-                    const ayer = new Date(hoy);
-                    ayer.setDate(ayer.getDate() - 1);
-                    cumpleFiltroFecha = fechaSolicitud.toDateString() === ayer.toDateString();
-                    break;
-                case 'semana':
-                    const semanaAtras = new Date(hoy);
-                    semanaAtras.setDate(semanaAtras.getDate() - 7);
-                    cumpleFiltroFecha = fechaSolicitud >= semanaAtras;
-                    break;
-                case 'mes':
-                    const mesAtras = new Date(hoy);
-                    mesAtras.setMonth(mesAtras.getMonth() - 1);
-                    cumpleFiltroFecha = fechaSolicitud >= mesAtras;
-                    break;
-            }
-            
-            if (!cumpleFiltroFecha) mostrar = false;
-        }
-        
         if (mostrar) {
             fila.style.display = '';
             visibles++;
@@ -661,24 +634,35 @@ function limpiarFiltros() {
     document.getElementById('filtroBeca').value = '';
     document.getElementById('filtroCarrera').value = '';
     document.getElementById('busquedaEstudiante').value = '';
-    document.getElementById('filtroFecha').value = '';
     document.getElementById('ordenarPor').value = 'fecha_desc';
     aplicarFiltros();
 }
 
 function verSoloPendientes() {
-    document.getElementById('filtroEstado').value = 'Pendiente';
+    document.getElementById('filtroEstado').value = 'Postulada';
     aplicarFiltros();
 }
 
-function verUrgentes() {
-    // Implementar lógica para mostrar solo urgentes
-    mostrarNotificacion('Mostrando solicitudes urgentes', 'info');
+function verEnRevision() {
+    document.getElementById('filtroEstado').value = 'En Revisión';
+    aplicarFiltros();
 }
 
 function verListosAprobacion() {
     document.getElementById('filtroEstado').value = 'Documentos Aprobados';
     aplicarFiltros();
+}
+
+function filtrarPorPeriodo() {
+    const periodoId = document.getElementById('filtroPeriodo').value;
+    const url = new URL(window.location.href);
+    if (periodoId) {
+        url.searchParams.set('periodo_id', periodoId);
+    } else {
+        url.searchParams.delete('periodo_id');
+    }
+    url.searchParams.delete('page');
+    window.location.href = url.toString();
 }
 
 function revisarDocumentos(solicitudId) {

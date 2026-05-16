@@ -90,8 +90,8 @@ class SolicitudBecaModel extends Model
      */
     public function getSolicitudesPorEstado($estado)
     {
-        return $this->select('solicitudes_becas.*, estudiantes.nombre as estudiante_nombre, estudiantes.apellido as estudiante_apellido, becas.nombre as beca_nombre, becas.tipo_beca, periodos_academicos.nombre as periodo_nombre')
-                   ->join('estudiantes', 'estudiantes.id = solicitudes_becas.estudiante_id')
+        return $this->select('solicitudes_becas.*, usuarios.nombre as estudiante_nombre, usuarios.apellido as estudiante_apellido, becas.nombre as beca_nombre, becas.tipo_beca, periodos_academicos.nombre as periodo_nombre')
+                   ->join('usuarios', 'usuarios.id = solicitudes_becas.estudiante_id')
                    ->join('becas', 'becas.id = solicitudes_becas.beca_id')
                    ->join('periodos_academicos', 'periodos_academicos.id = solicitudes_becas.periodo_id')
                    ->where('solicitudes_becas.estado', $estado)
@@ -104,8 +104,8 @@ class SolicitudBecaModel extends Model
      */
     public function getSolicitudesConFiltros($filtros = [])
     {
-        $query = $this->select('solicitudes_becas.*, estudiantes.nombre as estudiante_nombre, estudiantes.apellido as estudiante_apellido, becas.nombre as beca_nombre, becas.tipo_beca, periodos_academicos.nombre as periodo_nombre')
-                     ->join('estudiantes', 'estudiantes.id = solicitudes_becas.estudiante_id')
+        $query = $this->select('solicitudes_becas.*, usuarios.nombre as estudiante_nombre, usuarios.apellido as estudiante_apellido, becas.nombre as beca_nombre, becas.tipo_beca, periodos_academicos.nombre as periodo_nombre')
+                     ->join('usuarios', 'usuarios.id = solicitudes_becas.estudiante_id')
                      ->join('becas', 'becas.id = solicitudes_becas.beca_id')
                      ->join('periodos_academicos', 'periodos_academicos.id = solicitudes_becas.periodo_id');
 
@@ -123,8 +123,8 @@ class SolicitudBecaModel extends Model
 
         if (isset($filtros['buscar']) && !empty($filtros['buscar'])) {
             $query->groupStart()
-                  ->like('estudiantes.nombre', $filtros['buscar'])
-                  ->orLike('estudiantes.apellido', $filtros['buscar'])
+                  ->like('usuarios.nombre', $filtros['buscar'])
+                  ->orLike('usuarios.apellido', $filtros['buscar'])
                   ->orLike('becas.nombre', $filtros['buscar'])
                   ->groupEnd();
         }
@@ -137,8 +137,8 @@ class SolicitudBecaModel extends Model
      */
     public function getSolicitudCompleta($id)
     {
-        $solicitud = $this->select('solicitudes_becas.*, estudiantes.nombre as estudiante_nombre, estudiantes.apellido as estudiante_apellido, estudiantes.email as estudiante_email, becas.nombre as beca_nombre, becas.tipo_beca, becas.descripcion as beca_descripcion, periodos_academicos.nombre as periodo_nombre')
-                          ->join('estudiantes', 'estudiantes.id = solicitudes_becas.estudiante_id')
+        $solicitud = $this->select('solicitudes_becas.*, usuarios.nombre as estudiante_nombre, usuarios.apellido as estudiante_apellido, usuarios.email as estudiante_email, becas.nombre as beca_nombre, becas.tipo_beca, becas.descripcion as beca_descripcion, periodos_academicos.nombre as periodo_nombre')
+                          ->join('usuarios', 'usuarios.id = solicitudes_becas.estudiante_id')
                           ->join('becas', 'becas.id = solicitudes_becas.beca_id')
                           ->join('periodos_academicos', 'periodos_academicos.id = solicitudes_becas.periodo_id')
                           ->where('solicitudes_becas.id', $id)
@@ -187,8 +187,8 @@ class SolicitudBecaModel extends Model
      */
     public function getSolicitudesPorPeriodo($periodoId)
     {
-        return $this->select('solicitudes_becas.*, estudiantes.nombre as estudiante_nombre, estudiantes.apellido as estudiante_apellido, becas.nombre as beca_nombre, becas.tipo_beca')
-                   ->join('estudiantes', 'estudiantes.id = solicitudes_becas.estudiante_id')
+        return $this->select('solicitudes_becas.*, usuarios.nombre as estudiante_nombre, usuarios.apellido as estudiante_apellido, becas.nombre as beca_nombre, becas.tipo_beca')
+                   ->join('usuarios', 'usuarios.id = solicitudes_becas.estudiante_id')
                    ->join('becas', 'becas.id = solicitudes_becas.beca_id')
                    ->where('solicitudes_becas.periodo_id', $periodoId)
                    ->orderBy('solicitudes_becas.fecha_solicitud', 'DESC')
@@ -200,8 +200,8 @@ class SolicitudBecaModel extends Model
      */
     public function getSolicitudesPorBeca($becaId)
     {
-        return $this->select('solicitudes_becas.*, estudiantes.nombre as estudiante_nombre, estudiantes.apellido as estudiante_apellido, periodos_academicos.nombre as periodo_nombre')
-                   ->join('estudiantes', 'estudiantes.id = solicitudes_becas.estudiante_id')
+        return $this->select('solicitudes_becas.*, usuarios.nombre as estudiante_nombre, usuarios.apellido as estudiante_apellido, periodos_academicos.nombre as periodo_nombre')
+                   ->join('usuarios', 'usuarios.id = solicitudes_becas.estudiante_id')
                    ->join('periodos_academicos', 'periodos_academicos.id = solicitudes_becas.periodo_id')
                    ->where('solicitudes_becas.beca_id', $becaId)
                    ->orderBy('solicitudes_becas.fecha_solicitud', 'ASC')
@@ -274,8 +274,8 @@ class SolicitudBecaModel extends Model
      */
     public function getSolicitudesPendientesRevision()
     {
-        return $this->select('solicitudes_becas.*, estudiantes.nombre as estudiante_nombre, estudiantes.apellido as estudiante_apellido, becas.nombre as beca_nombre, becas.tipo_beca, periodos_academicos.nombre as periodo_nombre')
-                   ->join('estudiantes', 'estudiantes.id = solicitudes_becas.estudiante_id')
+        return $this->select('solicitudes_becas.*, usuarios.nombre as estudiante_nombre, usuarios.apellido as estudiante_apellido, becas.nombre as beca_nombre, becas.tipo_beca, periodos_academicos.nombre as periodo_nombre')
+                   ->join('usuarios', 'usuarios.id = solicitudes_becas.estudiante_id')
                    ->join('becas', 'becas.id = solicitudes_becas.beca_id')
                    ->join('periodos_academicos', 'periodos_academicos.id = solicitudes_becas.periodo_id')
                    ->whereIn('solicitudes_becas.estado', ['Postulada', 'En Revisión'])
@@ -311,8 +311,8 @@ class SolicitudBecaModel extends Model
      */
     public function getSolicitudesAprobadasPorPeriodo($periodoId)
     {
-        return $this->select('solicitudes_becas.*, estudiantes.nombre as estudiante_nombre, estudiantes.apellido as estudiante_apellido, becas.nombre as beca_nombre, becas.tipo_beca, becas.monto_beca')
-                   ->join('estudiantes', 'estudiantes.id = solicitudes_becas.estudiante_id')
+        return $this->select('solicitudes_becas.*, usuarios.nombre as estudiante_nombre, usuarios.apellido as estudiante_apellido, becas.nombre as beca_nombre, becas.tipo_beca, becas.monto_beca')
+                   ->join('usuarios', 'usuarios.id = solicitudes_becas.estudiante_id')
                    ->join('becas', 'becas.id = solicitudes_becas.beca_id')
                    ->where('solicitudes_becas.periodo_id', $periodoId)
                    ->where('solicitudes_becas.estado', 'Aprobada')
@@ -325,8 +325,8 @@ class SolicitudBecaModel extends Model
      */
     public function getSolicitudesRechazadasPorPeriodo($periodoId)
     {
-        return $this->select('solicitudes_becas.*, estudiantes.nombre as estudiante_nombre, estudiantes.apellido as estudiante_apellido, becas.nombre as beca_nombre, becas.tipo_beca')
-                   ->join('estudiantes', 'estudiantes.id = solicitudes_becas.estudiante_id')
+        return $this->select('solicitudes_becas.*, usuarios.nombre as estudiante_nombre, usuarios.apellido as estudiante_apellido, becas.nombre as beca_nombre, becas.tipo_beca')
+                   ->join('usuarios', 'usuarios.id = solicitudes_becas.estudiante_id')
                    ->join('becas', 'becas.id = solicitudes_becas.beca_id')
                    ->where('solicitudes_becas.periodo_id', $periodoId)
                    ->where('solicitudes_becas.estado', 'Rechazada')
@@ -347,8 +347,8 @@ class SolicitudBecaModel extends Model
      */
     public function getSolicitudesConDocumentosPendientes()
     {
-        return $this->select('solicitudes_becas.*, estudiantes.nombre as estudiante_nombre, estudiantes.apellido as estudiante_apellido, becas.nombre as beca_nombre')
-                   ->join('estudiantes', 'estudiantes.id = solicitudes_becas.estudiante_id')
+        return $this->select('solicitudes_becas.*, usuarios.nombre as estudiante_nombre, usuarios.apellido as estudiante_apellido, becas.nombre as beca_nombre')
+                   ->join('usuarios', 'usuarios.id = solicitudes_becas.estudiante_id')
                    ->join('becas', 'becas.id = solicitudes_becas.beca_id')
                    ->whereIn('solicitudes_becas.estado', ['Postulada', 'En Revisión'])
                    ->where('solicitudes_becas.porcentaje_avance <', 100)

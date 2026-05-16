@@ -1572,17 +1572,24 @@ class EstudianteController extends BaseController
             $totalDocumentos = $documentoModel->where('solicitud_beca_id', $solicitudId)->countAllResults();
             
             if ($totalDocumentos > 0) {
+                // Obtener documentos subidos (estado != Pendiente)
+                $documentosSubidos = $documentoModel->where('solicitud_beca_id', $solicitudId)
+                                                    ->where('estado !=', 'Pendiente')
+                                                    ->countAllResults();
+                
                 // Obtener documentos aprobados
                 $documentosAprobados = $documentoModel->where('solicitud_beca_id', $solicitudId)
                                                     ->where('estado', 'Aprobado')
                                                     ->countAllResults();
                 
-                // Calcular porcentaje
-                $porcentaje = ($documentosAprobados / $totalDocumentos) * 100;
+                // Calcular porcentaje basado en documentos subidos
+                $porcentaje = round(($documentosSubidos / $totalDocumentos) * 100, 1);
                 
                 // Actualizar solicitud
                 $solicitudModel->update($solicitudId, [
-                    'porcentaje_avance' => $porcentaje
+                    'porcentaje_avance' => $porcentaje,
+                    'total_documentos' => $totalDocumentos,
+                    'documentos_revisados' => $documentosSubidos
                 ]);
             }
         } catch (\Exception $e) {
@@ -1883,26 +1890,27 @@ class EstudianteController extends BaseController
                 ->getResultArray();
 
             $totalDocumentos = 0;
+            $documentosSubidos = 0;
             $documentosAprobados = 0;
-            $documentosRevisados = 0;
 
             foreach ($estados as $estado) {
                 $totalDocumentos += $estado['total'];
+                if ($estado['estado'] !== 'Pendiente') {
+                    $documentosSubidos += $estado['total'];
+                }
                 if ($estado['estado'] === 'Aprobado') {
                     $documentosAprobados += $estado['total'];
                 }
-                if (in_array($estado['estado'], ['En Revision', 'Aprobado', 'Rechazado'])) {
-                    $documentosRevisados += $estado['total'];
-                }
             }
 
-            $porcentajeAvance = $totalDocumentos > 0 ? round(($documentosAprobados / $totalDocumentos) * 100, 1) : 0;
+            // Porcentaje basado en documentos subidos (no solo aprobados)
+            $porcentajeAvance = $totalDocumentos > 0 ? round(($documentosSubidos / $totalDocumentos) * 100, 1) : 0;
 
             // Actualizar solicitud
             $this->db->table('solicitudes_becas')
                 ->where('id', $solicitudId)
                 ->update([
-                    'documentos_revisados' => $documentosRevisados,
+                    'documentos_revisados' => $documentosSubidos,
                     'total_documentos' => $totalDocumentos,
                     'porcentaje_avance' => $porcentajeAvance
                 ]);

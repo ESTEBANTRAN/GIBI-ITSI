@@ -5,18 +5,13 @@ namespace App\Filters;
 use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
+use App\Security\SessionGuard;
+use App\Security\SecurityLogger;
 
 class AuthFilter implements FilterInterface
 {
     /**
-     * Do whatever processing this filter needs to do.
-     * By default it should not return anything during
-     * normal execution. However, when an abnormal state
-     * is found, it should return an instance of
-     * CodeIgniter\HTTP\Response. If it does, script
-     * execution will end and that Response will be
-     * sent back to the client, allowing for error pages,
-     * redirects, etc.
+     * Verifica si el usuario está logueado y la sesión es válida.
      *
      * @param RequestInterface $request
      * @param array|null       $arguments
@@ -27,16 +22,46 @@ class AuthFilter implements FilterInterface
     {
         // Verificar si el usuario está logueado
         if (!session()->get('isLoggedIn')) {
-            // Si no está logueado, redirigir al login
             return redirect()->to('/login');
         }
-        
-        // Si está logueado, permitir continuar
+
+        $sessionGuard = new SessionGuard();
+
+        // Verificar si la sesión expiró por inactividad
+        if ($sessionGuard->isSessionExpired()) {
+            $userId = session()->get('id');
+            if ($userId) {
+                $logger = new SecurityLogger();
+                $logger->log(
+                    SecurityLogger::LEVEL_INFO,
+                    'SESSION_EXPIRED',
+                    'Sesión expirada por inactividad',
+                    ['user_id' => $userId]
+                );
+            }
+            $sessionGuard->destroySession();
+            return redirect()->to('/login')->with('error', 'Su sesión ha expirado por inactividad.');
+        }
+
+        // Verificar integridad de sesión (fingerprint)
+        if (!$sessionGuard->validateSession()) {
+            $userId = session()->get('id');
+            if ($userId) {
+                $logger = new SecurityLogger();
+                $logger->logSessionHijack((int)$userId);
+            }
+            $sessionGuard->destroySession();
+            return redirect()->to('/login')->with('error', 'Sesión inválida. Por favor inicie sesión nuevamente.');
+        }
+
+        // Actualizar timestamp de actividad
+        $sessionGuard->touchActivity();
+
         return $request;
     }
 
     /**
-     * We don't have anything to do here.
+     * No hacer nada después de la respuesta.
      *
      * @param RequestInterface $request
      * @param ResponseInterface $response
@@ -46,7 +71,6 @@ class AuthFilter implements FilterInterface
      */
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
-        // No hacer nada después de la respuesta
         return $response;
     }
 }

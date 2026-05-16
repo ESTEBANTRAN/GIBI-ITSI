@@ -230,8 +230,19 @@ class EstudianteBecasService
     public function getTodasLasBecasDisponibles($estudianteId)
     {
         try {
-            // Obtener todos los períodos activos
-            $periodosActivos = $this->periodoModel->where('activo', 1)->findAll();
+            // Obtener solo el período actual (no todos los activos)
+            $periodoActual = $this->periodoModel->getPeriodoActualReal();
+            
+            if (!$periodoActual) {
+                return [
+                    'becas' => [],
+                    'total_periodos' => 0,
+                    'total_becas' => 0,
+                    'mensaje' => 'No hay período académico vigente'
+                ];
+            }
+
+            $periodosActivos = [$periodoActual];
             
             $todasLasBecas = [];
             
@@ -561,12 +572,13 @@ class EstudianteBecasService
     private function calcularProgresoDocumentos($documentos)
     {
         if (empty($documentos)) {
-            return ['porcentaje' => 0, 'subidos' => 0, 'total' => 0, 'aprobados' => 0];
+            return ['porcentaje' => 0, 'subidos' => 0, 'total' => 0, 'aprobados' => 0, 'pendientes' => 0, 'en_revision' => 0, 'rechazados' => 0, 'porcentaje_aprobados' => 0];
         }
 
         $total = count($documentos);
         $subidos = 0;
         $aprobados = 0;
+        $rechazados = 0;
 
         foreach ($documentos as $doc) {
             if ($doc['estado'] !== 'Pendiente') {
@@ -575,15 +587,20 @@ class EstudianteBecasService
             if ($doc['estado'] === 'Aprobado') {
                 $aprobados++;
             }
+            if ($doc['estado'] === 'Rechazado') {
+                $rechazados++;
+            }
         }
 
         return [
-            'porcentaje' => round(($aprobados / $total) * 100, 1),
+            'porcentaje' => round(($subidos / $total) * 100, 1),
             'subidos' => $subidos,
             'total' => $total,
             'aprobados' => $aprobados,
             'pendientes' => $total - $subidos,
-            'en_revision' => $subidos - $aprobados
+            'en_revision' => $subidos - $aprobados - $rechazados,
+            'rechazados' => $rechazados,
+            'porcentaje_aprobados' => round(($aprobados / $total) * 100, 1)
         ];
     }
 

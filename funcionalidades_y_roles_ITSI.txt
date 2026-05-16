@@ -1,0 +1,378 @@
+================================================================================
+    SISTEMA ITSI - GESTIÓN INTEGRAL DE BIENESTAR INSTITUCIONAL (GIBI-ITSI)
+    RESUMEN DE FUNCIONALIDADES Y ROLES DEL SISTEMA
+================================================================================
+
+Tecnología: CodeIgniter 4 (PHP) | Base de datos: MySQL (bienestar_estudiantil_db)
+Arquitectura: MVC (Modelo-Vista-Controlador)
+
+================================================================================
+                              ROLES DEL SISTEMA
+================================================================================
+
+El sistema maneja 3 roles principales, identificados por rol_id:
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ ROL 1: ESTUDIANTE (rol_id = 1)                                             │
+│ Dashboard: /estudiante                                                     │
+│ Controlador: EstudianteController                                          │
+│ Descripción: Usuario final del sistema. Puede gestionar su ficha           │
+│ socioeconómica, solicitar becas, enviar solicitudes de ayuda y             │
+│ administrar su perfil y cuenta personal.                                   │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ ROL 2: ADMINISTRADOR DE BIENESTAR (rol_id = 2)                             │
+│ Dashboard: /admin-bienestar                                                │
+│ Controlador: AdminBienestarController                                      │
+│ Descripción: Administrador del departamento de bienestar estudiantil.      │
+│ Gestiona fichas socioeconómicas, becas, períodos académicos, usuarios,     │
+│ solicitudes de ayuda, reportes y configuración del sistema.                │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ ROL 4: SUPER ADMINISTRADOR / GLOBAL ADMIN (rol_id = 4)                     │
+│ Dashboard: /global-admin/dashboard                                         │
+│ Controlador: GlobalAdminController                                         │
+│ Descripción: Administrador global del sistema con control total. Gestiona  │
+│ usuarios, roles, configuración del sistema, respaldos de base de datos,    │
+│ logs de actividad y estadísticas globales.                                 │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+Nota: El rol_id = 3 (Administrativo) existe en el mapa de roles pero no
+tiene controlador ni rutas activas en el sistema actual.
+
+================================================================================
+                    FUNCIONALIDADES GENERALES (TODOS LOS ROLES)
+================================================================================
+
+1. AUTENTICACIÓN Y SEGURIDAD
+   - Inicio de sesión con cédula/email y contraseña
+   - Cierre de sesión seguro
+   - Rate limiting: máximo 10 intentos de login en 15 minutos por IP
+   - Bloqueo de cuenta tras 5 intentos fallidos (30 minutos)
+   - Protección CSRF en formularios
+   - Protección contra XSS (Cross-Site Scripting)
+   - Sanitización de entradas (InputSanitizer)
+   - Encabezados HTTP de seguridad (SecurityHeaders)
+   - Gestión segura de sesiones (SessionGuard)
+   - Logging de eventos de seguridad (SecurityLogger)
+   - Política de contraseñas seguras (PasswordPolicy)
+
+2. GESTIÓN DE PERFIL
+   - Ver perfil personal
+   - Editar datos del perfil (nombre, apellido, teléfono, dirección)
+   - Cambiar foto de perfil
+
+3. GESTIÓN DE CUENTA
+   - Cambiar contraseña
+   - Configurar notificaciones
+   - Exportar datos personales
+   - Eliminar cuenta
+
+================================================================================
+              FUNCIONALIDADES DEL ROL ESTUDIANTE (rol_id = 1)
+================================================================================
+
+1. DASHBOARD ESTUDIANTIL
+   - Panel principal con resumen de actividades
+   - Estadísticas personales
+   - Actividad reciente
+
+2. FICHA SOCIOECONÓMICA
+   - Crear ficha socioeconómica (datos personales, familiares, económicos)
+   - Ver ficha creada
+   - Editar ficha existente
+   - Enviar ficha para revisión del administrador
+   - Exportar ficha a PDF con código de verificación
+
+3. SISTEMA DE BECAS
+   - Ver becas disponibles
+   - Verificar elegibilidad para becas
+   - Solicitar becas
+   - Ver estado de solicitud de beca
+   - Subir documentos requeridos para beca
+   - Actualizar documentos de beca
+   - Descargar documentos de beca
+   - Cancelar solicitud de beca
+   - Ver detalle de beca y solicitud
+
+4. SOLICITUDES DE AYUDA
+   - Crear solicitudes de ayuda (por categoría)
+   - Editar solicitudes existentes
+   - Cancelar solicitudes
+   - Ver historial de solicitudes
+   - Vista mejorada de solicitudes con filtros
+
+5. GESTIÓN DE DOCUMENTOS
+   - Subir documentos
+   - Descargar documentos
+   - Eliminar documentos
+
+6. SECCIÓN DE INFORMACIÓN
+   - Información sobre servicios de bienestar
+   - Información sobre becas disponibles
+   - Información sobre servicios de psicología
+   - Información sobre servicios de salud
+   - Información sobre trabajo social
+   - Información sobre orientación académica
+
+================================================================================
+        FUNCIONALIDADES DEL ADMINISTRADOR DE BIENESTAR (rol_id = 2)
+================================================================================
+
+1. DASHBOARD ADMINISTRATIVO
+   - Panel de control con métricas generales
+   - Estadísticas del sistema (fichas, becas, solicitudes)
+   - Actividad reciente del sistema
+
+2. GESTIÓN DE FICHAS SOCIOECONÓMICAS
+   - Ver listado de fichas con filtros
+   - Ver detalle de ficha socioeconómica
+   - Marcar ficha como revisada
+   - Aprobar fichas
+   - Rechazar fichas con observaciones
+   - Agregar observaciones a fichas
+   - Actualizar estado de ficha
+   - Exportar ficha a PDF
+   - Estadísticas de fichas
+
+3. GESTIÓN DE PERÍODOS ACADÉMICOS
+   - Crear período académico
+   - Actualizar período
+   - Eliminar período
+   - Duplicar período
+   - Ver detalle de período
+   - Actualizar límites de período
+   - Activar/desactivar configuraciones de período
+   - Exportar períodos
+   - Estadísticas de períodos
+
+4. GESTIÓN DE BECAS
+   - Configuración de becas (tipos, requisitos, montos)
+   - Crear nueva beca
+   - Actualizar beca existente
+   - Eliminar beca
+   - Activar/desactivar becas
+   - Configurar documentos requeridos por beca
+   - Ver listado de becas con filtros
+   - Exportar becas a PDF
+   - Estadísticas de becas
+
+5. GESTIÓN DE SOLICITUDES DE BECAS
+   - Ver listado de solicitudes (vista mejorada con filtros)
+   - Revisión de documentos de solicitud
+   - Aprobar documentos individuales
+   - Rechazar documentos con observación
+   - Aprobar solicitud de beca completa
+   - Rechazar solicitud de beca
+   - Colocar solicitud en lista de espera
+   - Ver detalle de solicitud
+   - Exportar solicitud a PDF
+   - Verificar documentos de beca
+   - Descargar/ver documentos de beca
+
+6. GESTIÓN DE SOLICITUDES DE AYUDA
+   - Ver listado de solicitudes de ayuda (vista mejorada)
+   - Ver detalle de solicitud
+   - Responder solicitudes
+   - Marcar solicitud como resuelta
+   - Asignar solicitud a responsable
+   - Cambiar prioridad de solicitud
+   - Cerrar solicitud
+   - Ver historial de solicitudes por estudiante
+   - Exportar solicitudes
+   - Gestión de respuestas predefinidas (crear, obtener, eliminar)
+
+7. GESTIÓN DE USUARIOS / ESTUDIANTES
+   - Ver listado de usuarios con filtros
+   - Ver detalle de usuario
+   - Crear nuevos usuarios
+   - Cambiar estado de usuario (Activo/Inactivo)
+   - Resetear contraseña de usuario
+   - Exportar listado de usuarios
+   - Ver historial de estudiante
+   - Ver estudiantes sin beca
+
+8. NOTIFICACIONES DE BECAS
+   - Enviar notificaciones sobre becas a estudiantes
+   - Marcar notificaciones como leídas
+
+9. REPORTES
+   - Generar reportes generales
+   - Reportes de becas
+   - Estadísticas de becas
+   - Exportar reportes de becas
+   - Exportar datos del sistema
+
+10. GESTIÓN DE PLANTILLAS PDF
+    - Ver plantillas disponibles
+    - Subir nuevas plantillas
+    - Vista previa de plantillas
+    - Eliminar plantillas
+    - Probar plantillas personalizadas y Word
+    - Verificar códigos de PDF
+
+11. CONFIGURACIÓN DEL SISTEMA
+    - Configuración general del sistema
+    - Guardar configuraciones
+    - Crear respaldos manuales
+
+12. PERFIL Y CUENTA PROPIOS
+    - Editar perfil
+    - Cambiar foto de perfil
+    - Cambiar contraseña
+    - Configurar notificaciones
+    - Exportar datos personales
+    - Eliminar cuenta
+
+================================================================================
+        FUNCIONALIDADES DEL SUPER ADMINISTRADOR (rol_id = 4)
+================================================================================
+
+1. DASHBOARD GLOBAL
+   - Panel de control con métricas del sistema completo
+   - Estadísticas globales
+   - Métricas de rendimiento del sistema
+   - Supervisión de bienestar estudiantil
+
+2. GESTIÓN DE USUARIOS
+   - Ver listado completo de usuarios del sistema
+   - Crear nuevos usuarios
+   - Actualizar datos de usuarios
+   - Eliminar usuarios
+   - Obtener detalle de usuario
+   - Exportar usuarios a PDF
+
+3. GESTIÓN DE ROLES
+   - Ver listado de roles con estadísticas
+   - Crear nuevos roles
+   - Actualizar roles existentes
+   - Eliminar roles
+   - Ver permisos por rol
+   - Ver usuarios asignados a cada rol
+
+4. CONFIGURACIÓN DEL SISTEMA
+   - Configuración general del sistema
+   - Actualizar parámetros de configuración
+   - Guardar configuración
+
+5. RESPALDOS DE BASE DE DATOS
+   - Crear respaldos manuales
+   - Restaurar respaldos
+   - Descargar respaldos
+   - Enviar respaldos por email
+   - Eliminar respaldos individuales
+   - Limpieza masiva de respaldos
+   - Configurar política de respaldos
+   - Estadísticas de respaldos
+
+6. LOGS DE ACTIVIDAD
+   - Ver listado de logs del sistema
+   - Ver detalle de log individual
+   - Eliminar logs
+   - Limpieza masiva de logs
+   - Exportar logs
+   - Estadísticas de logs
+
+7. ESTADÍSTICAS AVANZADAS
+   - Estadísticas globales del sistema
+   - Métricas de rendimiento
+   - Supervisión de bienestar
+
+8. VISTAS DE OTROS ROLES
+   - Vista de perfil de estudiante (para supervisión)
+   - Vista de perfil de admin bienestar (para supervisión)
+
+9. PERFIL Y CUENTA PROPIOS
+   - Editar perfil
+   - Cambiar foto de perfil
+   - Cambiar contraseña
+   - Configurar notificaciones
+   - Exportar datos personales
+   - Eliminar cuenta
+
+================================================================================
+                        MÓDULO DE SEGURIDAD
+================================================================================
+
+El sistema cuenta con un módulo de seguridad dedicado (app/Security/) que
+incluye los siguientes componentes:
+
+1. RateLimiter       - Control de frecuencia de peticiones para prevenir
+                       ataques de fuerza bruta
+2. InputSanitizer    - Sanitización y validación de datos de entrada
+3. SecurityLogger    - Registro de eventos de seguridad (login, logout,
+                       accesos denegados, bloqueos)
+4. SessionGuard      - Protección avanzada de sesiones (inicialización,
+                       destrucción segura)
+5. CsrfGuard         - Protección contra ataques CSRF
+6. XssProtector      - Protección contra inyección XSS
+7. SecurityHelper    - Utilidades de seguridad (obtener IP, enmascarar emails)
+8. PasswordPolicy    - Políticas de contraseñas seguras
+
+Filtros de seguridad (app/Filters/):
+- AuthFilter         - Verificación de autenticación en rutas protegidas
+- RoleFilter         - Autorización basada en roles por ruta
+- RateLimitFilter    - Filtro global de rate limiting
+- SecurityHeaders    - Cabeceras HTTP de seguridad
+- XssFilter          - Filtrado global contra XSS
+
+================================================================================
+                      MODELOS DE DATOS
+================================================================================
+
+- UsuarioModel                  - Gestión de usuarios del sistema
+- RolModel                      - Gestión de roles y permisos
+- FichaSocioeconomicaModel      - Fichas socioeconómicas de estudiantes
+- BecaModel                     - Tipos de becas disponibles
+- SolicitudBecaModel            - Solicitudes de becas de estudiantes
+- SolicitudBecaDocumentoModel   - Documentos asociados a solicitudes de becas
+- BecaDocumentoRequisitoModel   - Requisitos documentales por tipo de beca
+- SolicitudAyudaModel           - Solicitudes de ayuda de estudiantes
+- CategoriaSolicitudAyudaModel  - Categorías de solicitudes de ayuda
+- RespuestaSolicitudModel       - Respuestas a solicitudes de ayuda
+- PeriodoAcademicoModel         - Períodos académicos
+- NotificacionBecaModel         - Notificaciones relacionadas con becas
+- PdfCodigoVerificacionModel    - Códigos de verificación para PDFs
+- CarreraModel                  - Carreras universitarias
+
+================================================================================
+                    ESTRUCTURA DE NAVEGACIÓN
+================================================================================
+
+ESTUDIANTE:
+  /estudiante                       → Dashboard principal
+  /estudiante/ficha-socioeconomica  → Ficha socioeconómica
+  /estudiante/becas                 → Sistema de becas
+  /estudiante/solicitudes-ayuda     → Solicitudes de ayuda
+  /estudiante/documentos            → Gestión de documentos
+  /estudiante/perfil                → Perfil personal
+  /estudiante/cuenta                → Configuración de cuenta
+  /estudiante/informacion/*         → Sección informativa
+
+ADMIN BIENESTAR:
+  /admin-bienestar/dashboard              → Dashboard
+  /admin-bienestar/fichas-socioeconomicas → Fichas socioeconómicas
+  /admin-bienestar/gestion-periodos       → Períodos académicos
+  /admin-bienestar/configuracion-becas    → Configuración de becas
+  /admin-bienestar/solicitudes-becas      → Solicitudes de becas
+  /admin-bienestar/solicitudes-ayuda      → Solicitudes de ayuda
+  /admin-bienestar/usuarios               → Gestión de usuarios
+  /admin-bienestar/reportes               → Reportes
+  /admin-bienestar/configuracion-sistema  → Configuración
+  /admin-bienestar/perfil                 → Perfil personal
+  /admin-bienestar/cuenta                 → Configuración de cuenta
+
+SUPER ADMINISTRADOR:
+  /global-admin/dashboard       → Dashboard global
+  /global-admin/usuarios        → Gestión de usuarios
+  /global-admin/roles           → Gestión de roles
+  /global-admin/configuracion   → Configuración del sistema
+  /global-admin/respaldos       → Respaldos de BD
+  /global-admin/logs            → Logs de actividad
+  /global-admin/estadisticas    → Estadísticas avanzadas
+  /global-admin/perfil          → Perfil personal
+  /global-admin/cuenta          → Configuración de cuenta
+
+================================================================================
+Documento generado el: 25 de marzo de 2026
+Sistema: ITSI (GIBI - Gestión Integral de Bienestar Institucional)
+Framework: CodeIgniter 4 | PHP | MySQL
+================================================================================

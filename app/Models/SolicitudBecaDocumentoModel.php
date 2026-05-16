@@ -6,7 +6,7 @@ use CodeIgniter\Model;
 
 class SolicitudBecaDocumentoModel extends Model
 {
-    protected $table            = 'solicitudes_becas_documentos';
+    protected $table            = 'documentos_solicitud_becas';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
@@ -14,17 +14,17 @@ class SolicitudBecaDocumentoModel extends Model
 
     protected $allowedFields = [
         'solicitud_beca_id',
-        'documento_requisito_id',
+        'documento_requerido_id',
         'nombre_archivo',
         'ruta_archivo',
-        'tipo_archivo',
-        'tamano_archivo',
+        'orden_revision',
         'estado',
+        'observaciones',
+        'revisado_por',
         'fecha_subida',
         'fecha_revision',
-        'revisado_por',
-        'observaciones',
-        'motivo_rechazo'
+        'tama±o_archivo',
+        'tipo_mime'
     ];
 
     protected $useTimestamps = false;
@@ -35,12 +35,8 @@ class SolicitudBecaDocumentoModel extends Model
 
     protected $validationRules = [
         'solicitud_beca_id'      => 'required|integer',
-        'documento_requisito_id' => 'required|integer',
-        'nombre_archivo'         => 'required|max_length[255]',
-        'ruta_archivo'           => 'required|max_length[500]',
-        'tipo_archivo'           => 'required|max_length[100]',
-        'tamano_archivo'         => 'required|integer',
-        'estado'                 => 'required|in_list[Pendiente,Aprobado,Rechazado]'
+        'documento_requerido_id' => 'required|integer',
+        'estado'                 => 'required|in_list[Pendiente,En Revision,Aprobado,Rechazado]'
     ];
 
     protected $validationMessages = [
@@ -82,9 +78,9 @@ class SolicitudBecaDocumentoModel extends Model
      */
     public function getDocumentosSolicitud($solicitudId)
     {
-        return $this->select('solicitudes_becas_documentos.*, becas_documentos_requisitos.nombre_documento, becas_documentos_requisitos.orden_verificacion')
-                   ->join('becas_documentos_requisitos', 'becas_documentos_requisitos.id = solicitudes_becas_documentos.documento_requisito_id')
-                   ->where('solicitudes_becas_documentos.solicitud_beca_id', $solicitudId)
+        return $this->select('documentos_solicitud_becas.*, becas_documentos_requisitos.nombre_documento, becas_documentos_requisitos.orden_verificacion')
+                   ->join('becas_documentos_requisitos', 'becas_documentos_requisitos.id = documentos_solicitud_becas.documento_requerido_id')
+                   ->where('documentos_solicitud_becas.solicitud_beca_id', $solicitudId)
                    ->orderBy('becas_documentos_requisitos.orden_verificacion', 'ASC')
                    ->findAll();
     }
@@ -94,10 +90,10 @@ class SolicitudBecaDocumentoModel extends Model
      */
     public function getDocumentosPendientes($solicitudId)
     {
-        return $this->select('solicitudes_becas_documentos.*, becas_documentos_requisitos.nombre_documento, becas_documentos_requisitos.orden_verificacion')
-                   ->join('becas_documentos_requisitos', 'becas_documentos_requisitos.id = solicitudes_becas_documentos.documento_requisito_id')
-                   ->where('solicitudes_becas_documentos.solicitud_beca_id', $solicitudId)
-                   ->where('solicitudes_becas_documentos.estado', 'Pendiente')
+        return $this->select('documentos_solicitud_becas.*, becas_documentos_requisitos.nombre_documento, becas_documentos_requisitos.orden_verificacion')
+                   ->join('becas_documentos_requisitos', 'becas_documentos_requisitos.id = documentos_solicitud_becas.documento_requerido_id')
+                   ->where('documentos_solicitud_becas.solicitud_beca_id', $solicitudId)
+                   ->where('documentos_solicitud_becas.estado', 'Pendiente')
                    ->orderBy('becas_documentos_requisitos.orden_verificacion', 'ASC')
                    ->findAll();
     }
@@ -107,10 +103,10 @@ class SolicitudBecaDocumentoModel extends Model
      */
     public function getDocumentosAprobados($solicitudId)
     {
-        return $this->select('solicitudes_becas_documentos.*, becas_documentos_requisitos.nombre_documento, becas_documentos_requisitos.orden_verificacion')
-                   ->join('becas_documentos_requisitos', 'becas_documentos_requisitos.id = solicitudes_becas_documentos.documento_requisito_id')
-                   ->where('solicitudes_becas_documentos.solicitud_beca_id', $solicitudId)
-                   ->where('solicitudes_becas_documentos.estado', 'Aprobado')
+        return $this->select('documentos_solicitud_becas.*, becas_documentos_requisitos.nombre_documento, becas_documentos_requisitos.orden_verificacion')
+                   ->join('becas_documentos_requisitos', 'becas_documentos_requisitos.id = documentos_solicitud_becas.documento_requerido_id')
+                   ->where('documentos_solicitud_becas.solicitud_beca_id', $solicitudId)
+                   ->where('documentos_solicitud_becas.estado', 'Aprobado')
                    ->orderBy('becas_documentos_requisitos.orden_verificacion', 'ASC')
                    ->findAll();
     }
@@ -120,10 +116,10 @@ class SolicitudBecaDocumentoModel extends Model
      */
     public function getSiguienteDocumentoPendiente($solicitudId)
     {
-        return $this->select('solicitudes_becas_documentos.*, becas_documentos_requisitos.nombre_documento, becas_documentos_requisitos.orden_verificacion')
-                   ->join('becas_documentos_requisitos', 'becas_documentos_requisitos.id = solicitudes_becas_documentos.documento_requisito_id')
-                   ->where('solicitudes_becas_documentos.solicitud_beca_id', $solicitudId)
-                   ->where('solicitudes_becas_documentos.estado', 'Pendiente')
+        return $this->select('documentos_solicitud_becas.*, becas_documentos_requisitos.nombre_documento, becas_documentos_requisitos.orden_verificacion')
+                   ->join('becas_documentos_requisitos', 'becas_documentos_requisitos.id = documentos_solicitud_becas.documento_requerido_id')
+                   ->where('documentos_solicitud_becas.solicitud_beca_id', $solicitudId)
+                   ->where('documentos_solicitud_becas.estado', 'Pendiente')
                    ->orderBy('becas_documentos_requisitos.orden_verificacion', 'ASC')
                    ->first();
     }
@@ -146,10 +142,10 @@ class SolicitudBecaDocumentoModel extends Model
      */
     public function getDocumentosRechazados($solicitudId)
     {
-        return $this->select('solicitudes_becas_documentos.*, becas_documentos_requisitos.nombre_documento, becas_documentos_requisitos.orden_verificacion')
-                   ->join('becas_documentos_requisitos', 'becas_documentos_requisitos.id = solicitudes_becas_documentos.documento_requisito_id')
-                   ->where('solicitudes_becas_documentos.solicitud_beca_id', $solicitudId)
-                   ->where('solicitudes_becas_documentos.estado', 'Rechazado')
+        return $this->select('documentos_solicitud_becas.*, becas_documentos_requisitos.nombre_documento, becas_documentos_requisitos.orden_verificacion')
+                   ->join('becas_documentos_requisitos', 'becas_documentos_requisitos.id = documentos_solicitud_becas.documento_requerido_id')
+                   ->where('documentos_solicitud_becas.solicitud_beca_id', $solicitudId)
+                   ->where('documentos_solicitud_becas.estado', 'Rechazado')
                    ->orderBy('becas_documentos_requisitos.orden_verificacion', 'ASC')
                    ->findAll();
     }
@@ -181,10 +177,10 @@ class SolicitudBecaDocumentoModel extends Model
      */
     public function buscarDocumentosPorNombre($solicitudId, $nombre)
     {
-        return $this->select('solicitudes_becas_documentos.*, becas_documentos_requisitos.nombre_documento')
-                   ->join('becas_documentos_requisitos', 'becas_documentos_requisitos.id = solicitudes_becas_documentos.documento_requisito_id')
-                   ->where('solicitudes_becas_documentos.solicitud_beca_id', $solicitudId)
-                   ->like('solicitudes_becas_documentos.nombre_archivo', $nombre)
+        return $this->select('documentos_solicitud_becas.*, becas_documentos_requisitos.nombre_documento')
+                   ->join('becas_documentos_requisitos', 'becas_documentos_requisitos.id = documentos_solicitud_becas.documento_requerido_id')
+                   ->where('documentos_solicitud_becas.solicitud_beca_id', $solicitudId)
+                   ->like('documentos_solicitud_becas.nombre_archivo', $nombre)
                    ->orLike('becas_documentos_requisitos.nombre_documento', $nombre)
                    ->findAll();
     }

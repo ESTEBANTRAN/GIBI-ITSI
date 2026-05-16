@@ -4,6 +4,10 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\UsuarioModel;
+use App\Security\RateLimiter;
+use App\Security\SecurityLogger;
+use App\Security\SessionGuard;
+use App\Security\SecurityHelper;
 
 class AuthController extends BaseController
 {
@@ -30,7 +34,20 @@ class AuthController extends BaseController
 
     public function attemptLogin()
     {
-        // 1. Validar los datos de entrada
+        $securityLogger = new SecurityLogger();
+        $ip = SecurityHelper::getClientIp();
+
+        // ====== 1. Rate Limiting por IP ======
+        $rateLimiter = new RateLimiter(10, 900, 'login_rate'); // 10 intentos en 15 min
+        if ($rateLimiter->tooManyAttempts($ip)) {
+            $waitTime = $rateLimiter->getFormattedWaitTime($ip);
+            $securityLogger->logRateLimited($ip, $rateLimiter->getAttempts($ip));
+            return redirect()->back()->withInput()->with('error', 
+                "Demasiados intentos de inicio de sesión. Intente de nuevo en {$waitTime}."
+            );
+        }
+
+        // ====== 2. Validar los datos de entrada ======
         $rules = [
             'identificador' => 'required',
             'password'      => 'required'
@@ -40,56 +57,78 @@ class AuthController extends BaseController
             return redirect()->back()->withInput()->with('error', 'Por favor complete todos los campos.');
         }
 
-        // 2. Obtener datos del formulario
-        $identifier = $this->request->getPost('identificador');
+        // ====== 3. Obtener datos del formulario ======
+        $identifier = trim($this->request->getPost('identificador'));
         $password = $this->request->getPost('password');
 
-        // Debug: log de intento de login
-        log_message('debug', 'AuthController::attemptLogin - Intentando login con identificador: ' . $identifier);
+        log_message('debug', 'AuthController::attemptLogin - Intentando login con identificador: ' . SecurityHelper::maskEmail($identifier));
 
-        // 3. Usar el modelo para buscar al usuario
+        // ====== 4. Buscar usuario ======
         $model = new UsuarioModel();
         $user = $model->findUserByIdentifier($identifier);
 
-        // Debug: verificar si el usuario existe
         if (!$user) {
-            log_message('debug', 'AuthController::attemptLogin - Usuario no encontrado');
-            return redirect()->back()->withInput()->with('error', 'Usuario no encontrado. Verifique su cédula o correo.');
+            // Registrar intento en rate limiter
+            $rateLimiter->hit($ip);
+            $securityLogger->logLoginFailed($identifier, 'Usuario no encontrado');
+            return redirect()->back()->withInput()->with('error', 'Credenciales incorrectas.');
         }
 
-        log_message('debug', 'AuthController::attemptLogin - Usuario encontrado, rol_id: ' . $user['rol_id']);
+        // ====== 5. Verificar si la cuenta está bloqueada ======
+        if ($model->usuarioBloqueado((int)$user['id'])) {
+            $securityLogger->logLoginFailed($identifier, 'Cuenta bloqueada');
+            return redirect()->back()->withInput()->with('error', 
+                'Su cuenta está temporalmente bloqueada por múltiples intentos fallidos. Intente más tarde.'
+            );
+        }
 
-        // Debug: verificar si la contraseña es correcta
+        // ====== 6. Verificar contraseña ======
         if (!password_verify($password, $user['password_hash'])) {
-            log_message('debug', 'AuthController::attemptLogin - Contraseña incorrecta');
-            return redirect()->back()->withInput()->with('error', 'Contraseña incorrecta.');
+            // Incrementar intentos fallidos
+            $rateLimiter->hit($ip);
+            $model->incrementarIntentosFallidos((int)$user['id']);
+            $securityLogger->logLoginFailed($identifier, 'Contraseña incorrecta');
+
+            // Verificar si se acaba de bloquear
+            $remainingAttempts = 5 - (int)($user['intentos_fallidos'] ?? 0) - 1;
+            if ($remainingAttempts <= 0) {
+                $securityLogger->logAccountLocked($identifier, (int)$user['id']);
+                return redirect()->back()->withInput()->with('error', 
+                    'Cuenta bloqueada por 30 minutos debido a múltiples intentos fallidos.'
+                );
+            }
+
+            return redirect()->back()->withInput()->with('error', 'Credenciales incorrectas.');
         }
 
         log_message('debug', 'AuthController::attemptLogin - Credenciales correctas, configurando sesión');
 
-        // 4. Si llegamos aquí, las credenciales son correctas
+        // ====== 7. Login exitoso ======
+        // Resetear intentos fallidos y rate limiter
+        $model->resetearIntentosFallidos((int)$user['id']);
+        $model->actualizarUltimoAcceso((int)$user['id']);
+        $rateLimiter->clear($ip);
+
+        // Configurar sesión
         $this->setSession($user);
+
+        // Protección avanzada de sesión
+        $sessionGuard = new SessionGuard();
+        $sessionGuard->initializeSession();
+
+        // Registrar login exitoso
+        $securityLogger->logLoginSuccess($identifier, (int)$user['id']);
         
-        // 5. Redirigir según el rol
+        // ====== 8. Redirigir según el rol ======
         $rol_id = $user['rol_id'];
         
-        log_message('debug', 'AuthController::attemptLogin - Redirigiendo según rol_id: ' . $rol_id);
-        
         if ($rol_id == 1) {
-            // Estudiante
-            log_message('debug', 'AuthController::attemptLogin - Redirigiendo a /estudiante');
             return redirect()->to('/estudiante');
         } elseif ($rol_id == 2) {
-            // Administrativo Bienestar
-            log_message('debug', 'AuthController::attemptLogin - Redirigiendo a /admin-bienestar');
             return redirect()->to('/admin-bienestar');
         } elseif ($rol_id == 4) {
-            // Super Administrador
-            log_message('debug', 'AuthController::attemptLogin - Redirigiendo a /global-admin/dashboard');
             return redirect()->to('/global-admin/dashboard');
         } else {
-            // Rol no reconocido
-            log_message('debug', 'AuthController::attemptLogin - Rol no reconocido: ' . $rol_id);
             session()->destroy();
             return redirect()->back()->withInput()->with('error', 'Rol de usuario no válido.');
         }
@@ -121,7 +160,17 @@ class AuthController extends BaseController
      */
     public function logout()
     {
-        session()->destroy();
+        // Registrar logout
+        $userId = session()->get('id');
+        if ($userId) {
+            $securityLogger = new SecurityLogger();
+            $securityLogger->logLogout((int)$userId);
+        }
+
+        // Destruir sesión de forma segura
+        $sessionGuard = new SessionGuard();
+        $sessionGuard->destroySession();
+
         return redirect()->to('/login');
     }
 }
