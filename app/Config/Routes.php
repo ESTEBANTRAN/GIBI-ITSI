@@ -194,7 +194,8 @@ $routes->group('global-admin', ['filter' => ['auth', 'role:4']], function($route
 
     // Rutas para SuperAdmin - Respaldos
     $routes->post('crear-respaldo', 'GlobalAdmin\GlobalAdminController::crearRespaldo');
-    $routes->get('obtener-respaldos', 'GlobalAdmin\GlobalAdminController::obtenerRespaldos');
+    $routes->get('obtener-lista-respaldos', 'GlobalAdmin\GlobalAdminController::obtenerRespaldos');
+    $routes->get('obtener-respaldos', 'GlobalAdmin\GlobalAdminController::obtenerRespaldos'); // Para cache antiguo
     $routes->post('restaurar-respaldo', 'GlobalAdmin\GlobalAdminController::restaurarRespaldo');
     $routes->get('descargar-respaldo/(:num)', 'GlobalAdmin\GlobalAdminController::descargarRespaldo/$1');
     $routes->post('enviar-respaldo-email', 'GlobalAdmin\GlobalAdminController::enviarRespaldoPorEmail');

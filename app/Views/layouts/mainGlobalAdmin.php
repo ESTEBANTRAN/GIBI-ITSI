@@ -57,6 +57,7 @@
     <script src="<?= base_url('sistema/assets/js/app.min.js') ?>"></script>
     <script src="<?= base_url('sistema/assets/js/dashboard.js') ?>"></script>
     <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <!-- Scripts de la vista -->
     <?= $this->renderSection('scripts') ?>

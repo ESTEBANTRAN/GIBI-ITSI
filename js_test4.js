@@ -1,247 +1,13 @@
-<?= $this->extend('layouts/mainGlobalAdmin') ?>
 
-<?= $this->section('content') ?>
-<div class="page-wrapper">
-    <div class="page-content">
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box d-flex align-items-center justify-content-between">
-                    <h4 class="mb-0">Gestión de Respaldos</h4>
-                    <div class="page-title-right">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="<?= base_url('index.php/global-admin/dashboard') ?>">Dashboard</a></li>
-                            <li class="breadcrumb-item active">Respaldos</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Estadísticas de Respaldos -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="card bg-primary text-white">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h6 class="card-title">Total Respaldos</h6>
-                                <h3 class="mb-0" id="totalRespaldos">0</h3>
-                            </div>
-                            <div class="align-self-center">
-                                <i class="bi bi-database fs-1"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-success text-white">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h6 class="card-title">Último Respaldo</h6>
-                                <h3 class="mb-0" id="ultimoRespaldo">Hoy</h3>
-                            </div>
-                            <div class="align-self-center">
-                                <i class="bi bi-clock-history fs-1"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-info text-white">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h6 class="card-title">Tamaño Total</h6>
-                                <h3 class="mb-0" id="tamañoTotal">0 MB</h3>
-                            </div>
-                            <div class="align-self-center">
-                                <i class="bi bi-hdd fs-1"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-warning text-white">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h6 class="card-title">Estado</h6>
-                                <h3 class="mb-0" id="estadoRespaldo">Activo</h3>
-                            </div>
-                            <div class="align-self-center">
-                                <i class="bi bi-check-circle fs-1"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Acciones Rápidas -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">
-                            <i class="bi bi-lightning me-2"></i>Acciones Rápidas
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                                                 <div class="row g-3">
-                             <div class="col-md-2">
-                                 <button type="button" class="btn btn-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-4" onclick="crearRespaldo()">
-                                     <i class="bi bi-database-add mb-2" style="font-size: 2rem;"></i>
-                                     <span class="text-center">Crear Respaldo</span>
-                                 </button>
-                             </div>
-                             <div class="col-md-2">
-                                 <button type="button" class="btn btn-success w-100 h-100 d-flex flex-column align-items-center justify-content-center py-4" onclick="restaurarRespaldo()">
-                                     <i class="bi bi-arrow-clockwise mb-2" style="font-size: 2rem;"></i>
-                                     <span class="text-center">Restaurar</span>
-                                 </button>
-                             </div>
-                             <div class="col-md-2">
-                                 <button type="button" class="btn btn-info w-100 h-100 d-flex flex-column align-items-center justify-content-center py-4" onclick="descargarRespaldo()">
-                                     <i class="bi bi-download mb-2" style="font-size: 2rem;"></i>
-                                     <span class="text-center">Descargar</span>
-                                 </button>
-                             </div>
-                             <div class="col-md-2">
-                                 <button type="button" class="btn btn-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center py-4" onclick="configurarRespaldos()">
-                                     <i class="bi bi-gear mb-2" style="font-size: 2rem;"></i>
-                                     <span class="text-center">Configurar</span>
-                                 </button>
-                             </div>
-                             <div class="col-md-2">
-                                 <button type="button" class="btn btn-secondary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-4" onclick="verRespaldosServidor()">
-                                     <i class="bi bi-server mb-2" style="font-size: 2rem;"></i>
-                                     <span class="text-center">Ver en Servidor</span>
-                                 </button>
-                             </div>
-                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Lista de Respaldos -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">
-                            <i class="bi bi-list-ul me-2"></i>Respaldos Disponibles
-                        </h5>
-                        <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="limpiarRespaldos()">
-                                <i class="bi bi-trash me-1"></i>Limpiar Antiguos
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="actualizarLista()">
-                                <i class="bi bi-arrow-clockwise me-1"></i>Actualizar
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover" id="tablaRespaldos">
-                                <thead>
-                                    <tr>
-                                        <th>Nombre</th>
-                                        <th>Fecha</th>
-                                        <th>Tamaño</th>
-                                        <th>Tipo</th>
-                                        <th>Estado</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tbodyRespaldos">
-                                    <!-- Los datos se cargarán dinámicamente -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal para Configuración -->
-<div class="modal fade" id="configuracionModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Configuración de Respaldos</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="configuracionRespaldosForm">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="frecuenciaRespaldo" class="form-label">Frecuencia de Respaldo</label>
-                                <select class="form-select" id="frecuenciaRespaldo" name="frecuencia">
-                                    <option value="diario">Diario</option>
-                                    <option value="semanal" selected>Semanal</option>
-                                    <option value="mensual">Mensual</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="retenerDias" class="form-label">Retener Respaldos (días)</label>
-                                <input type="number" class="form-control" id="retenerDias" name="retener_dias" value="30" min="7" max="365">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="respaldoAutomatico" name="automatico" checked>
-                                    <label class="form-check-label" for="respaldoAutomatico">
-                                        Respaldo Automático
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="comprimirRespaldo" name="comprimir" checked>
-                                    <label class="form-check-label" for="comprimirRespaldo">
-                                        Comprimir Respaldos
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="guardarConfiguracion()">Guardar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Retrasar 200ms para asegurar que el DOM y dependencias estén 100% listas
-    setTimeout(function() {
-        cargarRespaldos();
-        cargarEstadisticas();
-    }, 200);
+$(document).ready(function() {
+    cargarRespaldos();
+    cargarEstadisticas();
 });
 
 function cargarRespaldos() {
     $.ajax({
-        url: '<?= base_url('index.php/global-admin/obtener-lista-respaldos') ?>',
+        url: '',
         type: 'GET',
-        cache: false,
         success: function(response) {
             if (response.success) {
                 mostrarRespaldos(response.respaldos);
@@ -273,9 +39,9 @@ function mostrarRespaldos(respaldos) {
     respaldos.forEach(respaldo => {
         const row = `
             <tr>
-                <td>${respaldo.nombre_archivo}</td>
-                <td>${respaldo.fecha_formateada}</td>
-                <td>${respaldo.tamaño_formateado}</td>
+                <td>${respaldo.nombre}</td>
+                <td>${respaldo.fecha}</td>
+                <td>${formatearBytes(respaldo.tamaño)}</td>
                 <td><span class="badge bg-primary">${respaldo.tipo}</span></td>
                 <td><span class="badge bg-success">${respaldo.estado}</span></td>
                 <td>
@@ -283,7 +49,7 @@ function mostrarRespaldos(respaldos) {
                         <button type="button" class="btn btn-outline-primary" onclick="descargarRespaldo(${respaldo.id})" title="Descargar">
                             <i class="bi bi-download"></i>
                         </button>
-                        <button type="button" class="btn btn-outline-info" onclick="mostrarModalEnvioEmail(${respaldo.id}, '${respaldo.nombre_archivo}')" title="Enviar por Email">
+                        <button type="button" class="btn btn-outline-info" onclick="mostrarModalEnvioEmail(${respaldo.id}, '${respaldo.nombre}')" title="Enviar por Email">
                             <i class="bi bi-envelope"></i>
                         </button>
                         <button type="button" class="btn btn-outline-success" onclick="restaurarRespaldo(${respaldo.id})" title="Restaurar">
@@ -302,9 +68,8 @@ function mostrarRespaldos(respaldos) {
 
 function cargarEstadisticas() {
     $.ajax({
-        url: '<?= base_url('index.php/global-admin/estadisticas-respaldos') ?>',
+        url: '',
         type: 'GET',
-        cache: false,
         success: function(response) {
             if (response.success) {
                 $('#totalRespaldos').text(response.estadisticas.total);
@@ -344,7 +109,7 @@ function crearRespaldo() {
             });
 
             $.ajax({
-                url: '<?= base_url('index.php/global-admin/crear-respaldo') ?>',
+                url: '',
                 type: 'POST',
                 success: function(response) {
                                          if (response.success) {
@@ -407,7 +172,7 @@ function restaurarRespaldo(id = null) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: '<?= base_url('index.php/global-admin/restaurar-respaldo') ?>',
+                url: '',
                 type: 'POST',
                 data: { id: id },
                 success: function(response) {
@@ -450,7 +215,7 @@ function descargarRespaldo(id = null) {
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                descargarArchivoConDialogo('<?= base_url('index.php/global-admin/descargar-respaldo') ?>/' + id);
+                descargarArchivoConDialogo('/' + id);
             } else if (result.isDenied) {
                 mostrarModalEnvioEmail(id);
             }
@@ -473,7 +238,7 @@ function eliminarRespaldo(id) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: '<?= base_url('index.php/global-admin/eliminar-respaldo') ?>',
+                url: '',
                 type: 'POST',
                 data: { id: id },
                 success: function(response) {
@@ -513,7 +278,7 @@ function guardarConfiguracion() {
     const formData = new FormData($('#configuracionRespaldosForm')[0]);
     
     $.ajax({
-        url: '<?= base_url('index.php/global-admin/guardar-configuracion-respaldos') ?>',
+        url: '',
         type: 'POST',
         data: formData,
         processData: false,
@@ -557,7 +322,7 @@ function limpiarRespaldos() {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: '<?= base_url('index.php/global-admin/limpiar-respaldos') ?>',
+                url: '',
                 type: 'POST',
                 success: function(response) {
                     if (response.success) {
@@ -735,7 +500,7 @@ function mostrarModalEnvioEmail(respaldoId, filename = '') {
             });
             
             $.ajax({
-                url: '<?= base_url('index.php/global-admin/enviar-respaldo-email') ?>',
+                url: '',
                 type: 'POST',
                 data: {
                     respaldo_id: respaldoId,
@@ -767,5 +532,3 @@ function mostrarModalEnvioEmail(respaldoId, filename = '') {
         }
     });
 }
-</script>
-<?= $this->endSection() ?> 

@@ -312,7 +312,8 @@ class GlobalAdminController extends BaseController
                 $mysqldump_path = 'mysqldump';
             }
             // Ejecutar mysqldump y capturar la salida
-            $command = '"' . $mysqldump_path . '" --host=' . $host . ' --user=' . $username . ' --password=' . $password . ' ' . $database;
+            $password_str = !empty($password) ? ' --password=' . escapeshellarg($password) : '';
+            $command = '"' . $mysqldump_path . '" --host=' . escapeshellarg($host) . ' --user=' . escapeshellarg($username) . $password_str . ' ' . escapeshellarg($database);
             $dump = shell_exec($command);
             if ($dump && strlen($dump) > 1000) {
                 file_put_contents($filepath, $dump);
@@ -385,7 +386,9 @@ class GlobalAdminController extends BaseController
             if (!file_exists($mysqldump_path)) {
                 $mysqldump_path = 'mysqldump';
             }
-            $command = '"' . $mysqldump_path . '" --host=' . $host . ' --user=' . $username . ' --password=' . $password . ' ' . $database . ' > "' . $filepath . '" 2>&1';
+            
+            $password_str = !empty($password) ? ' --password=' . escapeshellarg($password) : '';
+            $command = '"' . $mysqldump_path . '" --host=' . escapeshellarg($host) . ' --user=' . escapeshellarg($username) . $password_str . ' ' . escapeshellarg($database) . ' > "' . $filepath . '" 2>&1';
 
             // Ejecutar comando y capturar salida y código de retorno
             exec($command, $output, $return_var);
@@ -432,7 +435,9 @@ class GlobalAdminController extends BaseController
 
     public function obtenerRespaldos()
     {
+        log_message('info', 'obtenerRespaldos called via ' . $this->request->getMethod() . '. Session ID: ' . session('id'));
         if (!session('id') || session('rol_id') != 4) {
+            log_message('error', 'obtenerRespaldos: No autorizado');
             return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
         }
 
@@ -472,26 +477,32 @@ class GlobalAdminController extends BaseController
         $id = $this->request->getPost('id');
         
         try {
-            $backupDir = WRITEPATH . 'backups/';
-            $files = glob($backupDir . '*.sql');
+            $respaldo = $this->db->table('respaldos')->where('id', $id)->get()->getRowArray();
             
-            if (isset($files[$id - 1])) {
-                $file = $files[$id - 1];
+            if ($respaldo && file_exists($respaldo['ruta_archivo'])) {
+                $file = $respaldo['ruta_archivo'];
                 $host = $this->db->hostname;
                 $username = $this->db->username;
                 $password = $this->db->password;
                 $database = $this->db->database;
                 
-                $command = "mysql --host={$host} --user={$username} --password={$password} {$database} < {$file}";
+                $mysql_path = 'C:\xampp\mysql\bin\mysql.exe';
+                if (!file_exists($mysql_path)) {
+                    $mysql_path = 'mysql';
+                }
+                
+                $password_str = !empty($password) ? ' --password=' . escapeshellarg($password) : '';
+                $command = '"' . $mysql_path . '" --host=' . escapeshellarg($host) . ' --user=' . escapeshellarg($username) . $password_str . ' ' . escapeshellarg($database) . ' < "' . $file . '" 2>&1';
+                
                 exec($command, $output, $return_var);
                 
                 if ($return_var === 0) {
                     return $this->response->setJSON(['success' => true, 'message' => 'Respaldo restaurado exitosamente']);
                 } else {
-                    return $this->response->setJSON(['success' => false, 'error' => 'Error al restaurar el respaldo']);
+                    return $this->response->setJSON(['success' => false, 'error' => 'Error al restaurar el respaldo. Detalle: ' . implode("\n", $output)]);
                 }
             } else {
-                return $this->response->setJSON(['success' => false, 'error' => 'Respaldo no encontrado']);
+                return $this->response->setJSON(['success' => false, 'error' => 'Respaldo no encontrado o archivo no existe']);
             }
         } catch (\Exception $e) {
             return $this->response->setJSON(['success' => false, 'error' => $e->getMessage()]);
@@ -545,16 +556,19 @@ class GlobalAdminController extends BaseController
         $id = $this->request->getPost('id');
         
         try {
-            $backupDir = WRITEPATH . 'backups/';
-            $files = glob($backupDir . '*.sql');
+            $respaldo = $this->db->table('respaldos')->where('id', $id)->get()->getRowArray();
             
-            if (isset($files[$id - 1])) {
-                $file = $files[$id - 1];
-                if (unlink($file)) {
-                    return $this->response->setJSON(['success' => true, 'message' => 'Respaldo eliminado exitosamente']);
-                } else {
-                    return $this->response->setJSON(['success' => false, 'error' => 'Error al eliminar el archivo']);
+            if ($respaldo) {
+                $file = $respaldo['ruta_archivo'];
+                
+                // Si el archivo existe lo eliminamos, y en cualquier caso borramos el registro
+                if (file_exists($file)) {
+                    unlink($file);
                 }
+                
+                $this->db->table('respaldos')->where('id', $id)->delete();
+                
+                return $this->response->setJSON(['success' => true, 'message' => 'Respaldo eliminado exitosamente']);
             } else {
                 return $this->response->setJSON(['success' => false, 'error' => 'Respaldo no encontrado']);
             }
@@ -580,9 +594,12 @@ class GlobalAdminController extends BaseController
                 }
             }
             
+            // Eliminar todos los registros de la base de datos
+            $this->db->table('respaldos')->emptyTable();
+            
             return $this->response->setJSON([
                 'success' => true, 
-                'message' => "Se eliminaron {$deleted} respaldos antiguos"
+                'message' => "Se eliminaron {$deleted} respaldos antiguos y se limpió el registro"
             ]);
         } catch (\Exception $e) {
             return $this->response->setJSON(['success' => false, 'error' => $e->getMessage()]);
