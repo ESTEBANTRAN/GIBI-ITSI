@@ -507,6 +507,10 @@ function actualizarDashboard() {
                 // Actualizar gráficos
                 actualizarGraficos(data.data);
                 
+                // Actualizar tablas dinámicas
+                cargarActividadReciente(data.data.actividad_reciente);
+                cargarAlertasNotificaciones(data.data.alertas);
+                
                 // Mostrar mensaje de éxito
                 mostrarNotificacion('Dashboard actualizado correctamente', 'success');
             } else {
@@ -556,16 +560,18 @@ function actualizarGraficos(estadisticas) {
 }
 
 // Función para cargar actividad reciente
-function cargarActividadReciente() {
+function cargarActividadReciente(actividades = null) {
     const tbody = document.getElementById('actividad-reciente');
     
-    // Simular datos de actividad (en producción esto vendría del servidor)
-    const actividades = [
-        { accion: 'Ficha Aprobada', usuario: 'Juan Pérez', fecha: 'Hace 5 min', estado: 'success' },
-        { accion: 'Beca Creada', usuario: 'María García', fecha: 'Hace 15 min', estado: 'info' },
-        { accion: 'Solicitud Rechazada', usuario: 'Carlos López', fecha: 'Hace 1 hora', estado: 'danger' },
-        { accion: 'Período Activado', usuario: 'Ana Martínez', fecha: 'Hace 2 horas', estado: 'warning' }
-    ];
+    // Si no se proporcionan actividades, usar las iniciales inyectadas por PHP
+    if (!actividades) {
+        actividades = <?= json_encode($estadisticas['actividad_reciente'] ?? []) ?>;
+    }
+
+    if (actividades.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No hay actividad reciente.</td></tr>';
+        return;
+    }
 
     tbody.innerHTML = actividades.map(act => `
         <tr>
@@ -578,15 +584,18 @@ function cargarActividadReciente() {
 }
 
 // Función para cargar alertas y notificaciones
-function cargarAlertasNotificaciones() {
+function cargarAlertasNotificaciones(alertas = null) {
     const contenedor = document.getElementById('alertas-notificaciones');
     
-    // Simular alertas (en producción esto vendría del servidor)
-    const alertas = [
-        { tipo: 'warning', mensaje: '5 fichas pendientes de revisión', icono: 'bi-exclamation-triangle' },
-        { tipo: 'info', mensaje: 'Nuevo período académico disponible', icono: 'bi-info-circle' },
-        { tipo: 'success', mensaje: 'Sistema funcionando correctamente', icono: 'bi-check-circle' }
-    ];
+    // Si no se proporcionan alertas, usar las iniciales inyectadas por PHP
+    if (!alertas) {
+        alertas = <?= json_encode($estadisticas['alertas'] ?? []) ?>;
+    }
+
+    if (alertas.length === 0) {
+        contenedor.innerHTML = '<div class="alert alert-success"><i class="bi bi-check-circle me-2"></i>Todo al día.</div>';
+        return;
+    }
 
     contenedor.innerHTML = alertas.map(alerta => `
         <div class="alert alert-${alerta.tipo} alert-dismissible fade show" role="alert">

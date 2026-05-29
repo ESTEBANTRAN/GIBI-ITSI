@@ -91,7 +91,7 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                                                 <div class="row g-3">
+                        <div class="row g-3">
                              <div class="col-md-2">
                                  <button type="button" class="btn btn-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-4" onclick="crearRespaldo()">
                                      <i class="bi bi-database-add mb-2" style="font-size: 2rem;"></i>
@@ -120,6 +120,12 @@
                                  <button type="button" class="btn btn-secondary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-4" onclick="verRespaldosServidor()">
                                      <i class="bi bi-server mb-2" style="font-size: 2rem;"></i>
                                      <span class="text-center">Ver en Servidor</span>
+                                 </button>
+                             </div>
+                             <div class="col-md-2">
+                                 <button type="button" class="btn text-white w-100 h-100 d-flex flex-column align-items-center justify-content-center py-4" style="background-color: #0F9D58;" onclick="configurarDriveMirror()">
+                                     <i class="bi bi-google mb-2" style="font-size: 2rem;"></i>
+                                     <span class="text-center">Drive Mirror</span>
                                  </button>
                              </div>
                          </div>
@@ -690,6 +696,27 @@ function verRespaldosServidor() {
         icon: 'info',
         confirmButtonText: 'Entendido',
         width: '600px'
+    });
+}
+
+function configurarDriveMirror() {
+    Swal.fire({
+        title: 'Google Drive Mirroring',
+        html: `
+            <div class="text-start">
+                <p>Los respaldos del sistema están configurados para hacer un "Mirror" (espejo) obligatorio hacia la nube.</p>
+                <p>Cada vez que se genere un respaldo local, se subirá automáticamente a la subcarpeta <strong>backups</strong> dentro del Google Drive configurado (<code>bienestar.itsi.info@gmail.com</code>).</p>
+                <p>Si la integración está apagada, solo se guardarán localmente.</p>
+            </div>
+        `,
+        icon: 'success',
+        showCancelButton: true,
+        confirmButtonText: 'Ir a Configuración',
+        cancelButtonText: 'Entendido'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = '<?= base_url('index.php/global-admin/configuracion') ?>';
+        }
     });
 }
 

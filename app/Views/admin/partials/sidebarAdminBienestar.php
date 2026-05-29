@@ -81,12 +81,8 @@
                         <span class="hide-menu">Configurar Programas de Becas</span>
                     </a>
                 </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link" href="<?= base_url('index.php/admin-bienestar/configuracion-sistema') ?>" aria-expanded="false">
-                        <span><i class="bi bi-gear"></i></span>
-                        <span class="hide-menu">Configuración del Sistema</span>
-                    </a>
-                </li>
+
+
 
             </ul>
         </nav>

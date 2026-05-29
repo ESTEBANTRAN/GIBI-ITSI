@@ -406,13 +406,22 @@ class GlobalAdminController extends BaseController
                 ]);
                 
                 $respaldoId = $this->db->insertID();
-                log_message('info', 'Backup creado exitosamente: ' . $filename);
+                log_message('info', 'Backup creado exitosamente local: ' . $filename);
                 
+                // Mirror obligatorio a Google Drive
+                $driveId = \App\Helpers\GoogleDriveHelper::subirArchivo(
+                    $filepath,
+                    $filename,
+                    'application/sql',
+                    'backups' // Subcarpeta destino
+                );
+                
+                $cloudMsg = $driveId ? " y sincronizado con Google Drive" : "";
                 $fileSizeFormatted = $this->formatBytes($tamaño);
                 
                 return $this->response->setJSON([
                     'success' => true,
-                    'message' => "Respaldo creado exitosamente y guardado en el servidor.\nTamaño: {$fileSizeFormatted}\n\n¿Deseas descargar una copia adicional?",
+                    'message' => "Respaldo creado exitosamente en servidor{$cloudMsg}.\nTamaño: {$fileSizeFormatted}\n\n¿Deseas descargar una copia adicional?",
                     'filename' => $filename,
                     'download_url' => base_url('index.php/global-admin/descargar-respaldo/' . $respaldoId),
                     'respaldo_id' => $respaldoId,
@@ -1449,7 +1458,100 @@ class GlobalAdminController extends BaseController
             return redirect()->to('/login');
         }
 
-        return view('GlobalAdmin/configuracion_sistema', ['configuracion' => []]);
+        try {
+            $configRows = $this->db->table('configuracion_sistema')->get()->getResultArray();
+            $configuracion = [];
+            foreach ($configRows as $row) {
+                $configuracion[$row['clave']] = $row['valor'];
+            }
+            
+            return view('GlobalAdmin/configuracion_sistema', [
+                'configuracion' => $configuracion
+            ]);
+        } catch (\Exception $e) {
+            log_message('error', 'GlobalAdmin::configuracionSistema - Error: ' . $e->getMessage());
+            return view('GlobalAdmin/configuracion_sistema', [
+                'configuracion' => [],
+                'error' => 'Error cargando configuración: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Guardar configuración del sistema (AJAX desde formularios por sección)
+     */
+    public function guardarConfiguracion()
+    {
+        if (!session('id') || session('rol_id') != 4) {
+            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
+        }
+
+        try {
+            $postData = $this->request->getPost();
+            $adminId = session('id');
+
+            if (empty($postData)) {
+                return $this->response->setJSON(['success' => false, 'error' => 'Datos de configuración requeridos']);
+            }
+
+            // Obtener todas las configuraciones actuales
+            $existingConfigs = $this->db->table('configuracion_sistema')->get()->getResultArray();
+            
+            // Identificar qué categorías de configuración se incluyeron en este submit
+            $submittedCategories = [];
+            foreach ($existingConfigs as $c) {
+                if (array_key_exists($c['clave'], $postData)) {
+                    $submittedCategories[$c['categoria']] = true;
+                }
+            }
+
+            // Si es un submit específico de alguna categoría, actualizar los campos
+            foreach ($existingConfigs as $c) {
+                $clave = $c['clave'];
+                $categoria = $c['categoria'];
+                
+                if (isset($submittedCategories[$categoria])) {
+                    if (array_key_exists($clave, $postData)) {
+                        $valor = $postData[$clave];
+                        if ($c['tipo'] === 'boolean') {
+                            $valor = ($valor === 'on' || $valor === '1' || $valor === 1) ? '1' : '0';
+                        }
+                        $this->db->table('configuracion_sistema')
+                            ->where('clave', $clave)
+                            ->update(['valor' => $valor]);
+                    } else {
+                        // Si es boolean y pertenece a una categoría enviada pero no está en POST, se desmarcó
+                        if ($c['tipo'] === 'boolean') {
+                            $this->db->table('configuracion_sistema')
+                                ->where('clave', $clave)
+                                ->update(['valor' => '0']);
+                        }
+                    }
+                }
+            }
+
+            // Registrar en logs si existe la tabla
+            try {
+                $this->db->table('logs')->insert([
+                    'usuario_id' => $adminId,
+                    'accion' => 'actualizar_configuracion_sistema',
+                    'tabla' => 'configuracion_sistema',
+                    'valores_nuevos' => json_encode($postData),
+                    'fecha' => date('Y-m-d H:i:s'),
+                    'ip' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'
+                ]);
+            } catch (\Exception $e) {
+                log_message('warning', 'No se pudo guardar log de configuración: ' . $e->getMessage());
+            }
+                
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Configuración guardada correctamente'
+            ]);
+        } catch (\Exception $e) {
+            log_message('error', 'Error guardando configuración: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error del sistema: ' . $e->getMessage()]);
+        }
     }
 
     public function restaurarBackup()
@@ -2278,41 +2380,33 @@ class GlobalAdminController extends BaseController
                 return $this->response->setJSON(['success' => false, 'error' => 'Archivo de respaldo no encontrado']);
             }
 
-            // Configurar el servicio de email
-            $email = \Config\Services::email();
+            $mensaje = "Hola,<br><br>";
+            $mensaje .= "Se ha generado un respaldo de la base de datos del Sistema de Bienestar Estudiantil.<br><br>";
+            $mensaje .= "<b>Detalles del respaldo:</b><br>";
+            $mensaje .= "- Nombre del archivo: " . $respaldo['nombre_archivo'] . "<br>";
+            $mensaje .= "- Fecha de creación: " . $respaldo['fecha_creacion'] . "<br>";
+            $mensaje .= "- Tamaño: " . $this->formatBytes($respaldo['tamano_bytes']) . "<br>";
+            $mensaje .= "- Tipo: " . ucfirst($respaldo['tipo']) . "<br><br>";
+            $mensaje .= "El archivo se encuentra adjunto a este correo.<br><br>";
+            $mensaje .= "Saludos,<br>Sistema de Bienestar Estudiantil";
             
-            // Cargar configuración personalizada de email
-            $emailConfig = include APPPATH . 'Config/EmailConfig.php';
+            // Usar el helper centralizado para asegurar que se usen las credenciales correctas de la DB
+            $enviado = \App\Helpers\EmailHelper::enviarCorreo(
+                $emailDestino,
+                'Respaldo de Base de Datos - ' . $respaldo['nombre_archivo'],
+                $mensaje,
+                [$filepath]
+            );
             
-            // Configurar SMTP dinámicamente
-            $email->setFrom($emailConfig['from_email'], $emailConfig['from_name']);
-            $email->setTo($emailDestino);
-            $email->setSubject('Respaldo de Base de Datos - ' . $respaldo['nombre_archivo']);
-            
-            $mensaje = "Hola,\n\n";
-            $mensaje .= "Se ha generado un respaldo de la base de datos del Sistema de Bienestar Estudiantil.\n\n";
-            $mensaje .= "Detalles del respaldo:\n";
-            $mensaje .= "- Nombre del archivo: " . $respaldo['nombre_archivo'] . "\n";
-            $mensaje .= "- Fecha de creación: " . $respaldo['fecha_creacion'] . "\n";
-            $mensaje .= "- Tamaño: " . $this->formatBytes($respaldo['tamano_bytes']) . "\n";
-            $mensaje .= "- Tipo: " . ucfirst($respaldo['tipo']) . "\n\n";
-            $mensaje .= "El archivo se encuentra adjunto a este correo.\n\n";
-            $mensaje .= "Saludos,\nSistema de Bienestar Estudiantil";
-            
-            $email->setMessage($mensaje);
-            $email->attach($filepath, 'attachment', $respaldo['nombre_archivo'], 'application/octet-stream');
-            
-            if ($email->send()) {
-                log_message('info', 'Respaldo enviado por email exitosamente a: ' . $emailDestino);
+            if ($enviado) {
                 return $this->response->setJSON([
                     'success' => true,
                     'message' => 'Respaldo enviado por correo electrónico exitosamente'
                 ]);
             } else {
-                log_message('error', 'Error al enviar respaldo por email: ' . $email->printDebugger(['headers']));
                 return $this->response->setJSON([
                     'success' => false,
-                    'error' => 'Error al enviar el correo electrónico'
+                    'error' => 'Error al enviar el correo electrónico (Verifique las credenciales SMTP en Configuración)'
                 ]);
             }
             

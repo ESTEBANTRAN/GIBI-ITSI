@@ -239,4 +239,37 @@ final class UsuarioModel extends Model
         
         return false;
     }
+
+    /**
+     * Buscar usuario por email Y cédula (ambos deben coincidir).
+     * Usado para verificación de identidad en recuperación de contraseña.
+     */
+    public function findByEmailAndCedula(string $email, string $cedula): ?array
+    {
+        $db = \Config\Database::connect();
+        
+        $usuario = $db->table('usuarios')
+            ->where('email', $email)
+            ->where('cedula', $cedula)
+            ->where('estado', 'Activo')
+            ->get()
+            ->getRowArray();
+        
+        return $usuario;
+    }
+
+    /**
+     * Actualiza la contraseña de un usuario.
+     * La contraseña se hashea con bcrypt antes de almacenarse.
+     */
+    public function updatePassword(int $usuarioId, string $newPassword): bool
+    {
+        $passwordHash = password_hash($newPassword, PASSWORD_BCRYPT);
+
+        return $this->update($usuarioId, [
+            'password_hash'     => $passwordHash,
+            'intentos_fallidos' => 0,
+            'bloqueado_hasta'   => null,
+        ]);
+    }
 }

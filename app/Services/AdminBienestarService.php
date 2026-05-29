@@ -38,10 +38,106 @@ class AdminBienestarService
             'becas' => $this->getEstadisticasBecas(),
             'periodos' => $this->getEstadisticasPeriodos(),
             'usuarios' => $this->getEstadisticasUsuarios(),
-            'solicitudes' => $this->getEstadisticasSolicitudes()
+            'solicitudes' => $this->getEstadisticasSolicitudes(),
+            'actividad_reciente' => $this->getActividadReciente(),
+            'alertas' => $this->getAlertas()
         ];
 
         return $estadisticas;
+    }
+
+    /**
+     * Obtener actividad reciente real de los logs del sistema
+     */
+    public function getActividadReciente()
+    {
+        $logs = $this->db->table('logs l')
+            ->select('l.accion, l.fecha_creacion as fecha, u.nombre, u.apellido, l.tabla')
+            ->join('usuarios u', 'u.id = l.id_usuario', 'left')
+            ->orderBy('l.fecha_creacion', 'DESC')
+            ->limit(5)
+            ->get()
+            ->getResultArray();
+
+        $actividades = [];
+        foreach ($logs as $log) {
+            $accionFormat = ucfirst(str_replace('_', ' ', $log['accion']));
+            $usuarioFormat = ($log['nombre'] && $log['apellido']) ? $log['nombre'] . ' ' . $log['apellido'] : 'Sistema';
+            
+            // Determinar el color según la tabla o acción
+            $estado = 'info';
+            if (strpos($log['accion'], 'rechaz') !== false || strpos($log['accion'], 'eliminar') !== false) {
+                $estado = 'danger';
+            } elseif (strpos($log['accion'], 'aprobar') !== false || strpos($log['accion'], 'crear') !== false) {
+                $estado = 'success';
+            } elseif (strpos($log['accion'], 'actualizar') !== false) {
+                $estado = 'warning';
+            }
+
+            $actividades[] = [
+                'accion' => $accionFormat,
+                'usuario' => $usuarioFormat,
+                'fecha' => date('d/m/Y H:i', strtotime($log['fecha'])),
+                'estado' => $estado
+            ];
+        }
+
+        return $actividades;
+    }
+
+    /**
+     * Obtener alertas reales del sistema
+     */
+    public function getAlertas()
+    {
+        $alertas = [];
+
+        // Fichas pendientes
+        $fichasPendientes = $this->db->table('fichas_socioeconomicas')
+            ->where('estado', 'Enviada')
+            ->countAllResults();
+        if ($fichasPendientes > 0) {
+            $alertas[] = [
+                'tipo' => 'warning',
+                'mensaje' => $fichasPendientes . ' ficha(s) pendientes de revisión',
+                'icono' => 'bi-file-earmark-text'
+            ];
+        }
+
+        // Solicitudes de becas pendientes
+        $solicitudesPendientes = $this->db->table('solicitudes_becas')
+            ->where('estado', 'Pendiente')
+            ->countAllResults();
+        if ($solicitudesPendientes > 0) {
+            $alertas[] = [
+                'tipo' => 'info',
+                'mensaje' => $solicitudesPendientes . ' solicitud(es) de beca pendientes de revisión',
+                'icono' => 'bi-award'
+            ];
+        }
+
+        // Solicitudes de ayuda pendientes
+        $ayudasPendientes = $this->db->table('solicitudes_ayuda_mejorada')
+            ->where('estado', 'Pendiente')
+            ->countAllResults();
+        if ($ayudasPendientes > 0) {
+            $alertas[] = [
+                'tipo' => 'danger',
+                'mensaje' => $ayudasPendientes . ' solicitud(es) de ayuda requieren atención',
+                'icono' => 'bi-exclamation-triangle'
+            ];
+        }
+
+        // Si no hay alertas
+        if (empty($alertas)) {
+            $alertas[] = [
+                'tipo' => 'success',
+                'mensaje' => 'Todo al día. No hay tareas pendientes urgentes.',
+                'icono' => 'bi-check-circle'
+            ];
+        }
+
+        return $alertas;
     }
 
     /**

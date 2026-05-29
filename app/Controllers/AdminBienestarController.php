@@ -131,38 +131,73 @@ class AdminBienestarController extends BaseController
                 'page' => $pagina
             ];
 
-            // Obtener período actual para filtro predeterminado
-            $periodoActual = $this->periodoModel->getPeriodoActualReal();
-            $periodoFiltroId = $filtros['periodo_id'];
-            
-            // Si no se especifica período, usar el actual por defecto
-            if (empty($periodoFiltroId) && $periodoActual) {
-                $periodoFiltroId = $periodoActual['id'];
-                $filtros['periodo_id'] = $periodoFiltroId;
+            // Si es la primera vez que se carga la página (no hay query params), 
+            // establecemos el periodo actual por defecto. Pero si se envía 'periodo_id'='',
+            // significa "Todos los periodos", por lo que lo respetamos.
+            $isFirstLoad = empty($this->request->getGet());
+            if ($isFirstLoad) {
+                $periodoActual = $this->periodoModel->getPeriodoActualReal();
+                if ($periodoActual) {
+                    $filtros['periodo_id'] = $periodoActual['id'];
+                }
             }
 
-            // Contar total de registros con filtro de período
-            $sqlCount = "SELECT COUNT(*) as total FROM v_fichas_admin";
-            if ($periodoFiltroId) {
-                $sqlCount .= " WHERE periodo_id = " . intval($periodoFiltroId);
+            // Construir consulta base
+            $db = \Config\Database::connect();
+            $builder = $db->table('v_fichas_admin f');
+            $builder->select('f.*');
+            
+            // Si hay filtro por carrera, unimos con usuarios
+            if (!empty($filtros['carrera_id'])) {
+                $builder->join('usuarios u', 'u.id = f.estudiante_id');
+                $builder->where('u.carrera_id', $filtros['carrera_id']);
             }
-            $totalRegistros = $this->db->query($sqlCount)->getRow()->total;
+
+            // Filtro por estado
+            if (!empty($filtros['estado'])) {
+                $builder->where('f.estado', $filtros['estado']);
+            }
+
+            // Filtro por periodo
+            if (!empty($filtros['periodo_id'])) {
+                $builder->where('f.periodo_id', $filtros['periodo_id']);
+            }
+
+            // Filtro por búsqueda
+            if (!empty($filtros['busqueda'])) {
+                $busqueda = $filtros['busqueda'];
+                $builder->groupStart()
+                    ->like('f.estudiante_nombre', $busqueda)
+                    ->orLike('f.cedula', $busqueda)
+                    ->orLike('f.email', $busqueda)
+                    ->groupEnd();
+            }
+
+            // Clonar builder para contar total
+            $countBuilder = clone $builder;
+            $totalRegistros = $countBuilder->countAllResults(false);
             $totalPaginas = ceil($totalRegistros / $porPagina);
+
+            // Obtener estadísticas globales basadas en los filtros
+            $statBuilder = clone $builder;
+            $statBuilder->select('f.estado, count(*) as count');
+            $statBuilder->groupBy('f.estado');
+            $statResults = $statBuilder->get()->getResultArray();
+            $statsMap = array_column($statResults, 'count', 'estado');
             
-            // Obtener datos usando el servicio con paginación
-            $fichas = $this->adminService->getFichasConFiltros($filtros);
-            $estadisticas = $this->adminService->getEstadisticasFichas();
-            
-            // Debug temporal: Obtener datos directamente si el servicio no funciona
-            if (empty($fichas)) {
-                $sqlFichas = "SELECT * FROM v_fichas_admin";
-                if ($periodoFiltroId) {
-                    $sqlFichas .= " WHERE periodo_id = " . intval($periodoFiltroId);
-                }
-                $sqlFichas .= " LIMIT $porPagina OFFSET $offset";
-                $fichas = $this->db->query($sqlFichas)->getResultArray();
-                log_message('debug', 'Usando consulta directa con paginación, fichas: ' . count($fichas));
-            }
+            $estadisticasReal = [
+                'total' => $totalRegistros,
+                'enviadas' => $statsMap['Enviada'] ?? 0,
+                'aprobadas' => $statsMap['Aprobada'] ?? 0,
+                'rechazadas' => $statsMap['Rechazada'] ?? 0,
+                'revisadas' => $statsMap['Revisada'] ?? 0
+            ];
+
+            // Obtener registros con paginación
+            $builder->limit($porPagina, $offset);
+            // Ordenar por fecha_envio DESC si es posible, o id DESC
+            $builder->orderBy('f.fecha_creacion', 'DESC');
+            $fichas = $builder->get()->getResultArray();
 
             // Obtener datos para filtros
             $periodos = $this->periodoModel->findAll();
@@ -172,16 +207,10 @@ class AdminBienestarController extends BaseController
                 'fichas' => $fichas,
             'periodos' => $periodos,
             'carreras' => $carreras,
-                'estadisticasBecados' => [
-                    'total' => $totalRegistros,
-                    'enviadas' => count(array_filter($fichas, fn($f) => $f['estado'] === 'Enviada')),
-                    'aprobadas' => count(array_filter($fichas, fn($f) => $f['estado'] === 'Aprobada')),
-                    'rechazadas' => count(array_filter($fichas, fn($f) => $f['estado'] === 'Rechazada')),
-                    'revisadas' => count(array_filter($fichas, fn($f) => $f['estado'] === 'Revisada'))
-                ],
+                'estadisticasBecados' => $estadisticasReal,
                 'estadisticasEstudiantes' => [
                     'total' => $totalRegistros,
-                    'enviadas' => count(array_filter($fichas, fn($f) => $f['estado'] === 'Enviada'))
+                    'enviadas' => $estadisticasReal['enviadas']
                 ],
                 'fichasBecados' => $fichas,
                 'fichasEstudiantes' => $fichas,
@@ -1263,70 +1292,222 @@ class AdminBienestarController extends BaseController
 
 
     /**
-     * Generar reporte
+     * Generar reporte (PDF Ejecutivo y Personalizados)
      */
     public function generarReporte()
     {
         if (!$this->verificarPermisos()) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
+            return $this->response->setStatusCode(403)->setBody('No autorizado');
         }
 
         try {
-            $tipo = $this->request->getPost('tipo');
-            $filtros = $this->request->getPost('filtros') ?? [];
+            $tipo = $this->request->getPost('tipo_reporte') ?? 'ejecutivo';
             $formato = $this->request->getPost('formato') ?? 'pdf';
-
-            $reporte = $this->adminService->generarReportePDF($tipo, $filtros, $formato);
-
-            if ($reporte) {
-            return $this->response->setJSON([
-                'success' => true,
-                    'message' => 'Reporte generado correctamente',
-                    'data' => $reporte
-                ]);
-            } else {
-            return $this->response->setJSON([
-                'success' => false,
-                    'error' => 'Error generando reporte'
-            ]);
+            $preview = $this->request->getPost('preview') === 'true';
+            $periodoId = $this->request->getPost('periodo_id');
+            $fechaDesde = $this->request->getPost('fecha_desde');
+            $fechaHasta = $this->request->getPost('fecha_hasta');
+            
+            $db = \Config\Database::connect();
+            $datos = [];
+            $titulo = 'Reporte Ejecutivo - Bienestar Estudiantil';
+            
+            // Recolectar datos según el tipo
+            if ($tipo === 'fichas') {
+                $titulo = 'Reporte de Fichas Socioeconómicas';
+                $builder = $db->table('fichas_socioeconomicas f')
+                    ->select('f.id, u.nombre, u.apellido, u.cedula, f.estado, f.fecha_creacion, p.nombre as periodo')
+                    ->join('usuarios u', 'u.id = f.estudiante_id', 'left')
+                    ->join('periodos_academicos p', 'p.id = f.periodo_id', 'left');
+                if (!empty($periodoId)) $builder->where('f.periodo_id', $periodoId);
+                if (!empty($fechaDesde)) $builder->where('DATE(f.fecha_creacion) >=', $fechaDesde);
+                if (!empty($fechaHasta)) $builder->where('DATE(f.fecha_creacion) <=', $fechaHasta);
+                $datos = $builder->orderBy('f.fecha_creacion', 'DESC')->get()->getResultArray();
+            } 
+            elseif ($tipo === 'becas') {
+                $titulo = 'Reporte de Solicitudes de Becas';
+                $builder = $db->table('solicitudes_becas sb')
+                    ->select('sb.id, u.nombre as estudiante_nombre, u.apellido as estudiante_apellido, b.nombre as beca, sb.estado, sb.fecha_solicitud')
+                    ->join('usuarios u', 'u.id = sb.estudiante_id', 'left')
+                    ->join('becas b', 'b.id = sb.beca_id', 'left');
+                if (!empty($periodoId)) $builder->where('sb.periodo_id', $periodoId);
+                if (!empty($fechaDesde)) $builder->where('DATE(sb.fecha_solicitud) >=', $fechaDesde);
+                if (!empty($fechaHasta)) $builder->where('DATE(sb.fecha_solicitud) <=', $fechaHasta);
+                $datos = $builder->orderBy('sb.fecha_solicitud', 'DESC')->get()->getResultArray();
             }
+            elseif ($tipo === 'usuarios') {
+                $titulo = 'Reporte de Usuarios Registrados';
+                $builder = $db->table('usuarios u')
+                    ->select('u.id, u.nombre, u.apellido, u.cedula, u.email, r.nombre as rol, u.estado')
+                    ->join('roles r', 'r.id = u.rol_id', 'left');
+                if (!empty($fechaDesde)) $builder->where('DATE(u.created_at) >=', $fechaDesde);
+                if (!empty($fechaHasta)) $builder->where('DATE(u.created_at) <=', $fechaHasta);
+                $datos = $builder->orderBy('u.created_at', 'DESC')->get()->getResultArray();
+            }
+            elseif ($tipo === 'general') {
+                $titulo = 'Reporte General - Panorama Completo';
+                $builder = $db->table('usuarios u')
+                    ->select('u.cedula, CONCAT(u.nombre, " ", u.apellido) as estudiante, IFNULL(f.estado, "Sin Ficha") as estado_ficha, IFNULL(b.nombre, "Sin Solicitud") as beca_solicitada, IFNULL(sb.estado, "N/A") as estado_beca')
+                    ->join('fichas_socioeconomicas f', 'f.estudiante_id = u.id', 'left')
+                    ->join('solicitudes_becas sb', 'sb.estudiante_id = u.id', 'left')
+                    ->join('becas b', 'b.id = sb.beca_id', 'left')
+                    ->where('u.rol_id', 1);
+                if (!empty($periodoId)) {
+                    $builder->groupStart()
+                        ->where('f.periodo_id', $periodoId)
+                        ->orWhere('sb.periodo_id', $periodoId)
+                    ->groupEnd();
+                }
+                $builder->groupBy('u.id'); // Evitar duplicados múltiples si tienen varias
+                $datos = $builder->orderBy('u.nombre', 'ASC')->get()->getResultArray();
+            }
+            else {
+                // Estadisticas o ejecutivo
+                $titulo = 'Reporte de Estadísticas Avanzadas';
+                $totalEstudiantes = $db->table('usuarios')->where('rol_id', 1)->countAllResults();
+                $totalBecas = $db->table('becas')->where('activa', 1)->countAllResults();
+                $totalSolicitudes = $db->table('solicitudes_becas')->countAllResults();
+                $fichasAprobadas = $db->table('fichas_socioeconomicas')->where('estado', 'Aprobada')->countAllResults();
+                $fichasRechazadas = $db->table('fichas_socioeconomicas')->where('estado', 'Rechazada')->countAllResults();
+                $becasAprobadas = $db->table('solicitudes_becas')->where('estado', 'Aprobada')->countAllResults();
+                
+                $datos = [
+                    ['Metrica' => 'Total Estudiantes Registrados', 'Valor' => $totalEstudiantes],
+                    ['Metrica' => 'Total Becas Activas en Sistema', 'Valor' => $totalBecas],
+                    ['Metrica' => 'Fichas Socioeconómicas Aprobadas', 'Valor' => $fichasAprobadas],
+                    ['Metrica' => 'Fichas Socioeconómicas Rechazadas', 'Valor' => $fichasRechazadas],
+                    ['Metrica' => 'Total Solicitudes de Beca', 'Valor' => $totalSolicitudes],
+                    ['Metrica' => 'Becas Otorgadas (Aprobadas)', 'Valor' => $becasAprobadas],
+                ];
+            }
+
+            // Si es preview, retornar JSON
+            if ($preview) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'data' => [
+                        'titulo' => $titulo,
+                        'total_registros' => count($datos),
+                        'muestra' => array_slice($datos, 0, 5) // Muestra de 5
+                    ]
+                ]);
+            }
+
+            // Generación de Archivo Físico
+            if ($formato === 'csv' || $formato === 'excel') {
+                header('Content-Type: text/csv; charset=utf-8');
+                header('Content-Disposition: attachment; filename=reporte_' . strtolower($tipo) . '_' . date('YmdHis') . '.csv');
+                $output = fopen('php://output', 'w');
+                fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF)); // BOM
+                
+                if (count($datos) > 0) {
+                    fputcsv($output, array_keys($datos[0])); // Encabezados
+                    foreach ($datos as $row) {
+                        fputcsv($output, array_values($row));
+                    }
+                } else {
+                    fputcsv($output, ['No hay datos para los filtros seleccionados']);
+                }
+                fclose($output);
+                exit;
+            } 
+            else {
+                // Generar PDF
+                $pdf = new \TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+                $pdf->SetCreator(PDF_CREATOR);
+                $pdf->SetAuthor('Sistema GIBI-ITSI');
+                $pdf->SetTitle($titulo);
+                $pdf->SetMargins(15, 15, 15);
+                $pdf->AddPage();
+                
+                $pdf->SetFont('helvetica', 'B', 16);
+                $pdf->Cell(0, 10, $titulo, 0, 1, 'C');
+                $pdf->SetFont('helvetica', '', 10);
+                $pdf->Cell(0, 8, 'Fecha de generación: ' . date('d/m/Y H:i'), 0, 1, 'C');
+                $pdf->Ln(5);
+                
+                $html = '<table border="1" cellpadding="4"><thead><tr style="background-color:#f0f0f0;">';
+                if (count($datos) > 0) {
+                    // Encabezados
+                    foreach (array_keys($datos[0]) as $k) {
+                        $html .= '<th><b>' . strtoupper($k) . '</b></th>';
+                    }
+                    $html .= '</tr></thead><tbody>';
+                    foreach ($datos as $row) {
+                        $html .= '<tr>';
+                        foreach ($row as $val) {
+                            $html .= '<td>' . $val . '</td>';
+                        }
+                        $html .= '</tr>';
+                    }
+                } else {
+                    $html .= '<th>Sin Datos</th></tr></thead><tbody><tr><td>No hay datos para este reporte</td></tr>';
+                }
+                $html .= '</tbody></table>';
+                
+                $pdf->writeHTML($html, true, false, true, false, '');
+                $pdf->Output('reporte_' . strtolower($tipo) . '_' . date('Ymd') . '.pdf', 'I');
+                exit;
+            }
+            
         } catch (\Exception $e) {
-            log_message('error', 'Error generando reporte: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error del sistema']);
+            log_message('error', 'Error generando reporte PDF/CSV: ' . $e->getMessage());
+            if ($this->request->getPost('preview') === 'true') {
+                return $this->response->setJSON(['success' => false, 'error' => $e->getMessage()]);
+            }
+            return $this->response->setStatusCode(500)->setBody('Error del sistema: ' . $e->getMessage());
         }
     }
     
     /**
-     * Exportar datos
+     * Exportar datos (Reporte Completo Excel/CSV)
      */
     public function exportarDatos()
     {
         if (!$this->verificarPermisos()) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
+            return $this->response->setStatusCode(403)->setBody('No autorizado');
         }
 
         try {
-            $tipo = $this->request->getPost('tipo');
-            $filtros = $this->request->getPost('filtros') ?? [];
-            $formato = $this->request->getPost('formato') ?? 'csv';
-
-            $datos = $this->adminService->exportarDatos($tipo, $filtros, $formato);
-
-            if ($datos) {
-            return $this->response->setJSON([
-                'success' => true,
-                    'message' => 'Datos exportados correctamente',
-                    'data' => $datos
+            // Generar CSV
+            header('Content-Type: text/csv; charset=utf-8');
+            header('Content-Disposition: attachment; filename=reporte_completo_' . date('YmdHis') . '.csv');
+            
+            $output = fopen('php://output', 'w');
+            // BOM for Excel
+            fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+            
+            // Encabezados
+            fputcsv($output, ['ID', 'Nombre', 'Apellido', 'Cedula', 'Email', 'Estado Ficha', 'Periodo']);
+            
+            // Datos
+            $db = \Config\Database::connect();
+            $datos = $db->table('usuarios u')
+                ->select('u.id, u.nombre, u.apellido, u.cedula, u.email, f.estado, p.nombre as periodo')
+                ->join('fichas_socioeconomicas f', 'f.estudiante_id = u.id', 'left')
+                ->join('periodos_academicos p', 'p.id = f.periodo_id', 'left')
+                ->where('u.rol_id', 1)
+                ->orderBy('u.id', 'DESC')
+                ->get()->getResultArray();
+                
+            foreach ($datos as $row) {
+                fputcsv($output, [
+                    $row['id'],
+                    $row['nombre'],
+                    $row['apellido'],
+                    $row['cedula'],
+                    $row['email'],
+                    $row['estado'] ?? 'Sin Ficha',
+                    $row['periodo'] ?? 'N/A'
                 ]);
-            } else {
-            return $this->response->setJSON([
-                'success' => false,
-                    'error' => 'Error exportando datos'
-            ]);
             }
+            
+            fclose($output);
+            exit;
+            
         } catch (\Exception $e) {
             log_message('error', 'Error exportando datos: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error del sistema']);
+            return $this->response->setStatusCode(500)->setBody('Error del sistema');
         }
     }
 
@@ -1344,7 +1525,11 @@ class AdminBienestarController extends BaseController
         }
 
         try {
-            $configuracion = $this->db->table('configuracion_sistema')->get()->getResultArray();
+            $configRows = $this->db->table('configuracion_sistema')->get()->getResultArray();
+            $configuracion = [];
+            foreach ($configRows as $row) {
+                $configuracion[$row['clave']] = $row['valor'];
+            }
             
             return view('AdminBienestar/configuracion_sistema', [
                 'configuracion' => $configuracion,
@@ -1370,37 +1555,70 @@ class AdminBienestarController extends BaseController
         }
 
         try {
-            $configuracion = $this->request->getPost('configuracion');
+            $postData = $this->request->getPost();
             $adminId = session('id');
 
-            if (!$configuracion) {
+            if (empty($postData)) {
                 return $this->response->setJSON(['success' => false, 'error' => 'Datos de configuración requeridos']);
             }
 
-            // Actualizar cada configuración
-            foreach ($configuracion as $clave => $valor) {
-                $this->db->table('configuracion_sistema')
-                    ->where('clave', $clave)
-                    ->update(['valor' => $valor]);
+            // Obtener todas las configuraciones actuales
+            $existingConfigs = $this->db->table('configuracion_sistema')->get()->getResultArray();
+            
+            // Identificar qué categorías de configuración se incluyeron en este submit
+            $submittedCategories = [];
+            foreach ($existingConfigs as $c) {
+                if (array_key_exists($c['clave'], $postData)) {
+                    $submittedCategories[$c['categoria']] = true;
+                }
             }
 
-            // Registrar en logs
-            $this->db->table('logs')->insert([
-                'usuario_id' => $adminId,
-                'accion' => 'actualizar_configuracion_sistema',
-                'tabla' => 'configuracion_sistema',
-                'valores_nuevos' => json_encode($configuracion),
-                'fecha' => date('Y-m-d H:i:s'),
-                'ip' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'
-            ]);
+            // Si es un submit específico de alguna categoría, actualizar los campos
+            foreach ($existingConfigs as $c) {
+                $clave = $c['clave'];
+                $categoria = $c['categoria'];
                 
-                return $this->response->setJSON([
-                    'success' => true,
+                if (isset($submittedCategories[$categoria])) {
+                    if (array_key_exists($clave, $postData)) {
+                        $valor = $postData[$clave];
+                        if ($c['tipo'] === 'boolean') {
+                            $valor = ($valor === 'on' || $valor === '1' || $valor === 1) ? '1' : '0';
+                        }
+                        $this->db->table('configuracion_sistema')
+                            ->where('clave', $clave)
+                            ->update(['valor' => $valor]);
+                    } else {
+                        // Si es boolean y pertenece a una categoría enviada pero no está en POST, se desmarcó
+                        if ($c['tipo'] === 'boolean') {
+                            $this->db->table('configuracion_sistema')
+                                ->where('clave', $clave)
+                                ->update(['valor' => '0']);
+                        }
+                    }
+                }
+            }
+
+            // Registrar en logs si existe la tabla
+            try {
+                $this->db->table('logs')->insert([
+                    'usuario_id' => $adminId,
+                    'accion' => 'actualizar_configuracion_sistema',
+                    'tabla' => 'configuracion_sistema',
+                    'valores_nuevos' => json_encode($postData),
+                    'fecha' => date('Y-m-d H:i:s'),
+                    'ip' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'
+                ]);
+            } catch (\Exception $e) {
+                log_message('warning', 'No se pudo guardar log de configuración: ' . $e->getMessage());
+            }
+                
+            return $this->response->setJSON([
+                'success' => true,
                 'message' => 'Configuración guardada correctamente'
             ]);
         } catch (\Exception $e) {
             log_message('error', 'Error guardando configuración: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error del sistema']);
+            return $this->response->setJSON(['success' => false, 'error' => 'Error del sistema: ' . $e->getMessage()]);
         }
     }
 

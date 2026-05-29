@@ -1,324 +1,331 @@
 <?= $this->extend('layouts/mainGlobalAdmin') ?>
 
 <?= $this->section('content') ?>
-<div class="page-wrapper">
-    <div class="page-content">
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box d-flex align-items-center justify-content-between">
-                    <h4 class="mb-0">Configuración del Sistema</h4>
-                    <div class="page-title-right">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="<?= base_url('index.php/global-admin/dashboard') ?>">Dashboard</a></li>
-                            <li class="breadcrumb-item active">Configuración</li>
-                        </ol>
-                    </div>
+
+<div class="container-fluid">
+    <!-- Encabezado de la página -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h4 class="mb-1 fw-bold"><i class="bi bi-gear me-2 text-primary"></i>Configuración del Sistema</h4>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="<?= base_url('index.php/global-admin/dashboard') ?>">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Configuración</li>
+                </ol>
+            </nav>
+        </div>
+        <span class="badge bg-info p-2 shadow-sm"><i class="bi bi-arrow-repeat me-1"></i> Sincronizado en Tiempo Real</span>
+    </div>
+
+    <!-- Alertas y Mensajes -->
+    <?php if (isset($error)): ?>
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i><?= esc($error) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
+
+    <!-- Configuraciones del sistema -->
+    <div class="row">
+        
+        <!-- Configuración General -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100 border-start border-primary border-4">
+                <div class="card-header py-3 bg-white d-flex align-items-center justify-content-between">
+                    <h6 class="m-0 fw-bold text-primary"><i class="bi bi-building me-2"></i>Configuración General</h6>
+                    <span class="text-muted small">Datos institucionales básicos</span>
+                </div>
+                <div class="card-body">
+                    <form id="formConfiguracionGeneral">
+                        <div class="mb-3">
+                            <label for="nombre_institucion" class="form-label fw-bold">Nombre de la Institución</label>
+                            <input type="text" class="form-control" id="nombre_institucion" name="nombre_institucion" value="<?= esc($configuracion['nombre_institucion'] ?? 'Instituto Tecnológico Superior de Informática') ?>" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email_contacto" class="form-label fw-bold">Email de Contacto</label>
+                            <input type="email" class="form-control" id="email_contacto" name="email_contacto" value="<?= esc($configuracion['email_contacto'] ?? 'bienestar@itsi.edu.ec') ?>" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="telefono_contacto" class="form-label fw-bold">Teléfono de Contacto</label>
+                            <input type="text" class="form-control" id="telefono_contacto" name="telefono_contacto" value="<?= esc($configuracion['telefono_contacto'] ?? '+593 2 1234567') ?>">
+                        </div>
+                        <div class="mb-3">
+                            <label for="direccion" class="form-label fw-bold">Dirección</label>
+                            <textarea class="form-control" id="direccion" name="direccion" rows="2" required><?= esc($configuracion['direccion'] ?? 'Av. Principal 123, Quito, Ecuador') ?></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-2"></i>Guardar General
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">
-                            <i class="bi bi-gear me-2"></i>Configuración General del Sistema
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <form id="configuracionForm">
-                            <!-- Configuración de la Institución -->
-                            <div class="row mb-4">
-                                <div class="col-12">
-                                    <h6 class="text-primary mb-3">Información de la Institución</h6>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="nombreInstitucion" class="form-label">Nombre de la Institución</label>
-                                        <input type="text" class="form-control" id="nombreInstitucion" name="nombre_institucion" value="Instituto Superior Tecnológico Ibarra">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="direccionInstitucion" class="form-label">Dirección</label>
-                                        <input type="text" class="form-control" id="direccionInstitucion" name="direccion" value="Ibarra, Av. Atahualpa 14-148 y José M. Leoro">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <label for="telefonoInstitucion" class="form-label">Teléfono</label>
-                                        <input type="text" class="form-control" id="telefonoInstitucion" name="telefono" value="062-952-535">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <label for="celularInstitucion" class="form-label">Celular</label>
-                                        <input type="text" class="form-control" id="celularInstitucion" name="celular" value="0978609734">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <label for="emailInstitucion" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="emailInstitucion" name="email" value="itsiibarra@itsi.edu.ec">
-                                    </div>
+        <!-- Configuración de Correo SMTP (Gmail) -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100 border-start border-danger border-4">
+                <div class="card-header py-3 bg-white d-flex align-items-center justify-content-between">
+                    <h6 class="m-0 fw-bold text-danger"><i class="bi bi-envelope me-2"></i>Configuración de Correo (SMTP)</h6>
+                    <span class="text-muted small">Cuenta bienestar.itsi.info@gmail.com</span>
+                </div>
+                <div class="card-body">
+                    <form id="formConfiguracionCorreo">
+                        <div class="mb-3">
+                            <label for="gmail_correo" class="form-label fw-bold">Correo SMTP Institucional</label>
+                            <input type="email" class="form-control" id="gmail_correo" name="gmail_correo" value="<?= esc($configuracion['gmail_correo'] ?? 'bienestar.itsi.info@gmail.com') ?>" required>
+                            <small class="form-text text-muted">Todos los correos del sistema saldrán desde esta cuenta.</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="gmail_clave" class="form-label fw-bold">Clave de Aplicación / Contraseña SMTP</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="gmail_clave" name="gmail_clave" value="<?= esc($configuracion['gmail_clave'] ?? '') ?>" required>
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('gmail_clave')">
+                                    <i class="bi bi-eye" id="eye-gmail_clave"></i>
+                                </button>
+                            </div>
+                            <small class="form-text text-muted">Use contraseñas de aplicación si utiliza verificación en dos pasos de Google.</small>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="mb-3">
+                                    <label for="gmail_smtp_host" class="form-label fw-bold">Host SMTP</label>
+                                    <input type="text" class="form-control" id="gmail_smtp_host" name="gmail_smtp_host" value="<?= esc($configuracion['gmail_smtp_host'] ?? 'smtp.gmail.com') ?>" required>
                                 </div>
                             </div>
-
-                            <!-- Configuración del Sistema -->
-                            <div class="row mb-4">
-                                <div class="col-12">
-                                    <h6 class="text-primary mb-3">Configuración del Sistema</h6>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="nombreSistema" class="form-label">Nombre del Sistema</label>
-                                        <input type="text" class="form-control" id="nombreSistema" name="nombre_sistema" value="Sistema de Bienestar Estudiantil">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="versionSistema" class="form-label">Versión del Sistema</label>
-                                        <input type="text" class="form-control" id="versionSistema" name="version_sistema" value="1.0.0">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="timezone" class="form-label">Zona Horaria</label>
-                                        <select class="form-select" id="timezone" name="timezone">
-                                            <option value="America/Guayaquil" selected>Ecuador (GMT-5)</option>
-                                            <option value="UTC">UTC</option>
-                                            <option value="America/New_York">Eastern Time (GMT-5)</option>
-                                            <option value="America/Los_Angeles">Pacific Time (GMT-8)</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="idioma" class="form-label">Idioma Predeterminado</label>
-                                        <select class="form-select" id="idioma" name="idioma">
-                                            <option value="es" selected>Español</option>
-                                            <option value="en">English</option>
-                                        </select>
-                                    </div>
+                            <div class="col-md-5">
+                                <div class="mb-3">
+                                    <label for="gmail_smtp_port" class="form-label fw-bold">Puerto SMTP</label>
+                                    <input type="number" class="form-control" id="gmail_smtp_port" name="gmail_smtp_port" value="<?= esc($configuracion['gmail_smtp_port'] ?? '587') ?>" required>
                                 </div>
                             </div>
-
-                            <!-- Configuración de Seguridad -->
-                            <div class="row mb-4">
-                                <div class="col-12">
-                                    <h6 class="text-primary mb-3">Configuración de Seguridad</h6>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="tiempoSesion" class="form-label">Tiempo de Sesión (minutos)</label>
-                                        <input type="number" class="form-control" id="tiempoSesion" name="tiempo_sesion" value="120" min="30" max="480">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="intentosLogin" class="form-label">Intentos de Login Máximos</label>
-                                        <input type="number" class="form-control" id="intentosLogin" name="intentos_login" value="3" min="1" max="10">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="captchaLogin" name="captcha_login">
-                                            <label class="form-check-label" for="captchaLogin">
-                                                Habilitar CAPTCHA en login
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="logAcciones" name="log_acciones" checked>
-                                            <label class="form-check-label" for="logAcciones">
-                                                Registrar todas las acciones
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Configuración de Notificaciones -->
-                            <div class="row mb-4">
-                                <div class="col-12">
-                                    <h6 class="text-primary mb-3">Configuración de Notificaciones</h6>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="notifEmail" name="notif_email" checked>
-                                            <label class="form-check-label" for="notifEmail">
-                                                Notificaciones por Email
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="notifSistema" name="notif_sistema" checked>
-                                            <label class="form-check-label" for="notifSistema">
-                                                Notificaciones del Sistema
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="emailSistema" class="form-label">Email del Sistema</label>
-                                        <input type="email" class="form-control" id="emailSistema" name="email_sistema" value="sistema@itsi.edu.ec">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="nombreSistemaEmail" class="form-label">Nombre del Remitente</label>
-                                        <input type="text" class="form-control" id="nombreSistemaEmail" name="nombre_sistema_email" value="Sistema de Bienestar Estudiantil">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Configuración de Respaldo -->
-                            <div class="row mb-4">
-                                <div class="col-12">
-                                    <h6 class="text-primary mb-3">Configuración de Respaldo</h6>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="frecuenciaRespaldo" class="form-label">Frecuencia de Respaldo</label>
-                                        <select class="form-select" id="frecuenciaRespaldo" name="frecuencia_respaldo">
-                                            <option value="diario">Diario</option>
-                                            <option value="semanal" selected>Semanal</option>
-                                            <option value="mensual">Mensual</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="retenerRespaldo" class="form-label">Retener Respaldos (días)</label>
-                                        <input type="number" class="form-control" id="retenerRespaldo" name="retener_respaldo" value="30" min="7" max="365">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="respaldoAutomatico" name="respaldo_automatico" checked>
-                                            <label class="form-check-label" for="respaldoAutomatico">
-                                                Respaldo Automático
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="comprimirRespaldo" name="comprimir_respaldo" checked>
-                                            <label class="form-check-label" for="comprimirRespaldo">
-                                                Comprimir Respaldos
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Botones de Acción -->
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="d-flex justify-content-end gap-2">
-                                        <button type="button" class="btn btn-secondary" onclick="restaurarConfiguracion()">
-                                            <i class="bi bi-arrow-clockwise me-2"></i>Restaurar Valores
-                                        </button>
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="bi bi-save me-2"></i>Guardar Configuración
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="gmail_smtp_crypto" class="form-label fw-bold">Cifrado SMTP</label>
+                            <select class="form-select" id="gmail_smtp_crypto" name="gmail_smtp_crypto">
+                                <option value="tls" <?= ($configuracion['gmail_smtp_crypto'] ?? 'tls') === 'tls' ? 'selected' : '' ?>>TLS (Recomendado para puerto 587)</option>
+                                <option value="ssl" <?= ($configuracion['gmail_smtp_crypto'] ?? 'tls') === 'ssl' ? 'selected' : '' ?>>SSL (Recomendado para puerto 465)</option>
+                                <option value="" <?= ($configuracion['gmail_smtp_crypto'] ?? 'tls') === '' ? 'selected' : '' ?>>Sin Cifrado</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-save me-2"></i>Guardar Configuración SMTP
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
+
+    </div>
+
+    <div class="row">
+
+        <!-- Configuración de Respaldo en la Nube (Google Drive) -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100 border-start border-success border-4">
+                <div class="card-header py-3 bg-white d-flex align-items-center justify-content-between">
+                    <h6 class="m-0 fw-bold text-success"><i class="bi bi-cloud-arrow-up me-2"></i>Almacenamiento en Google Drive</h6>
+                    <span class="text-muted small">Sincronización en la nube híbrida</span>
+                </div>
+                <div class="card-body">
+                    <form id="formConfiguracionDrive">
+                        <div class="mb-3">
+                            <div class="form-check form-switch mb-3">
+                                <input type="checkbox" class="form-check-input" id="drive_activo" name="drive_activo" value="1" <?= ($configuracion['drive_activo'] ?? '0') === '1' ? 'checked' : '' ?>>
+                                <label class="form-check-label fw-bold text-success" for="drive_activo">Activar Google Drive Mirroring</label>
+                            </div>
+                            <small class="form-text text-muted mb-3 d-block">Al activarlo, los documentos se guardarán de manera local en el servidor de la institución y simultáneamente en el almacenamiento de Google Drive.</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="drive_client_id" class="form-label fw-bold">Google API Client ID</label>
+                            <input type="text" class="form-control" id="drive_client_id" name="drive_client_id" value="<?= esc($configuracion['drive_client_id'] ?? '') ?>" placeholder="Ej: 12345678-abc.apps.googleusercontent.com">
+                        </div>
+                        <div class="mb-3">
+                            <label for="drive_client_secret" class="form-label fw-bold">Google API Client Secret</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="drive_client_secret" name="drive_client_secret" value="<?= esc($configuracion['drive_client_secret'] ?? '') ?>" placeholder="Ingrese su Client Secret">
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('drive_client_secret')">
+                                    <i class="bi bi-eye" id="eye-drive_client_secret"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="drive_refresh_token" class="form-label fw-bold">Google OAuth 2.0 Refresh Token</label>
+                            <input type="text" class="form-control" id="drive_refresh_token" name="drive_refresh_token" value="<?= esc($configuracion['drive_refresh_token'] ?? '') ?>" placeholder="Refresh Token para bienestar.itsi.info@gmail.com">
+                            <small class="form-text text-muted">Token persistente para la generación de sesiones de Google Drive sin caducidad.</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="drive_folder_id" class="form-label fw-bold">Google Drive Folder ID (Opcional)</label>
+                            <input type="text" class="form-control" id="drive_folder_id" name="drive_folder_id" value="<?= esc($configuracion['drive_folder_id'] ?? '') ?>" placeholder="ID de la carpeta destino en Google Drive">
+                            <small class="form-text text-muted">Si se deja vacío, las subidas se guardarán directamente en la raíz de su Google Drive.</small>
+                        </div>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-save me-2"></i>Guardar Configuración Drive
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configuración de Seguridad -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100 border-start border-warning border-4">
+                <div class="card-header py-3 bg-white d-flex align-items-center justify-content-between">
+                    <h6 class="m-0 fw-bold text-warning"><i class="bi bi-shield-lock me-2"></i>Seguridad y Sesión</h6>
+                    <span class="text-muted small">Directivas de protección del sistema</span>
+                </div>
+                <div class="card-body">
+                    <form id="formConfiguracionSeguridad">
+                        <div class="mb-3">
+                            <label for="tiempo_sesion" class="form-label fw-bold">Tiempo de Sesión Activa (minutos)</label>
+                            <input type="number" class="form-control" id="tiempo_sesion" name="tiempo_sesion" value="<?= esc($configuracion['tiempo_sesion'] ?? '30') ?>" min="5" max="480">
+                        </div>
+                        <div class="mb-3">
+                            <label for="intentos_login" class="form-label fw-bold">Intentos de Login Máximos (Bloqueo)</label>
+                            <input type="number" class="form-control" id="intentos_login" name="intentos_login" value="<?= esc($configuracion['intentos_login'] ?? '3') ?>" min="1" max="10">
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check form-switch mb-2">
+                                <input type="checkbox" class="form-check-input" id="requerir_cambio_password" name="requerir_cambio_password" value="1" <?= ($configuracion['requerir_cambio_password'] ?? '0') === '1' ? 'checked' : '' ?>>
+                                <label class="form-check-label fw-bold text-warning" for="requerir_cambio_password">Requerir Cambio Periódico de Contraseña</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dias_cambio_password" class="form-label fw-bold">Días para Expiración de Contraseña</label>
+                            <input type="number" class="form-control" id="dias_cambio_password" name="dias_cambio_password" value="<?= esc($configuracion['dias_cambio_password'] ?? '90') ?>" min="30" max="365">
+                        </div>
+                        <button type="submit" class="btn btn-warning text-white">
+                            <i class="bi bi-save me-2"></i>Guardar Seguridad
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
 <script>
 $(document).ready(function() {
-    // Cargar configuración actual
-    cargarConfiguracion();
-    
-    // Manejar envío del formulario
-    $('#configuracionForm').on('submit', function(e) {
+    // Eventos para guardar configuración mediante AJAX dinámico
+    $('#formConfiguracionGeneral').submit(function(e) {
         e.preventDefault();
-        guardarConfiguracion();
+        guardarConfiguracion('General');
+    });
+
+    $('#formConfiguracionCorreo').submit(function(e) {
+        e.preventDefault();
+        guardarConfiguracion('Correo');
+    });
+
+    $('#formConfiguracionDrive').submit(function(e) {
+        e.preventDefault();
+        guardarConfiguracion('Drive');
+    });
+
+    $('#formConfiguracionSeguridad').submit(function(e) {
+        e.preventDefault();
+        guardarConfiguracion('Seguridad');
+    });
+
+    // Confirmación modal al cambiar el switch de Google Drive
+    $('#drive_activo').on('change', function(e) {
+        const isChecked = $(this).is(':checked');
+        const estadoTexto = isChecked ? 'activar' : 'desactivar';
+        const checkbox = $(this);
+
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: `¿Deseas ${estadoTexto} la sincronización con Google Drive?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: isChecked ? '#1cc88a' : '#e74a3b',
+            cancelButtonColor: '#858796',
+            confirmButtonText: `Sí, ${estadoTexto}`,
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Si confirma, guardamos la configuración de Drive automáticamente
+                guardarConfiguracion('Drive');
+            } else {
+                // Si cancela, revertimos el estado del switch
+                checkbox.prop('checked', !isChecked);
+            }
+        });
     });
 });
 
-function cargarConfiguracion() {
-    // Aquí se cargarían los valores actuales desde la base de datos
-    console.log('Cargando configuración actual...');
+function togglePasswordVisibility(fieldId) {
+    const field = document.getElementById(fieldId);
+    const eyeIcon = document.getElementById('eye-' + fieldId);
+    if (field.type === 'password') {
+        field.type = 'text';
+        eyeIcon.classList.remove('bi-eye');
+        eyeIcon.classList.add('bi-eye-slash');
+    } else {
+        field.type = 'password';
+        eyeIcon.classList.remove('bi-eye-slash');
+        eyeIcon.classList.add('bi-eye');
+    }
 }
 
-function guardarConfiguracion() {
-    const formData = new FormData($('#configuracionForm')[0]);
+function guardarConfiguracion(tipo) {
+    const formElement = document.getElementById('formConfiguracion' + tipo);
+    const formData = new FormData(formElement);
     
+    // Si es un Switch/Checkbox que no está marcado, asegurarnos de enviar 0 en el AJAX
+    $(formElement).find('input[type="checkbox"]').each(function() {
+        if (!this.checked) {
+            formData.append(this.name, '0');
+        }
+    });
+
+    // Mostrar loading
+    Swal.fire({
+        title: 'Guardando...',
+        text: 'Aplicando cambios de ' + tipo,
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
     $.ajax({
         url: '<?= base_url('index.php/global-admin/guardar-configuracion') ?>',
         type: 'POST',
         data: formData,
         processData: false,
         contentType: false,
+        dataType: 'json',
         success: function(response) {
             if (response.success) {
                 Swal.fire({
                     icon: 'success',
-                    title: '¡Configuración Guardada!',
-                    text: 'Los cambios se han aplicado correctamente.',
-                    confirmButtonText: 'Aceptar'
+                    title: '¡Operación Exitosa!',
+                    text: '¡Excelente! La configuración de ' + tipo + ' se ha guardado y aplicado correctamente.',
+                    timer: 3500,
+                    showConfirmButton: false
                 });
             } else {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Error',
-                    text: response.error || 'Error al guardar la configuración.',
-                    confirmButtonText: 'Aceptar'
+                    title: 'Error de Configuración',
+                    text: 'Error al guardar configuración: ' + (response.error || response.message),
+                    confirmButtonColor: '#e74a3b'
                 });
             }
         },
-        error: function() {
+        error: function(xhr, status, error) {
             Swal.fire({
                 icon: 'error',
                 title: 'Error de Conexión',
-                text: 'No se pudo conectar con el servidor.',
-                confirmButtonText: 'Aceptar'
+                text: 'Error en la comunicación con el servidor. Por favor, intente nuevamente.',
+                confirmButtonColor: '#e74a3b'
             });
         }
     });
 }
-
-function restaurarConfiguracion() {
-    Swal.fire({
-        title: '¿Restaurar Configuración?',
-        text: '¿Estás seguro de que quieres restaurar los valores por defecto?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, restaurar',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Lógica para restaurar configuración
-            Swal.fire(
-                '¡Restaurado!',
-                'La configuración ha sido restaurada a los valores por defecto.',
-                'success'
-            );
-        }
-    });
-}
 </script>
-<?= $this->endSection() ?> 
+<?= $this->endSection() ?>

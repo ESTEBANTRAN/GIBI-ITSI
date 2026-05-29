@@ -9,6 +9,7 @@ use App\Models\SolicitudBecaModel;
 use App\Models\SolicitudAyudaModel;
 use App\Models\PeriodoAcademicoModel;
 use App\Services\EstudianteBecasService;
+use App\Helpers\GoogleDriveHelper;
 
 class EstudianteController extends BaseController
 {
@@ -631,15 +632,16 @@ class EstudianteController extends BaseController
         }
 
         // Obtener todos los documentos del estudiante de sus solicitudes de becas
-        $documentos = $this->db->table('solicitudes_becas_documentos sbd')
-            ->select('sbd.*, bdr.nombre_documento, bdr.descripcion, sb.beca_id, b.nombre as nombre_beca, sb.periodo_id, p.nombre as periodo_nombre')
-            ->join('becas_documentos_requisitos bdr', 'bdr.id = sbd.documento_requisito_id')
-            ->join('solicitudes_becas sb', 'sb.id = sbd.solicitud_beca_id')
+        $documentos = $this->db->table('documentos_solicitud_becas dsb')
+            ->select('dsb.*, dsb.`tama±o_archivo` as tamano_archivo, bdr.nombre_documento, bdr.descripcion, sb.beca_id, b.nombre as nombre_beca, sb.periodo_id, p.nombre as periodo_nombre')
+            ->join('becas_documentos_requisitos bdr', 'bdr.id = dsb.documento_requerido_id')
+            ->join('solicitudes_becas sb', 'sb.id = dsb.solicitud_beca_id')
             ->join('becas b', 'b.id = sb.beca_id')
             ->join('periodos_academicos p', 'p.id = sb.periodo_id')
             ->where('sb.estudiante_id', session('id'))
+            ->where('dsb.ruta_archivo IS NOT NULL')
             ->orderBy('sb.periodo_id', 'DESC')
-            ->orderBy('bdr.orden_verificacion', 'ASC')
+            ->orderBy('dsb.orden_revision', 'ASC')
             ->get()
             ->getResultArray();
 
@@ -1758,25 +1760,40 @@ class EstudianteController extends BaseController
                 return $this->response->setJSON(['success' => false, 'message' => 'Error al guardar el archivo']);
             }
 
+            // Subir a Google Drive si la integración está activa
+            $googleDriveId = null;
+            try {
+                $googleDriveId = GoogleDriveHelper::subirArchivo($rutaDestino, $archivo->getClientName(), $archivo->getClientMimeType());
+            } catch (\Exception $ex) {
+                log_message('error', 'Error al subir a Google Drive en EstudianteController::subirDocumento: ' . $ex->getMessage());
+            }
+
             // Actualizar documento en la base de datos
+            $updateData = [
+                'nombre_archivo' => $archivo->getClientName(),
+                'ruta_archivo' => $rutaDestino,
+                'estado' => 'En Revision',
+                'fecha_subida' => date('Y-m-d H:i:s'),
+                'tama±o_archivo' => $archivo->getSize(),
+                'tipo_mime' => $archivo->getClientMimeType()
+            ];
+
+            if ($googleDriveId) {
+                $updateData['google_drive_id'] = $googleDriveId;
+            }
+
             $this->db->table('documentos_solicitud_becas')
                 ->where('id', $documentoId)
-                ->update([
-                    'nombre_archivo' => $archivo->getClientName(),
-                    'ruta_archivo' => $rutaDestino,
-                    'estado' => 'En Revision',
-                    'fecha_subida' => date('Y-m-d H:i:s'),
-                    'tama±o_archivo' => $archivo->getSize(),
-                    'tipo_mime' => $archivo->getClientMimeType()
-                ]);
+                ->update($updateData);
 
             // Actualizar progreso de la solicitud
             $this->actualizarProgresoSolicitud($solicitudId);
 
             return $this->response->setJSON([
                 'success' => true,
-                'message' => 'Documento subido exitosamente',
-                'archivo' => $archivo->getClientName()
+                'message' => 'Documento subido exitosamente' . ($googleDriveId ? ' y respaldado en la nube' : ''),
+                'archivo' => $archivo->getClientName(),
+                'google_drive_id' => $googleDriveId
             ]);
 
         } catch (\Exception $e) {

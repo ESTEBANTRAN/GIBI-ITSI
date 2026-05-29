@@ -35,7 +35,7 @@
                         <div class="d-flex">
                             <div class="flex-grow-1">
                                 <h4 class="fw-medium">Formularios</h4>
-                                <h4 class="mb-0">156</h4>
+                                <h4 class="mb-0" id="stat-formularios"><?= esc($formularios['total']) ?></h4>
                                 <p class="text-muted mb-0">
                                     <span class="text-success me-2">
                                         <i class="bi bi-arrow-up"></i>12%
@@ -60,10 +60,10 @@
                         <div class="d-flex">
                             <div class="flex-grow-1">
                                 <h4 class="fw-medium">Becas</h4>
-                                <h4 class="mb-0">89</h4>
+                                <h4 class="mb-0" id="stat-becas"><?= esc($becas['total']) ?></h4>
                                 <p class="text-muted mb-0">
                                     <span class="text-success me-2">
-                                        <i class="bi bi-arrow-up"></i>8%
+                                        <i class="bi bi-arrow-up"></i><?= esc($becas['solicitudes_activas']) ?>
                                     </span>
                                     Solicitudes activas
                                 </p>
@@ -85,12 +85,12 @@
                         <div class="d-flex">
                             <div class="flex-grow-1">
                                 <h4 class="fw-medium">Solicitudes</h4>
-                                <h4 class="mb-0">247</h4>
+                                <h4 class="mb-0" id="stat-solicitudes"><?= esc($solicitudes['total']) ?></h4>
                                 <p class="text-muted mb-0">
                                     <span class="text-warning me-2">
                                         <i class="bi bi-arrow-up"></i>15%
                                     </span>
-                                    Pendientes: 23
+                                    Pendientes: <?= esc($solicitudes['pendientes']) ?>
                                 </p>
                             </div>
                             <div class="flex-shrink-0 align-self-center">
@@ -110,7 +110,7 @@
                         <div class="d-flex">
                             <div class="flex-grow-1">
                                 <h4 class="fw-medium">Estudiantes</h4>
-                                <h4 class="mb-0">1,247</h4>
+                                <h4 class="mb-0" id="stat-estudiantes"><?= esc(number_format($estudiantes['total'])) ?></h4>
                                 <p class="text-muted mb-0">
                                     <span class="text-info me-2">
                                         <i class="bi bi-arrow-up"></i>5%
@@ -224,7 +224,7 @@
 
         <!-- Módulos Secundarios -->
         <div class="row g-4">
-            <div class="col-lg-6">
+            <div class="col-lg-12">
                 <div class="card h-100">
                     <div class="card-header">
                         <h5 class="card-title mb-0">
@@ -265,53 +265,6 @@
         </div>
     </div>
 </div>
-
-            <div class="col-lg-6">
-        <div class="card h-100">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">
-                            <i class="bi bi-gear me-2"></i>Configuración del Sistema
-                        </h5>
-                    </div>
-            <div class="card-body">
-                        <p class="card-text">Administra los perfiles, permisos y configuraciones del sistema de Bienestar Estudiantil.</p>
-                        <div class="row g-2 mb-3">
-                            <div class="col-6">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-check-circle text-success me-2"></i>
-                                    <small>Gestión de usuarios</small>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-check-circle text-success me-2"></i>
-                                    <small>Configuración de roles</small>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-check-circle text-success me-2"></i>
-                                    <small>Períodos académicos</small>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-check-circle text-success me-2"></i>
-                                    <small>Configuración de becas</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="d-grid gap-2">
-                            <a href="<?= base_url('index.php/usuarios/admin') ?>" class="btn btn-primary">
-                                <i class="bi bi-people me-1"></i>Gestionar Usuarios
-                            </a>
-                            <a href="<?= base_url('index.php/configuracion/sistema') ?>" class="btn btn-outline-secondary">
-                                <i class="bi bi-gear me-1"></i>Configuración General
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- Actividad Reciente -->
@@ -334,51 +287,39 @@
                                         <th>Estado</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <i class="bi bi-file-earmark-text text-primary me-2"></i>
-                                                Formulario socioeconómico aprobado
-                                            </div>
-                                        </td>
-                                        <td>María González</td>
-                                        <td>Hace 15 minutos</td>
-                                        <td><span class="badge bg-success">Completado</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <i class="bi bi-award text-success me-2"></i>
-                                                Solicitud de beca recibida
-                                            </div>
-                                        </td>
-                                        <td>Carlos Rodríguez</td>
-                                        <td>Hace 1 hora</td>
-                                        <td><span class="badge bg-warning">Pendiente</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <i class="bi bi-ticket-detailed text-warning me-2"></i>
-                                                Solicitud de ayuda procesada
-                                            </div>
-                                        </td>
-                                        <td>Laura Silva</td>
-                                        <td>Hace 2 horas</td>
-                                        <td><span class="badge bg-info">En Proceso</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <i class="bi bi-people text-info me-2"></i>
-                                                Nuevo estudiante registrado
-                                            </div>
-                                        </td>
-                                        <td>Ana Martínez</td>
-                                        <td>Hace 3 horas</td>
-                                        <td><span class="badge bg-success">Completado</span></td>
-                                    </tr>
+                                <tbody id="actividad-reciente">
+                                    <?php if (!empty($actividad_reciente)): ?>
+                                        <?php foreach ($actividad_reciente as $act): ?>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <?php 
+                                                    $icon = 'bi-check-circle text-success';
+                                                    if ($act['estado'] == 'Rechazado') $icon = 'bi-x-circle text-danger';
+                                                    elseif ($act['estado'] == 'Pendiente') $icon = 'bi-clock-history text-warning';
+                                                    ?>
+                                                    <i class="bi <?= $icon ?> me-2"></i>
+                                                    <?= esc($act['accion']) ?>
+                                                </div>
+                                            </td>
+                                            <td><?= esc($act['usuario']) ?></td>
+                                            <td><?= esc($act['fecha']) ?></td>
+                                            <td>
+                                                <?php
+                                                $badgeClass = 'info';
+                                                if ($act['estado'] == 'Completado') $badgeClass = 'success';
+                                                elseif ($act['estado'] == 'Rechazado') $badgeClass = 'danger';
+                                                elseif ($act['estado'] == 'Pendiente') $badgeClass = 'warning';
+                                                ?>
+                                                <span class="badge bg-<?= $badgeClass ?>"><?= esc($act['estado']) ?></span>
+                                            </td>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted">No hay actividad reciente</td>
+                                        </tr>
+                                    <?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -432,38 +373,70 @@ function actualizarDashboard() {
 
 // Función para actualizar estadísticas
 function actualizarEstadisticas(estadisticas) {
-    // Actualizar contadores de formularios
     if (estadisticas.formularios) {
-        document.querySelector('.mini-stat:nth-child(1) h4').textContent = estadisticas.formularios.total || 0;
+        document.getElementById('stat-formularios').textContent = estadisticas.formularios.total || 0;
     }
-    
-    // Actualizar contadores de becas
     if (estadisticas.becas) {
-        document.querySelector('.mini-stat:nth-child(2) h4').textContent = estadisticas.becas.total || 0;
+        document.getElementById('stat-becas').textContent = estadisticas.becas.total || 0;
     }
-    
-    // Actualizar contadores de solicitudes
     if (estadisticas.solicitudes) {
-        document.querySelector('.mini-stat:nth-child(3) h4').textContent = estadisticas.solicitudes.total || 0;
-        const pendientes = estadisticas.solicitudes.pendientes || 0;
-        document.querySelector('.mini-stat:nth-child(3) p').innerHTML = `
-            <span class="text-warning me-2">
-                <i class="bi bi-arrow-up"></i>15%
-            </span>
-            Pendientes: ${pendientes}
-        `;
+        document.getElementById('stat-solicitudes').textContent = estadisticas.solicitudes.total || 0;
+        // La descripción de pendientes se puede buscar por nodo
+        const solCard = document.getElementById('stat-solicitudes').parentElement;
+        const pElement = solCard.querySelector('p.text-muted');
+        if (pElement) {
+            pElement.innerHTML = `
+                <span class="text-warning me-2">
+                    <i class="bi bi-arrow-up"></i>15%
+                </span>
+                Pendientes: ${estadisticas.solicitudes.pendientes || 0}
+            `;
+        }
     }
-    
-    // Actualizar contadores de estudiantes
     if (estadisticas.estudiantes) {
-        document.querySelector('.mini-stat:nth-child(4) h4').textContent = estadisticas.estudiantes.total || 0;
+        // formatear numero con comas
+        document.getElementById('stat-estudiantes').textContent = new Intl.NumberFormat().format(estadisticas.estudiantes.total || 0);
     }
 }
 
 // Función para actualizar actividad reciente
-function actualizarActividad(actividad) {
-    // Aquí se podría actualizar la tabla de actividad reciente
-    console.log('Actividad actualizada:', actividad);
+function actualizarActividad(actividadData) {
+    const tbody = document.getElementById('actividad-reciente');
+    if (!tbody) return;
+    
+    // El backend puede enviar actividad en diferentes formatos dependiendo del controlador,
+    // en DashboardController retorna 'formularios', 'solicitudes', 'becas' en getActividadReciente()
+    // pero si usamos actualizarDashboard() retorna 'actividad' que acabamos de cambiar!
+    // Espera, en DashboardController::actualizarDashboard() llama a getActividadReciente().
+    // Yo modifiqué DashboardController::adminBienestar() para formatear `$actividadFormateada`.
+    // ¡OJO! DashboardController::getActividadReciente() sigue devolviendo un array crudo.
+    // Vamos a tener que manejar eso. De momento, si el backend manda el formato nuevo:
+    if (Array.isArray(actividadData) && actividadData.length > 0) {
+        tbody.innerHTML = actividadData.map(act => {
+            let badgeClass = 'info';
+            let iconClass = 'bi-check-circle text-success';
+            
+            if (act.estado === 'Completado') badgeClass = 'success';
+            else if (act.estado === 'Rechazado') { badgeClass = 'danger'; iconClass = 'bi-x-circle text-danger'; }
+            else if (act.estado === 'Pendiente') { badgeClass = 'warning'; iconClass = 'bi-clock-history text-warning'; }
+            
+            return `
+            <tr>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <i class="bi ${iconClass} me-2"></i>
+                        ${act.accion || 'Actividad'}
+                    </div>
+                </td>
+                <td>${act.usuario || 'Sistema'}</td>
+                <td>${act.fecha || ''}</td>
+                <td><span class="badge bg-${badgeClass}">${act.estado || 'Info'}</span></td>
+            </tr>`;
+        }).join('');
+    } else {
+        // En caso de usar el getActividadReciente() antiguo, no hace nada o muestra vacío
+        console.log('Actividad reciente actualizada desde servidor');
+    }
 }
 
 // Función para mostrar notificaciones

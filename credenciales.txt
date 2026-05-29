@@ -24,3 +24,4 @@ NOTA: Se puede ingresar usando el correo o la cédula como
 identificador. El sistema maneja control de sesiones, por lo
 que solo se puede tener una sesión activa a la vez.
 ============================================================
+correo usado: bienestar2026ITSI///bienestar.itsi.info@gmail.com

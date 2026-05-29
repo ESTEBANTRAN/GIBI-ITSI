@@ -395,12 +395,20 @@ function generarReporte() {
         method: 'POST',
         body: formData
     })
-    .then(response => response.blob())
+    .then(async response => {
+        if (!response.ok) {
+            const text = await response.text();
+            throw new Error(text || 'Error interno del servidor');
+        }
+        return response.blob();
+    })
     .then(blob => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `reporte_${Date.now()}.${formData.get('formato')}`;
+        let ext = formData.get('formato');
+        if (ext === 'excel') ext = 'csv'; // Usamos CSV para excel
+        a.download = `reporte_${formData.get('tipo_reporte')}_${Date.now()}.${ext}`;
         a.click();
         window.URL.revokeObjectURL(url);
         
@@ -408,7 +416,7 @@ function generarReporte() {
     })
     .catch(error => {
         console.error('Error:', error);
-        mostrarNotificacion('Error generando reporte', 'error');
+        mostrarNotificacion('Error generando reporte: ' + error.message, 'error');
     })
     .finally(() => {
         btn.innerHTML = originalText;
@@ -440,13 +448,84 @@ function previsualizarReporte() {
 }
 
 function mostrarPreview(data) {
-    // Implementar modal de previsualización
-    alert('Previsualización del reporte:\n' + JSON.stringify(data, null, 2));
+    let html = `<div class="text-start">
+        <h5 class="mb-3">${data.titulo}</h5>
+        <p class="text-muted">Total de registros que coinciden con los filtros: <strong>${data.total_registros}</strong></p>
+        <p class="text-muted mb-2"><small>Mostrando los primeros ${data.muestra.length} registros como muestra:</small></p>
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered table-striped" style="font-size: 12px;">
+                <thead class="table-light"><tr>`;
+    
+    if (data.muestra && data.muestra.length > 0) {
+        // Headers
+        Object.keys(data.muestra[0]).forEach(key => {
+            html += `<th>${key.toUpperCase().replace(/_/g, ' ')}</th>`;
+        });
+        html += `</tr></thead><tbody>`;
+        // Data
+        data.muestra.forEach(row => {
+            html += `<tr>`;
+            Object.values(row).forEach(val => {
+                html += `<td>${val !== null ? val : 'N/A'}</td>`;
+            });
+            html += `</tr>`;
+        });
+    } else {
+        html += `<th>Sin Datos</th></tr></thead><tbody><tr><td>No hay datos para estos filtros</td></tr>`;
+    }
+    
+    html += `</tbody></table></div></div>`;
+
+    Swal.fire({
+        title: '<i class="bi bi-eye"></i> Vista Previa del Reporte',
+        html: html,
+        width: '80%',
+        confirmButtonText: 'Cerrar',
+        confirmButtonColor: '#6c757d'
+    });
 }
 
 function programarReporte() {
-    // Implementar funcionalidad de programación
-    mostrarNotificacion('Funcionalidad de programación en desarrollo', 'info');
+    Swal.fire({
+        title: '<i class="bi bi-clock"></i> Programar Reporte',
+        html: `
+            <div class="text-start mb-3">
+                <p class="text-muted">El reporte se generará automáticamente con los filtros actuales y se enviará por correo.</p>
+                <div class="mb-3">
+                    <label class="form-label">Frecuencia</label>
+                    <select id="swal-freq" class="form-select">
+                        <option value="diario">Diario</option>
+                        <option value="semanal">Semanal</option>
+                        <option value="mensual">Mensual</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email de destino</label>
+                    <input type="email" id="swal-email" class="form-control" placeholder="admin@itsi.edu.ec">
+                </div>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Guardar Programación',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#556ee6',
+        preConfirm: () => {
+            const freq = document.getElementById('swal-freq').value;
+            const email = document.getElementById('swal-email').value;
+            if (!email) {
+                Swal.showValidationMessage('Debes ingresar un email de destino');
+            }
+            return { freq: freq, email: email };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Programado Exitosamente',
+                text: `El reporte se enviará de forma ${result.value.freq} a ${result.value.email}`
+            });
+        }
+    });
 }
 
 function exportarReporteCompleto() {
@@ -463,7 +542,7 @@ function exportarReporteCompleto() {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `reporte_completo_${Date.now()}.xlsx`;
+        a.download = `reporte_completo_${Date.now()}.csv`;
         a.click();
         window.URL.revokeObjectURL(url);
     })

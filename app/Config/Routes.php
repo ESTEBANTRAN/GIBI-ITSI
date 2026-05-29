@@ -9,6 +9,12 @@ $routes->get('/', 'AuthController::index');
 $routes->get('/login', 'AuthController::index');
 $routes->post('auth/attemptLogin', 'AuthController::attemptLogin', ['filter' => 'ratelimit:10,900']);
 
+// Rutas para recuperación de contraseña
+$routes->get('forgot-password', 'AuthController::forgotPassword');
+$routes->post('auth/verifyIdentity', 'AuthController::verifyIdentity');
+$routes->get('reset-password/(:alphanum)', 'AuthController::resetPasswordForm/$1');
+$routes->post('auth/resetPassword', 'AuthController::resetPassword');
+
 // Ruta para limpiar sesiones (solo en desarrollo)
 // $routes->get('clear-session', 'ClearSessionController::index');
 
@@ -122,7 +128,7 @@ $routes->get('usuarios/admin', 'AdminBienestarController::usuarios');
 $routes->get('usuarios/roles', 'AdminBienestarController::usuarios');
 $routes->get('configuracion/periodos', 'AdminBienestarController::gestionPeriodosAcademicos');
 // $routes->get('configuracion/becas', 'AdminBienestarController::becas'); // RUTA CONFLICTIVA - COMENTADA
-$routes->get('configuracion/sistema', 'AdminBienestarController::configuracionSistema');
+// $routes->get('configuracion/sistema', 'AdminBienestarController::configuracionSistema'); // MOVIDO AL SUPERADMIN
 $routes->get('solicitudes/comunicacion', 'AdminBienestarController::solicitudesBecas');
 $routes->get('solicitudes/integracion', 'AdminBienestarController::solicitudesBecas');
 
@@ -188,8 +194,8 @@ $routes->group('global-admin', ['filter' => ['auth', 'role:4']], function($route
     $routes->post('limpiar-backups', 'GlobalAdmin\GlobalAdminController::limpiarBackups');
     $routes->post('guardar-configuracion-backup', 'GlobalAdmin\GlobalAdminController::guardarConfiguracionBackup');
 
-    // Rutas para SuperAdmin - Configuración
-    $routes->get('configuracion', 'GlobalAdmin\GlobalAdminController::configuracion');
+    // Rutas para SuperAdmin - Configuración del Sistema
+    $routes->get('configuracion', 'GlobalAdmin\GlobalAdminController::configuracionSistema');
     $routes->post('guardar-configuracion', 'GlobalAdmin\GlobalAdminController::guardarConfiguracion');
 
     // Rutas para SuperAdmin - Respaldos
@@ -395,7 +401,7 @@ $routes->post('admin-bienestar/toggle-campo-periodo', 'AdminBienestarController:
 $routes->get('admin-bienestar/obtener-becas-con-filtros', 'AdminBienestarController::obtenerBecasConFiltros');
 $routes->get('admin-bienestar/obtener-becas', 'AdminBienestarController::obtenerBecas');
 
-// Rutas adicionales para configuración
-$routes->get('admin-bienestar/configuracion-sistema', 'AdminBienestarController::configuracionSistema');
-$routes->post('admin-bienestar/guardar-configuracion', 'AdminBienestarController::guardarConfiguracion');
+// Rutas adicionales para configuración (MOVIDO AL SUPERADMIN - global-admin/configuracion)
+// $routes->get('admin-bienestar/configuracion-sistema', 'AdminBienestarController::configuracionSistema');
+// $routes->post('admin-bienestar/guardar-configuracion', 'AdminBienestarController::guardarConfiguracion');
 $routes->post('admin-bienestar/crear-respaldo-manual', 'AdminBienestarController::crearRespaldoManual');

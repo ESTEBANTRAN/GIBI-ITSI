@@ -50,7 +50,71 @@ class DashboardController extends BaseController
             return redirect()->to('/login');
         }
 
-        return view('AdminBienestar/administrativo');
+        // Estadísticas de formularios
+        $totalFormularios = $this->fichaModel->countAllResults();
+        $formulariosPendientes = $this->fichaModel->where('estado', 'Pendiente')->countAllResults();
+        $formulariosAprobados = $this->fichaModel->where('estado', 'Aprobado')->countAllResults();
+        $formulariosRechazados = $this->fichaModel->where('estado', 'Rechazado')->countAllResults();
+
+        // Estadísticas de becas
+        $totalBecas = $this->becaModel->countAllResults();
+        $becasActivas = $this->becaModel->where('estado', 'Activa')->countAllResults();
+        $solicitudesBecas = \Config\Database::connect()->table('solicitudes_becas')->where('estado', 'Pendiente')->countAllResults();
+
+        // Estadísticas de solicitudes
+        $totalSolicitudes = $this->solicitudModel->countAllResults();
+        $solicitudesPendientes = $this->solicitudModel->where('estado', 'Pendiente')->countAllResults();
+
+        // Estadísticas de estudiantes
+        $totalEstudiantes = $this->usuarioModel->where('rol_id', 1)->countAllResults();
+
+        // Obtener actividad reciente
+        $actividadRecienteLogs = \Config\Database::connect()->table('logs l')
+            ->select('l.accion, l.fecha_creacion as fecha, u.nombre, u.apellido')
+            ->join('usuarios u', 'u.id = l.id_usuario', 'left')
+            ->orderBy('l.fecha_creacion', 'DESC')
+            ->limit(5)
+            ->get()
+            ->getResultArray();
+
+        $actividadFormateada = [];
+        foreach ($actividadRecienteLogs as $log) {
+            $estado = 'Completado';
+            if (strpos(strtolower($log['accion']), 'rechaz') !== false || strpos(strtolower($log['accion']), 'eliminar') !== false) {
+                $estado = 'Rechazado';
+            } elseif (strpos(strtolower($log['accion']), 'pendient') !== false || strpos(strtolower($log['accion']), 'solicitud') !== false) {
+                $estado = 'Pendiente';
+            }
+
+            $actividadFormateada[] = [
+                'accion' => ucfirst(str_replace('_', ' ', $log['accion'])),
+                'usuario' => ($log['nombre'] && $log['apellido']) ? $log['nombre'] . ' ' . $log['apellido'] : 'Sistema',
+                'fecha' => 'Hace ' . \CodeIgniter\I18n\Time::parse($log['fecha'])->humanize(),
+                'estado' => $estado
+            ];
+        }
+
+        $data = [
+            'formularios' => [
+                'total' => $totalFormularios,
+                'pendientes' => $formulariosPendientes
+            ],
+            'becas' => [
+                'total' => $totalBecas,
+                'activas' => $becasActivas,
+                'solicitudes_activas' => $solicitudesBecas
+            ],
+            'solicitudes' => [
+                'total' => $totalSolicitudes,
+                'pendientes' => $solicitudesPendientes
+            ],
+            'estudiantes' => [
+                'total' => $totalEstudiantes
+            ],
+            'actividad_reciente' => $actividadFormateada
+        ];
+
+        return view('AdminBienestar/administrativo', $data);
     }
 
     /**
@@ -71,8 +135,8 @@ class DashboardController extends BaseController
 
             // Estadísticas de becas
             $totalBecas = $this->becaModel->countAllResults();
-            $becasActivas = $this->becaModel->where('estado', 'Activo')->countAllResults();
-            $solicitudesBecas = $this->becaModel->getSolicitudesBecas();
+            $becasActivas = $this->becaModel->where('estado', 'Activa')->countAllResults();
+            $solicitudesBecas = \Config\Database::connect()->table('solicitudes_becas')->where('estado', 'Pendiente')->countAllResults();
 
             // Estadísticas de solicitudes
             $totalSolicitudes = $this->solicitudModel->countAllResults();
@@ -93,7 +157,7 @@ class DashboardController extends BaseController
                 'becas' => [
                     'total' => $totalBecas,
                     'activas' => $becasActivas,
-                    'solicitudes' => count($solicitudesBecas)
+                    'solicitudes' => $solicitudesBecas
                 ],
                 'solicitudes' => [
                     'total' => $totalSolicitudes,
@@ -112,9 +176,6 @@ class DashboardController extends BaseController
         }
     }
 
-    /**
-     * Obtiene actividad reciente
-     */
     public function getActividadReciente()
     {
         if (!session('id') || session('rol_id') != 2) {
@@ -122,22 +183,33 @@ class DashboardController extends BaseController
         }
 
         try {
-            // Obtener formularios recientes
-            $formulariosRecientes = $this->fichaModel->orderBy('fecha_creacion', 'DESC')->limit(5)->findAll();
-            
-            // Obtener solicitudes recientes
-            $solicitudesRecientes = $this->solicitudModel->orderBy('fecha_solicitud', 'DESC')->limit(5)->findAll();
-            
-            // Obtener becas recientes
-            $becasRecientes = $this->becaModel->orderBy('fecha_creacion', 'DESC')->limit(5)->findAll();
+            // Obtener actividad reciente desde los logs
+            $actividadRecienteLogs = \Config\Database::connect()->table('logs l')
+                ->select('l.accion, l.fecha_creacion as fecha, u.nombre, u.apellido')
+                ->join('usuarios u', 'u.id = l.id_usuario', 'left')
+                ->orderBy('l.fecha_creacion', 'DESC')
+                ->limit(5)
+                ->get()
+                ->getResultArray();
 
-            $actividad = [
-                'formularios' => $formulariosRecientes,
-                'solicitudes' => $solicitudesRecientes,
-                'becas' => $becasRecientes
-            ];
+            $actividadFormateada = [];
+            foreach ($actividadRecienteLogs as $log) {
+                $estado = 'Completado';
+                if (strpos(strtolower($log['accion']), 'rechaz') !== false || strpos(strtolower($log['accion']), 'eliminar') !== false) {
+                    $estado = 'Rechazado';
+                } elseif (strpos(strtolower($log['accion']), 'pendient') !== false || strpos(strtolower($log['accion']), 'solicitud') !== false) {
+                    $estado = 'Pendiente';
+                }
 
-            return $this->response->setJSON($actividad);
+                $actividadFormateada[] = [
+                    'accion' => ucfirst(str_replace('_', ' ', $log['accion'])),
+                    'usuario' => ($log['nombre'] && $log['apellido']) ? $log['nombre'] . ' ' . $log['apellido'] : 'Sistema',
+                    'fecha' => 'Hace ' . \CodeIgniter\I18n\Time::parse($log['fecha'])->humanize(),
+                    'estado' => $estado
+                ];
+            }
+
+            return $this->response->setJSON($actividadFormateada);
         } catch (\Exception $e) {
             return $this->response->setJSON(['error' => 'Error al obtener actividad reciente'])->setStatusCode(500);
         }
