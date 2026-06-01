@@ -1,0 +1,4 @@
+[     157ms] missing ) after argument list
+[     174ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/login:0
+[   13799ms] missing ) after argument list
+[   13809ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/login:0

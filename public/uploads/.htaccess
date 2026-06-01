@@ -1,11 +1,17 @@
-# Denegar acceso directo a archivos
-<FilesMatch ".*">
+# Denegar acceso directo a archivos PDF (solo se sirven a través del controlador)
+<FilesMatch "\.pdf$">
     Order Deny,Allow
     Deny from all
 </FilesMatch>
 
-# Permitir solo descargas a través del controlador
-<FilesMatch "\.pdf$">
+# Permitir acceso a imágenes de perfil y recursos estáticos
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|ico|svg)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# Bloquear cualquier otro tipo de archivo no listado
+<FilesMatch ".*">
     Order Deny,Allow
     Deny from all
-</FilesMatch> 
+</FilesMatch>

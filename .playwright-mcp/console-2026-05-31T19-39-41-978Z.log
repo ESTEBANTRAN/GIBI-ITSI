@@ -1,0 +1,8 @@
+[     247ms] [LOG] CSS Styles URL: http://localhost/ITSI/public/sistema/assets/css/styles.min.css @ http://localhost/ITSI/public/index.php/admin-bienestar/estudiantes:37
+[     247ms] [LOG] CSS Custom URL: http://localhost/ITSI/public/sistema/assets/css/custom.css @ http://localhost/ITSI/public/index.php/admin-bienestar/estudiantes:38
+[     250ms] [LOG] Estudiantes cargados: [Object, Object, Object, Object, Object, Object, Object, Object, Object, Object] @ http://localhost/ITSI/public/index.php/admin-bienestar/estudiantes:1136
+[     250ms] [LOG] Carreras cargadas: [Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object] @ http://localhost/ITSI/public/index.php/admin-bienestar/estudiantes:1137
+[     256ms] [LOG] jQuery version: 3.7.1 @ http://localhost/ITSI/public/index.php/admin-bienestar/estudiantes:1343
+[     256ms] [LOG] jQuery is properly loaded @ http://localhost/ITSI/public/index.php/admin-bienestar/estudiantes:1347
+[     256ms] [LOG] jQuery cargado correctamente @ http://localhost/ITSI/public/index.php/admin-bienestar/estudiantes:1388
+[     256ms] [LOG] ApexCharts cargado correctamente @ http://localhost/ITSI/public/index.php/admin-bienestar/estudiantes:1395

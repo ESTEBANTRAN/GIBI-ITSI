@@ -1,0 +1,14 @@
+[     210ms] [ERROR] Failed to load resource: the server responded with a status of 403 (Forbidden) @ http://localhost/ITSI/public/uploads/perfiles/default.jpg:0
+[     213ms] [ERROR] Failed to load resource: the server responded with a status of 403 (Forbidden) @ http://localhost/ITSI/public/uploads/perfiles/user_40_1753940652.jpg:0
+[     313ms] [ERROR] Failed to load resource: the server responded with a status of 403 (Forbidden) @ http://localhost/ITSI/public/uploads/perfiles/default.jpg:0
+[     359ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/global-admin/usuarios:0
+[     360ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/global-admin/usuarios:0
+[     360ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/global-admin/usuarios:0
+[     360ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/global-admin/usuarios:0
+[     364ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)

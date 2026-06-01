@@ -1,0 +1,27 @@
+- generic [ref=e8]:
+  - generic [ref=e9]:
+    - textbox " Cédula o Correo Electrónico" [active] [ref=e10]:
+      - /placeholder: Cédula o Correo
+    - generic:
+      - generic: 
+      - text: Cédula o Correo Electrónico
+  - generic [ref=e11]:
+    - textbox " Contraseña" [ref=e12]:
+      - /placeholder: Contraseña
+    - generic:
+      - generic: 
+      - text: Contraseña
+  - iframe [ref=e17]:
+    - generic [ref=f1e2]:
+      - generic [ref=f1e3]:
+        - checkbox "No soy un robot" [ref=f1e7]
+        - generic [ref=f1e11]: No soy un robot
+      - generic [ref=f1e15]: reCAPTCHA
+  - text: 
+  - generic [ref=e18]:
+    - generic [ref=e19]:
+      - checkbox "Recordarme" [ref=e20]
+      - generic [ref=e21]: Recordarme
+    - link "¿Olvidó su contraseña?" [ref=e22] [cursor=pointer]:
+      - /url: http://localhost/ITSI/public/index.php/forgot-password
+  - button "INGRESAR" [ref=e24] [cursor=pointer]

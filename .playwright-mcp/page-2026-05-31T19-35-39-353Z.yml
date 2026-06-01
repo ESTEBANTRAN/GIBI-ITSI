@@ -1,0 +1,763 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - link "Logo Administrador de Bienestar Institucional" [ref=e6] [cursor=pointer]:
+            - /url: http://localhost/ITSI/public/index.php/admin-bienestar
+            - img "Logo" [ref=e7]
+            - generic [ref=e8]:
+              - text: Administrador de
+              - text: Bienestar Institucional
+          - text: 
+        - navigation [ref=e9]:
+          - region "scrollable content" [ref=e13]:
+            - list [ref=e15]:
+              - listitem [ref=e16]:  INICIO
+              - listitem [ref=e17]:
+                - link " Dashboard" [ref=e18] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/admin-bienestar
+                  - generic [ref=e20]: 
+                  - generic [ref=e21]: Dashboard
+              - listitem [ref=e22]:  GESTIÓN ESTUDIANTIL
+              - listitem [ref=e23]:
+                - link " Fichas Socioeconómicas" [ref=e24] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/admin-bienestar/fichas-socioeconomicas
+                  - generic [ref=e26]: 
+                  - generic [ref=e27]: Fichas Socioeconómicas
+              - listitem [ref=e28]:
+                - link " Solicitudes de Ayuda" [ref=e29] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda
+                  - generic [ref=e31]: 
+                  - generic [ref=e32]: Solicitudes de Ayuda
+              - listitem [ref=e33]:
+                - link " Información Estudiantil" [ref=e34] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/admin-bienestar/estudiantes
+                  - generic [ref=e36]: 
+                  - generic [ref=e37]: Información Estudiantil
+              - listitem [ref=e38]:  SOLICITUDES
+              - listitem [ref=e39]:
+                - link " Solicitudes de Becas" [ref=e40] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas
+                  - generic [ref=e42]: 
+                  - generic [ref=e43]: Solicitudes de Becas
+              - listitem [ref=e44]:  REPORTES Y ANALÍTICA
+              - listitem [ref=e45]:
+                - link " Reportes y Analítica" [ref=e46] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/admin-bienestar/reportes
+                  - generic [ref=e48]: 
+                  - generic [ref=e49]: Reportes y Analítica
+              - listitem [ref=e50]:  CONFIGURACIÓN
+              - listitem [ref=e51]:
+                - link " Gestión de Períodos Académicos" [ref=e52] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/admin-bienestar/gestion-periodos
+                  - generic [ref=e54]: 
+                  - generic [ref=e55]: Gestión de Períodos Académicos
+              - listitem [ref=e56]:
+                - link " Configurar Programas de Becas" [ref=e57] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/admin-bienestar/configuracion-becas
+                  - generic [ref=e59]: 
+                  - generic [ref=e60]: Configurar Programas de Becas
+    - generic [ref=e61]:
+      - banner [ref=e62]:
+        - navigation [ref=e63]:
+          - link:
+            - /url: http://localhost/ITSI/public/
+          - list: 
+          - list [ref=e65]:
+            - listitem [ref=e66]:
+              - generic [ref=e67]:
+                - generic [ref=e68]: 
+                - text: Bienvenido al sistema, admin
+            - listitem [ref=e69]:
+              - link "Foto de perfil" [ref=e70] [cursor=pointer]:
+                - /url: javascript:void(0)
+                - img "Foto de perfil" [ref=e71]
+              - text:   
+      - generic [ref=e72]:
+        - generic [ref=e75]:
+          - generic [ref=e76]:
+            - heading "Gestión de Solicitudes de Becas" [level=4] [ref=e77]
+            - paragraph [ref=e78]: Revisa y gestiona las solicitudes de becas de los estudiantes
+          - generic [ref=e79]:
+            - button " Excel" [ref=e80] [cursor=pointer]:
+              - generic [ref=e81]: 
+              - text: Excel
+            - button " PDF" [ref=e82] [cursor=pointer]:
+              - generic [ref=e83]: 
+              - text: PDF
+        - generic [ref=e84]:
+          - generic [ref=e87]:
+            - heading "Estadísticas de Solicitudes" [level=5] [ref=e88]
+            - button " Exportar PNG" [ref=e89] [cursor=pointer]:
+              - generic [ref=e90]: 
+              - text: Exportar PNG
+          - generic [ref=e96]:
+            - heading "Distribución por Estado" [level=5] [ref=e97]
+            - button " Exportar PNG" [ref=e98] [cursor=pointer]:
+              - generic [ref=e99]: 
+              - text: Exportar PNG
+        - generic [ref=e103]:
+          - generic [ref=e107]:
+            - generic [ref=e108]:
+              - heading "Total Solicitudes" [level=6] [ref=e109]
+              - heading "38" [level=3] [ref=e110]
+            - generic [ref=e112]: 
+          - generic [ref=e116]:
+            - generic [ref=e117]:
+              - heading "Aprobadas" [level=6] [ref=e118]
+              - heading "12" [level=3] [ref=e119]
+            - generic [ref=e121]: 
+          - generic [ref=e125]:
+            - generic [ref=e126]:
+              - heading "Pendientes" [level=6] [ref=e127]
+              - heading "3" [level=3] [ref=e128]
+            - generic [ref=e130]: 
+          - generic [ref=e131]:
+            - generic [ref=e132]:
+              - generic [ref=e134]:
+                - generic [ref=e135]:
+                  - heading "Rechazadas" [level=6] [ref=e136]
+                  - heading "6" [level=3] [ref=e137]
+                - generic [ref=e139]: 
+              - generic [ref=e141]:
+                - generic [ref=e142]: Tipo
+                - combobox "Tipo" [ref=e143]:
+                  - option "Todos los tipos" [selected]
+                  - option
+                  - option "Deportiva"
+                  - option "Cultural"
+                  - option "Otros"
+              - generic [ref=e145]:
+                - generic [ref=e146]: Estado
+                - combobox "Estado" [ref=e147]:
+                  - option "Todos los estados" [selected]
+                  - option "Pendiente"
+                  - option "En Revisión"
+                  - option "Aprobada"
+                  - option "Rechazada"
+                  - option "En espera"
+              - generic [ref=e149]:
+                - generic [ref=e150]: Período
+                - combobox "Período" [ref=e151]:
+                  - option "Todos los períodos" [selected]
+                  - option "2024-1"
+                  - option "2024-2"
+                  - option "PERIODO 2026"
+                  - option "PERIODO 2025"
+                  - option "2024-1"
+                  - option "2024-2"
+                  - option "2024-122132131"
+                  - option "2024-2"
+              - button [ref=e155] [cursor=pointer]
+            - button "Limpiar Filtros" [ref=e158] [cursor=pointer]: Limpiar Filtros
+        - generic [ref=e159]:
+          - generic [ref=e160]:
+            - heading " Solicitudes de Becas" [level=5] [ref=e161]:
+              - generic [ref=e162]: 
+              - text: Solicitudes de Becas
+            - generic [ref=e164]:
+              - textbox "Buscar..." [ref=e165]
+              - button "" [ref=e166] [cursor=pointer]:
+                - generic [ref=e167]: 
+          - generic [ref=e168]:
+            - table [ref=e170]:
+              - rowgroup [ref=e171]:
+                - row "# Estudiante Beca Tipo Período Estado Fecha Acciones" [ref=e172]:
+                  - columnheader "#" [ref=e173]
+                  - columnheader "Estudiante" [ref=e174]
+                  - columnheader "Beca" [ref=e175]
+                  - columnheader "Tipo" [ref=e176]
+                  - columnheader "Período" [ref=e177]
+                  - columnheader "Estado" [ref=e178]
+                  - columnheader "Fecha" [ref=e179]
+                  - columnheader "Acciones" [ref=e180]
+              - rowgroup [ref=e181]:
+                - row "42 EE estudiante estudiante 0003 N/A N/A Aprobada 04/03/2026" [ref=e182]:
+                  - cell "42" [ref=e183]
+                  - cell "EE estudiante estudiante 0003" [ref=e184]:
+                    - generic [ref=e185]:
+                      - generic [ref=e187]: EE
+                      - generic [ref=e188]:
+                        - heading "estudiante estudiante" [level=6] [ref=e189]
+                        - text: "0003"
+                  - cell "N/A" [ref=e190]
+                  - cell [ref=e191]
+                  - cell "N/A" [ref=e193]
+                  - cell "Aprobada" [ref=e194]:
+                    - generic [ref=e195]: Aprobada
+                  - cell "04/03/2026" [ref=e196]
+                  - cell [ref=e197]:
+                    - group [ref=e198]:
+                      - button "" [ref=e199] [cursor=pointer]:
+                        - generic [ref=e200]: 
+                      - button "" [ref=e201] [cursor=pointer]:
+                        - generic [ref=e202]: 
+                - row "41 EE estudiante estudiante 0003 N/A N/A Postulada 21/08/2025" [ref=e203]:
+                  - cell "41" [ref=e204]
+                  - cell "EE estudiante estudiante 0003" [ref=e205]:
+                    - generic [ref=e206]:
+                      - generic [ref=e208]: EE
+                      - generic [ref=e209]:
+                        - heading "estudiante estudiante" [level=6] [ref=e210]
+                        - text: "0003"
+                  - cell "N/A" [ref=e211]
+                  - cell [ref=e212]
+                  - cell "N/A" [ref=e214]
+                  - cell "Postulada" [ref=e215]:
+                    - generic [ref=e216]: Postulada
+                  - cell "21/08/2025" [ref=e217]
+                  - cell [ref=e218]:
+                    - group [ref=e219]:
+                      - button "" [ref=e220] [cursor=pointer]:
+                        - generic [ref=e221]: 
+                - row "37 EE estudiante estudiante 0003 N/A Otros N/A Postulada 21/08/2025" [ref=e222]:
+                  - cell "37" [ref=e223]
+                  - cell "EE estudiante estudiante 0003" [ref=e224]:
+                    - generic [ref=e225]:
+                      - generic [ref=e227]: EE
+                      - generic [ref=e228]:
+                        - heading "estudiante estudiante" [level=6] [ref=e229]
+                        - text: "0003"
+                  - cell "N/A" [ref=e230]
+                  - cell "Otros" [ref=e231]:
+                    - generic [ref=e232]: Otros
+                  - cell "N/A" [ref=e233]
+                  - cell "Postulada" [ref=e234]:
+                    - generic [ref=e235]: Postulada
+                  - cell "21/08/2025" [ref=e236]
+                  - cell [ref=e237]:
+                    - group [ref=e238]:
+                      - button "" [ref=e239] [cursor=pointer]:
+                        - generic [ref=e240]: 
+                - row "19 EA ESTEBAN MAXIMILIANO AULESTIA ANDRADE 1005183395 N/A N/A Lista de Espera 13/08/2025" [ref=e241]:
+                  - cell "19" [ref=e242]
+                  - cell "EA ESTEBAN MAXIMILIANO AULESTIA ANDRADE 1005183395" [ref=e243]:
+                    - generic [ref=e244]:
+                      - generic [ref=e246]: EA
+                      - generic [ref=e247]:
+                        - heading "ESTEBAN MAXIMILIANO AULESTIA ANDRADE" [level=6] [ref=e248]
+                        - text: "1005183395"
+                  - cell "N/A" [ref=e249]
+                  - cell [ref=e250]
+                  - cell "N/A" [ref=e252]
+                  - cell "Lista de Espera" [ref=e253]:
+                    - generic [ref=e254]: Lista de Espera
+                  - cell "13/08/2025" [ref=e255]
+                  - cell [ref=e256]:
+                    - group [ref=e257]:
+                      - button "" [ref=e258] [cursor=pointer]:
+                        - generic [ref=e259]: 
+                - row "20 EE estudiantedos estudiante 8485 N/A N/A Rechazada 13/08/2025" [ref=e260]:
+                  - cell "20" [ref=e261]
+                  - cell "EE estudiantedos estudiante 8485" [ref=e262]:
+                    - generic [ref=e263]:
+                      - generic [ref=e265]: EE
+                      - generic [ref=e266]:
+                        - heading "estudiantedos estudiante" [level=6] [ref=e267]
+                        - text: "8485"
+                  - cell "N/A" [ref=e268]
+                  - cell [ref=e269]
+                  - cell "N/A" [ref=e271]
+                  - cell "Rechazada" [ref=e272]:
+                    - generic [ref=e273]: Rechazada
+                  - cell "13/08/2025" [ref=e274]
+                  - cell [ref=e275]:
+                    - group [ref=e276]:
+                      - button "" [ref=e277] [cursor=pointer]:
+                        - generic [ref=e278]: 
+                - row "21 EE estudiantetres estudiante 10001 N/A N/A Aprobada 13/08/2025" [ref=e279]:
+                  - cell "21" [ref=e280]
+                  - cell "EE estudiantetres estudiante 10001" [ref=e281]:
+                    - generic [ref=e282]:
+                      - generic [ref=e284]: EE
+                      - generic [ref=e285]:
+                        - heading "estudiantetres estudiante" [level=6] [ref=e286]
+                        - text: "10001"
+                  - cell "N/A" [ref=e287]
+                  - cell [ref=e288]
+                  - cell "N/A" [ref=e290]
+                  - cell "Aprobada" [ref=e291]:
+                    - generic [ref=e292]: Aprobada
+                  - cell "13/08/2025" [ref=e293]
+                  - cell [ref=e294]:
+                    - group [ref=e295]:
+                      - button "" [ref=e296] [cursor=pointer]:
+                        - generic [ref=e297]: 
+                      - button "" [ref=e298] [cursor=pointer]:
+                        - generic [ref=e299]: 
+                - row "22 EE estudiantedocuatro estudiante 10002 N/A N/A 13/08/2025" [ref=e300]:
+                  - cell "22" [ref=e301]
+                  - cell "EE estudiantedocuatro estudiante 10002" [ref=e302]:
+                    - generic [ref=e303]:
+                      - generic [ref=e305]: EE
+                      - generic [ref=e306]:
+                        - heading "estudiantedocuatro estudiante" [level=6] [ref=e307]
+                        - text: "10002"
+                  - cell "N/A" [ref=e308]
+                  - cell [ref=e309]
+                  - cell "N/A" [ref=e311]
+                  - cell [ref=e312]
+                  - cell "13/08/2025" [ref=e314]
+                  - cell [ref=e315]:
+                    - group [ref=e316]:
+                      - button "" [ref=e317] [cursor=pointer]:
+                        - generic [ref=e318]: 
+                - row "23 EE estudiantedocinco estudiante 10003 N/A N/A 13/08/2025" [ref=e319]:
+                  - cell "23" [ref=e320]
+                  - cell "EE estudiantedocinco estudiante 10003" [ref=e321]:
+                    - generic [ref=e322]:
+                      - generic [ref=e324]: EE
+                      - generic [ref=e325]:
+                        - heading "estudiantedocinco estudiante" [level=6] [ref=e326]
+                        - text: "10003"
+                  - cell "N/A" [ref=e327]
+                  - cell [ref=e328]
+                  - cell "N/A" [ref=e330]
+                  - cell [ref=e331]
+                  - cell "13/08/2025" [ref=e333]
+                  - cell [ref=e334]:
+                    - group [ref=e335]:
+                      - button "" [ref=e336] [cursor=pointer]:
+                        - generic [ref=e337]: 
+                - row "24 EE estudianteseis estudiante 10004 N/A N/A Aprobada 13/08/2025" [ref=e338]:
+                  - cell "24" [ref=e339]
+                  - cell "EE estudianteseis estudiante 10004" [ref=e340]:
+                    - generic [ref=e341]:
+                      - generic [ref=e343]: EE
+                      - generic [ref=e344]:
+                        - heading "estudianteseis estudiante" [level=6] [ref=e345]
+                        - text: "10004"
+                  - cell "N/A" [ref=e346]
+                  - cell [ref=e347]
+                  - cell "N/A" [ref=e349]
+                  - cell "Aprobada" [ref=e350]:
+                    - generic [ref=e351]: Aprobada
+                  - cell "13/08/2025" [ref=e352]
+                  - cell [ref=e353]:
+                    - group [ref=e354]:
+                      - button "" [ref=e355] [cursor=pointer]:
+                        - generic [ref=e356]: 
+                      - button "" [ref=e357] [cursor=pointer]:
+                        - generic [ref=e358]: 
+                - row "25 EE estudiantesiete estudiante 10005 N/A N/A Aprobada 13/08/2025" [ref=e359]:
+                  - cell "25" [ref=e360]
+                  - cell "EE estudiantesiete estudiante 10005" [ref=e361]:
+                    - generic [ref=e362]:
+                      - generic [ref=e364]: EE
+                      - generic [ref=e365]:
+                        - heading "estudiantesiete estudiante" [level=6] [ref=e366]
+                        - text: "10005"
+                  - cell "N/A" [ref=e367]
+                  - cell [ref=e368]
+                  - cell "N/A" [ref=e370]
+                  - cell "Aprobada" [ref=e371]:
+                    - generic [ref=e372]: Aprobada
+                  - cell "13/08/2025" [ref=e373]
+                  - cell [ref=e374]:
+                    - group [ref=e375]:
+                      - button "" [ref=e376] [cursor=pointer]:
+                        - generic [ref=e377]: 
+                      - button "" [ref=e378] [cursor=pointer]:
+                        - generic [ref=e379]: 
+                - row "26 EE estudianteocho estudiante 10006 N/A N/A Rechazada 13/08/2025" [ref=e380]:
+                  - cell "26" [ref=e381]
+                  - cell "EE estudianteocho estudiante 10006" [ref=e382]:
+                    - generic [ref=e383]:
+                      - generic [ref=e385]: EE
+                      - generic [ref=e386]:
+                        - heading "estudianteocho estudiante" [level=6] [ref=e387]
+                        - text: "10006"
+                  - cell "N/A" [ref=e388]
+                  - cell [ref=e389]
+                  - cell "N/A" [ref=e391]
+                  - cell "Rechazada" [ref=e392]:
+                    - generic [ref=e393]: Rechazada
+                  - cell "13/08/2025" [ref=e394]
+                  - cell [ref=e395]:
+                    - group [ref=e396]:
+                      - button "" [ref=e397] [cursor=pointer]:
+                        - generic [ref=e398]: 
+                - row "27 EE estudiantenueve estudiante 10007 N/A N/A Rechazada 13/08/2025" [ref=e399]:
+                  - cell "27" [ref=e400]
+                  - cell "EE estudiantenueve estudiante 10007" [ref=e401]:
+                    - generic [ref=e402]:
+                      - generic [ref=e404]: EE
+                      - generic [ref=e405]:
+                        - heading "estudiantenueve estudiante" [level=6] [ref=e406]
+                        - text: "10007"
+                  - cell "N/A" [ref=e407]
+                  - cell [ref=e408]
+                  - cell "N/A" [ref=e410]
+                  - cell "Rechazada" [ref=e411]:
+                    - generic [ref=e412]: Rechazada
+                  - cell "13/08/2025" [ref=e413]
+                  - cell [ref=e414]:
+                    - group [ref=e415]:
+                      - button "" [ref=e416] [cursor=pointer]:
+                        - generic [ref=e417]: 
+                - row "28 EE estudiantediez estudiante 10008 N/A N/A Lista de Espera 13/08/2025" [ref=e418]:
+                  - cell "28" [ref=e419]
+                  - cell "EE estudiantediez estudiante 10008" [ref=e420]:
+                    - generic [ref=e421]:
+                      - generic [ref=e423]: EE
+                      - generic [ref=e424]:
+                        - heading "estudiantediez estudiante" [level=6] [ref=e425]
+                        - text: "10008"
+                  - cell "N/A" [ref=e426]
+                  - cell [ref=e427]
+                  - cell "N/A" [ref=e429]
+                  - cell "Lista de Espera" [ref=e430]:
+                    - generic [ref=e431]: Lista de Espera
+                  - cell "13/08/2025" [ref=e432]
+                  - cell [ref=e433]:
+                    - group [ref=e434]:
+                      - button "" [ref=e435] [cursor=pointer]:
+                        - generic [ref=e436]: 
+                - row "9 EA ESTEBAN MAXIMILIANO AULESTIA ANDRADE 1005183395 N/A N/A Postulada 13/08/2025" [ref=e437]:
+                  - cell "9" [ref=e438]
+                  - cell "EA ESTEBAN MAXIMILIANO AULESTIA ANDRADE 1005183395" [ref=e439]:
+                    - generic [ref=e440]:
+                      - generic [ref=e442]: EA
+                      - generic [ref=e443]:
+                        - heading "ESTEBAN MAXIMILIANO AULESTIA ANDRADE" [level=6] [ref=e444]
+                        - text: "1005183395"
+                  - cell "N/A" [ref=e445]
+                  - cell [ref=e446]
+                  - cell "N/A" [ref=e448]
+                  - cell "Postulada" [ref=e449]:
+                    - generic [ref=e450]: Postulada
+                  - cell "13/08/2025" [ref=e451]
+                  - cell [ref=e452]:
+                    - group [ref=e453]:
+                      - button "" [ref=e454] [cursor=pointer]:
+                        - generic [ref=e455]: 
+                - row "10 EE estudiantedos estudiante 8485 N/A N/A Postulada 13/08/2025" [ref=e456]:
+                  - cell "10" [ref=e457]
+                  - cell "EE estudiantedos estudiante 8485" [ref=e458]:
+                    - generic [ref=e459]:
+                      - generic [ref=e461]: EE
+                      - generic [ref=e462]:
+                        - heading "estudiantedos estudiante" [level=6] [ref=e463]
+                        - text: "8485"
+                  - cell "N/A" [ref=e464]
+                  - cell [ref=e465]
+                  - cell "N/A" [ref=e467]
+                  - cell "Postulada" [ref=e468]:
+                    - generic [ref=e469]: Postulada
+                  - cell "13/08/2025" [ref=e470]
+                  - cell [ref=e471]:
+                    - group [ref=e472]:
+                      - button "" [ref=e473] [cursor=pointer]:
+                        - generic [ref=e474]: 
+                - row "11 EE estudiantetres estudiante 10001 N/A N/A Postulada 13/08/2025" [ref=e475]:
+                  - cell "11" [ref=e476]
+                  - cell "EE estudiantetres estudiante 10001" [ref=e477]:
+                    - generic [ref=e478]:
+                      - generic [ref=e480]: EE
+                      - generic [ref=e481]:
+                        - heading "estudiantetres estudiante" [level=6] [ref=e482]
+                        - text: "10001"
+                  - cell "N/A" [ref=e483]
+                  - cell [ref=e484]
+                  - cell "N/A" [ref=e486]
+                  - cell "Postulada" [ref=e487]:
+                    - generic [ref=e488]: Postulada
+                  - cell "13/08/2025" [ref=e489]
+                  - cell [ref=e490]:
+                    - group [ref=e491]:
+                      - button "" [ref=e492] [cursor=pointer]:
+                        - generic [ref=e493]: 
+                - row "12 EE estudiantedocuatro estudiante 10002 N/A N/A 13/08/2025" [ref=e494]:
+                  - cell "12" [ref=e495]
+                  - cell "EE estudiantedocuatro estudiante 10002" [ref=e496]:
+                    - generic [ref=e497]:
+                      - generic [ref=e499]: EE
+                      - generic [ref=e500]:
+                        - heading "estudiantedocuatro estudiante" [level=6] [ref=e501]
+                        - text: "10002"
+                  - cell "N/A" [ref=e502]
+                  - cell [ref=e503]
+                  - cell "N/A" [ref=e505]
+                  - cell [ref=e506]
+                  - cell "13/08/2025" [ref=e508]
+                  - cell [ref=e509]:
+                    - group [ref=e510]:
+                      - button "" [ref=e511] [cursor=pointer]:
+                        - generic [ref=e512]: 
+                - row "13 EE estudiantedocinco estudiante 10003 N/A N/A 13/08/2025" [ref=e513]:
+                  - cell "13" [ref=e514]
+                  - cell "EE estudiantedocinco estudiante 10003" [ref=e515]:
+                    - generic [ref=e516]:
+                      - generic [ref=e518]: EE
+                      - generic [ref=e519]:
+                        - heading "estudiantedocinco estudiante" [level=6] [ref=e520]
+                        - text: "10003"
+                  - cell "N/A" [ref=e521]
+                  - cell [ref=e522]
+                  - cell "N/A" [ref=e524]
+                  - cell [ref=e525]
+                  - cell "13/08/2025" [ref=e527]
+                  - cell [ref=e528]:
+                    - group [ref=e529]:
+                      - button "" [ref=e530] [cursor=pointer]:
+                        - generic [ref=e531]: 
+                - row "14 EE estudianteseis estudiante 10004 N/A N/A Aprobada 13/08/2025" [ref=e532]:
+                  - cell "14" [ref=e533]
+                  - cell "EE estudianteseis estudiante 10004" [ref=e534]:
+                    - generic [ref=e535]:
+                      - generic [ref=e537]: EE
+                      - generic [ref=e538]:
+                        - heading "estudianteseis estudiante" [level=6] [ref=e539]
+                        - text: "10004"
+                  - cell "N/A" [ref=e540]
+                  - cell [ref=e541]
+                  - cell "N/A" [ref=e543]
+                  - cell "Aprobada" [ref=e544]:
+                    - generic [ref=e545]: Aprobada
+                  - cell "13/08/2025" [ref=e546]
+                  - cell [ref=e547]:
+                    - group [ref=e548]:
+                      - button "" [ref=e549] [cursor=pointer]:
+                        - generic [ref=e550]: 
+                      - button "" [ref=e551] [cursor=pointer]:
+                        - generic [ref=e552]: 
+                - row "15 EE estudiantesiete estudiante 10005 N/A N/A Aprobada 13/08/2025" [ref=e553]:
+                  - cell "15" [ref=e554]
+                  - cell "EE estudiantesiete estudiante 10005" [ref=e555]:
+                    - generic [ref=e556]:
+                      - generic [ref=e558]: EE
+                      - generic [ref=e559]:
+                        - heading "estudiantesiete estudiante" [level=6] [ref=e560]
+                        - text: "10005"
+                  - cell "N/A" [ref=e561]
+                  - cell [ref=e562]
+                  - cell "N/A" [ref=e564]
+                  - cell "Aprobada" [ref=e565]:
+                    - generic [ref=e566]: Aprobada
+                  - cell "13/08/2025" [ref=e567]
+                  - cell [ref=e568]:
+                    - group [ref=e569]:
+                      - button "" [ref=e570] [cursor=pointer]:
+                        - generic [ref=e571]: 
+                      - button "" [ref=e572] [cursor=pointer]:
+                        - generic [ref=e573]: 
+                - row "16 EE estudianteocho estudiante 10006 N/A N/A Rechazada 13/08/2025" [ref=e574]:
+                  - cell "16" [ref=e575]
+                  - cell "EE estudianteocho estudiante 10006" [ref=e576]:
+                    - generic [ref=e577]:
+                      - generic [ref=e579]: EE
+                      - generic [ref=e580]:
+                        - heading "estudianteocho estudiante" [level=6] [ref=e581]
+                        - text: "10006"
+                  - cell "N/A" [ref=e582]
+                  - cell [ref=e583]
+                  - cell "N/A" [ref=e585]
+                  - cell "Rechazada" [ref=e586]:
+                    - generic [ref=e587]: Rechazada
+                  - cell "13/08/2025" [ref=e588]
+                  - cell [ref=e589]:
+                    - group [ref=e590]:
+                      - button "" [ref=e591] [cursor=pointer]:
+                        - generic [ref=e592]: 
+                - row "17 EE estudiantenueve estudiante 10007 N/A N/A Rechazada 13/08/2025" [ref=e593]:
+                  - cell "17" [ref=e594]
+                  - cell "EE estudiantenueve estudiante 10007" [ref=e595]:
+                    - generic [ref=e596]:
+                      - generic [ref=e598]: EE
+                      - generic [ref=e599]:
+                        - heading "estudiantenueve estudiante" [level=6] [ref=e600]
+                        - text: "10007"
+                  - cell "N/A" [ref=e601]
+                  - cell [ref=e602]
+                  - cell "N/A" [ref=e604]
+                  - cell "Rechazada" [ref=e605]:
+                    - generic [ref=e606]: Rechazada
+                  - cell "13/08/2025" [ref=e607]
+                  - cell [ref=e608]:
+                    - group [ref=e609]:
+                      - button "" [ref=e610] [cursor=pointer]:
+                        - generic [ref=e611]: 
+                - row "18 EE estudiantediez estudiante 10008 N/A N/A Lista de Espera 13/08/2025" [ref=e612]:
+                  - cell "18" [ref=e613]
+                  - cell "EE estudiantediez estudiante 10008" [ref=e614]:
+                    - generic [ref=e615]:
+                      - generic [ref=e617]: EE
+                      - generic [ref=e618]:
+                        - heading "estudiantediez estudiante" [level=6] [ref=e619]
+                        - text: "10008"
+                  - cell "N/A" [ref=e620]
+                  - cell [ref=e621]
+                  - cell "N/A" [ref=e623]
+                  - cell "Lista de Espera" [ref=e624]:
+                    - generic [ref=e625]: Lista de Espera
+                  - cell "13/08/2025" [ref=e626]
+                  - cell [ref=e627]:
+                    - group [ref=e628]:
+                      - button "" [ref=e629] [cursor=pointer]:
+                        - generic [ref=e630]: 
+                - row "8 EL estebansito lolaso 01023123 N/A N/A Aprobada 30/07/2025" [ref=e631]:
+                  - cell "8" [ref=e632]
+                  - cell "EL estebansito lolaso 01023123" [ref=e633]:
+                    - generic [ref=e634]:
+                      - generic [ref=e636]: EL
+                      - generic [ref=e637]:
+                        - heading "estebansito lolaso" [level=6] [ref=e638]
+                        - text: "01023123"
+                  - cell "N/A" [ref=e639]
+                  - cell [ref=e640]
+                  - cell "N/A" [ref=e642]
+                  - cell "Aprobada" [ref=e643]:
+                    - generic [ref=e644]: Aprobada
+                  - cell "30/07/2025" [ref=e645]
+                  - cell [ref=e646]:
+                    - group [ref=e647]:
+                      - button "" [ref=e648] [cursor=pointer]:
+                        - generic [ref=e649]: 
+                      - button "" [ref=e650] [cursor=pointer]:
+                        - generic [ref=e651]: 
+                - row "7 EE estudiante estudiante 0003 N/A N/A En Revisión 29/07/2025" [ref=e652]:
+                  - cell "7" [ref=e653]
+                  - cell "EE estudiante estudiante 0003" [ref=e654]:
+                    - generic [ref=e655]:
+                      - generic [ref=e657]: EE
+                      - generic [ref=e658]:
+                        - heading "estudiante estudiante" [level=6] [ref=e659]
+                        - text: "0003"
+                  - cell "N/A" [ref=e660]
+                  - cell [ref=e661]
+                  - cell "N/A" [ref=e663]
+                  - cell "En Revisión" [ref=e664]:
+                    - generic [ref=e665]: En Revisión
+                  - cell "29/07/2025" [ref=e666]
+                  - cell [ref=e667]:
+                    - group [ref=e668]:
+                      - button "" [ref=e669] [cursor=pointer]:
+                        - generic [ref=e670]: 
+                      - button "" [ref=e671] [cursor=pointer]:
+                        - generic [ref=e672]: 
+                      - button "" [ref=e673] [cursor=pointer]:
+                        - generic [ref=e674]: 
+                - row "6 EA ESTEBAN MAXIMILIANO AULESTIA ANDRADE 1005183395 N/A N/A Aprobada 28/07/2025" [ref=e675]:
+                  - cell "6" [ref=e676]
+                  - cell "EA ESTEBAN MAXIMILIANO AULESTIA ANDRADE 1005183395" [ref=e677]:
+                    - generic [ref=e678]:
+                      - generic [ref=e680]: EA
+                      - generic [ref=e681]:
+                        - heading "ESTEBAN MAXIMILIANO AULESTIA ANDRADE" [level=6] [ref=e682]
+                        - text: "1005183395"
+                  - cell "N/A" [ref=e683]
+                  - cell [ref=e684]
+                  - cell "N/A" [ref=e686]
+                  - cell "Aprobada" [ref=e687]:
+                    - generic [ref=e688]: Aprobada
+                  - cell "28/07/2025" [ref=e689]
+                  - cell [ref=e690]:
+                    - group [ref=e691]:
+                      - button "" [ref=e692] [cursor=pointer]:
+                        - generic [ref=e693]: 
+                      - button "" [ref=e694] [cursor=pointer]:
+                        - generic [ref=e695]: 
+                - row "2 EA ESTEBAN MAXIMILIANO AULESTIA ANDRADE 1005183395 N/A N/A En Revisión 20/09/2024" [ref=e696]:
+                  - cell "2" [ref=e697]
+                  - cell "EA ESTEBAN MAXIMILIANO AULESTIA ANDRADE 1005183395" [ref=e698]:
+                    - generic [ref=e699]:
+                      - generic [ref=e701]: EA
+                      - generic [ref=e702]:
+                        - heading "ESTEBAN MAXIMILIANO AULESTIA ANDRADE" [level=6] [ref=e703]
+                        - text: "1005183395"
+                  - cell "N/A" [ref=e704]
+                  - cell [ref=e705]
+                  - cell "N/A" [ref=e707]
+                  - cell "En Revisión" [ref=e708]:
+                    - generic [ref=e709]: En Revisión
+                  - cell "20/09/2024" [ref=e710]
+                  - cell [ref=e711]:
+                    - group [ref=e712]:
+                      - button "" [ref=e713] [cursor=pointer]:
+                        - generic [ref=e714]: 
+                      - button "" [ref=e715] [cursor=pointer]:
+                        - generic [ref=e716]: 
+                      - button "" [ref=e717] [cursor=pointer]:
+                        - generic [ref=e718]: 
+                - row "4 AL Ana López 1005183397 N/A N/A En Revisión 12/08/2024" [ref=e719]:
+                  - cell "4" [ref=e720]
+                  - cell "AL Ana López 1005183397" [ref=e721]:
+                    - generic [ref=e722]:
+                      - generic [ref=e724]: AL
+                      - generic [ref=e725]:
+                        - heading "Ana López" [level=6] [ref=e726]
+                        - text: "1005183397"
+                  - cell "N/A" [ref=e727]
+                  - cell [ref=e728]
+                  - cell "N/A" [ref=e730]
+                  - cell "En Revisión" [ref=e731]:
+                    - generic [ref=e732]: En Revisión
+                  - cell "12/08/2024" [ref=e733]
+                  - cell [ref=e734]:
+                    - group [ref=e735]:
+                      - button "" [ref=e736] [cursor=pointer]:
+                        - generic [ref=e737]: 
+                      - button "" [ref=e738] [cursor=pointer]:
+                        - generic [ref=e739]: 
+                      - button "" [ref=e740] [cursor=pointer]:
+                        - generic [ref=e741]: 
+                - row "3 JP Juan Pérez 1005183396 N/A N/A Aprobada 10/08/2024" [ref=e742]:
+                  - cell "3" [ref=e743]
+                  - cell "JP Juan Pérez 1005183396" [ref=e744]:
+                    - generic [ref=e745]:
+                      - generic [ref=e747]: JP
+                      - generic [ref=e748]:
+                        - heading "Juan Pérez" [level=6] [ref=e749]
+                        - text: "1005183396"
+                  - cell "N/A" [ref=e750]
+                  - cell [ref=e751]
+                  - cell "N/A" [ref=e753]
+                  - cell "Aprobada" [ref=e754]:
+                    - generic [ref=e755]: Aprobada
+                  - cell "10/08/2024" [ref=e756]
+                  - cell [ref=e757]:
+                    - group [ref=e758]:
+                      - button "" [ref=e759] [cursor=pointer]:
+                        - generic [ref=e760]: 
+                      - button "" [ref=e761] [cursor=pointer]:
+                        - generic [ref=e762]: 
+                - row "5 CR Carlos Ruiz 1005183398 N/A N/A Aprobada 08/08/2024" [ref=e763]:
+                  - cell "5" [ref=e764]
+                  - cell "CR Carlos Ruiz 1005183398" [ref=e765]:
+                    - generic [ref=e766]:
+                      - generic [ref=e768]: CR
+                      - generic [ref=e769]:
+                        - heading "Carlos Ruiz" [level=6] [ref=e770]
+                        - text: "1005183398"
+                  - cell "N/A" [ref=e771]
+                  - cell [ref=e772]
+                  - cell "N/A" [ref=e774]
+                  - cell "Aprobada" [ref=e775]:
+                    - generic [ref=e776]: Aprobada
+                  - cell "08/08/2024" [ref=e777]
+                  - cell [ref=e778]:
+                    - group [ref=e779]:
+                      - button "" [ref=e780] [cursor=pointer]:
+                        - generic [ref=e781]: 
+                      - button "" [ref=e782] [cursor=pointer]:
+                        - generic [ref=e783]: 
+            - generic [ref=e784]:
+              - generic [ref=e785]: Mostrando 1 a 30 de 34 registros
+              - navigation "Paginación de solicitudes" [ref=e786]:
+                - list [ref=e787]:
+                  - listitem [ref=e788]:
+                    - link "1" [ref=e789] [cursor=pointer]:
+                      - /url: "?page=1&per_page=30&page=1"
+                  - listitem [ref=e790]:
+                    - link "2" [ref=e791] [cursor=pointer]:
+                      - /url: "?page=2&per_page=30&page=1"
+                  - listitem [ref=e792]:
+                    - link "Siguiente" [ref=e793] [cursor=pointer]:
+                      - /url: "?page=2&per_page=30&page=1"
+                      - text: »
+    - contentinfo [ref=e794]:
+      - generic [ref=e796]:
+        - img "ITSI Logo" [ref=e798]
+        - paragraph [ref=e800]: Tecnológico Ibarra. © 2024. All Rights Reserved
+  - img

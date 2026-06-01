@@ -176,16 +176,6 @@ class BackupModel extends Model
     }
 
     /**
-     * Obtiene respaldos por tipo
-     */
-    public function getBackupsPorTipo($tipo)
-    {
-        return $this->where('tipo', $tipo)
-                    ->orderBy('created_at', 'DESC')
-                    ->findAll();
-    }
-
-    /**
      * Elimina un respaldo
      */
     public function eliminarBackup($id)
@@ -205,30 +195,6 @@ class BackupModel extends Model
         
         // Eliminar registro de la base de datos
         return $this->delete($id);
-    }
-
-    /**
-     * Descarga un respaldo
-     */
-    public function descargarBackup($id)
-    {
-        $backup = $this->find($id);
-        
-        if (!$backup) {
-            return false;
-        }
-        
-        $rutaArchivo = WRITEPATH . 'backups/' . $backup['archivo'];
-        
-        if (!file_exists($rutaArchivo)) {
-            return false;
-        }
-        
-        return [
-            'archivo' => $rutaArchivo,
-            'nombre' => $backup['archivo'],
-            'tamaño' => filesize($rutaArchivo)
-        ];
     }
 
     /**
@@ -258,41 +224,6 @@ class BackupModel extends Model
     }
 
     /**
-     * Verifica espacio disponible
-     */
-    public function verificarEspacioDisponible()
-    {
-        $rutaBackups = WRITEPATH . 'backups/';
-        $espacioDisponible = disk_free_space($rutaBackups);
-        $espacioTotal = disk_total_space($rutaBackups);
-        
-        return [
-            'disponible' => $this->formatBytes($espacioDisponible),
-            'total' => $this->formatBytes($espacioTotal),
-            'porcentaje_usado' => round((($espacioTotal - $espacioDisponible) / $espacioTotal) * 100, 2)
-        ];
-    }
-
-    /**
-     * Limpia respaldos antiguos
-     */
-    public function limpiarBackupsAntiguos($dias = 30)
-    {
-        $fechaLimite = date('Y-m-d H:i:s', strtotime("-{$dias} days"));
-        
-        $backupsAntiguos = $this->where('created_at <', $fechaLimite)->findAll();
-        $eliminados = 0;
-        
-        foreach ($backupsAntiguos as $backup) {
-            if ($this->eliminarBackup($backup['id'])) {
-                $eliminados++;
-            }
-        }
-        
-        return $eliminados;
-    }
-
-    /**
      * Formatea bytes a formato legible
      */
     private function formatBytes($bytes, $precision = 2)
@@ -306,31 +237,4 @@ class BackupModel extends Model
         return round($bytes, $precision) . ' ' . $units[$i];
     }
 
-    /**
-     * Crea respaldo programado
-     */
-    public function crearBackupProgramado()
-    {
-        // Verificar si es momento de crear respaldo automático
-        $ultimoBackup = $this->where('tipo', 'automatico')
-                             ->orderBy('created_at', 'DESC')
-                             ->first();
-        
-        $intervalo = 24 * 60 * 60; // 24 horas en segundos
-        
-        if (!$ultimoBackup || (time() - strtotime($ultimoBackup['created_at'])) >= $intervalo) {
-            $resultado = $this->crearBackup();
-            
-            if ($resultado['success']) {
-                // Actualizar tipo a automático
-                $this->where('archivo', $resultado['archivo'])
-                     ->set(['tipo' => 'automatico'])
-                     ->update();
-            }
-            
-            return $resultado;
-        }
-        
-        return ['success' => false, 'mensaje' => 'No es momento de crear respaldo automático'];
-    }
 } 

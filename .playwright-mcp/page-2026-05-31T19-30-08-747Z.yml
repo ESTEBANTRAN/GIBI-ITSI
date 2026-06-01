@@ -1,0 +1,468 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]: "Displayed at 14:30:08pm — PHP: 8.2.12 — CodeIgniter: 4.6.1 -- Environment: development"
+    - generic [ref=e4]:
+      - heading "ErrorException" [level=1] [ref=e5]
+      - paragraph [ref=e6]: Undefined array key "totalPages"
+  - generic [ref=e7]:
+    - paragraph [ref=e8]: APPPATH\Views\AdminBienestar\solicitudes_becas.php at line 308
+    - code [ref=e11]:
+      - generic [ref=e12]: "301"
+      - text: <li class="page-item">
+      - generic [ref=e13]:
+        - text: "302 <a class=\"page-link\" href=\"?page=<?= $pager['currentPage'] - 1 ?><?= !empty($filtros) ? '&' . http_build_query($filtros) : '' ?>\" aria-label=\"Anterior\">"
+        - generic [ref=e14]:
+          - text: 303 <span aria-hidden="true">&laquo;</span>
+          - generic [ref=e15]:
+            - text: 304 </a>
+            - generic [ref=e16]:
+              - text: 305 </li>
+              - generic [ref=e17]:
+                - text: 306 <?php endif;
+                - generic [ref=e18]:
+                  - text: "?>"
+                  - generic [ref=e19]: "307"
+                  - generic [ref=e20]: "308 <?php for ($i = 1; $i <= $pager['totalPages']; $i++): ?>"
+                  - generic [ref=e21]:
+                    - generic [ref=e22]: "309"
+                    - text: "<li class=\"page-item <?= $i == $pager['currentPage'] ? 'active' : '' ?>\">"
+                    - generic [ref=e23]:
+                      - text: "310 <a class=\"page-link\" href=\"?page=<?= $i ?><?= !empty($filtros) ? '&' . http_build_query($filtros) : '' ?>\">"
+                      - generic [ref=e24]:
+                        - text: "311"
+                        - generic [ref=e25]:
+                          - text: <?= $i ?>
+                          - generic [ref=e26]: "312"
+                          - text: </a>
+                          - generic [ref=e27]:
+                            - text: 313 </li>
+                            - generic [ref=e28]:
+                              - text: 314 <?php endfor;
+                              - generic [ref=e29]:
+                                - text: "?>"
+                                - generic [ref=e30]: "315"
+  - generic [ref=e32]:
+    - list [ref=e33]:
+      - listitem [ref=e34]:
+        - link "Backtrace" [ref=e35] [cursor=pointer]:
+          - /url: "#backtrace"
+      - listitem [ref=e36]:
+        - link "Server" [ref=e37] [cursor=pointer]:
+          - /url: "#server"
+      - listitem [ref=e38]:
+        - link "Request" [ref=e39] [cursor=pointer]:
+          - /url: "#request"
+      - listitem [ref=e40]:
+        - link "Response" [ref=e41] [cursor=pointer]:
+          - /url: "#response"
+      - listitem [ref=e42]:
+        - link "Files" [ref=e43] [cursor=pointer]:
+          - /url: "#files"
+      - listitem [ref=e44]:
+        - link "Memory" [ref=e45] [cursor=pointer]:
+          - /url: "#memory"
+    - list [ref=e48]:
+      - listitem [ref=e49]:
+        - paragraph [ref=e50]:
+          - text: "APPPATH\\Views\\AdminBienestar\\solicitudes_becas.php : 308 — CodeIgniter\\Debug\\Exceptions->errorHandler ("
+          - link "arguments" [ref=e51] [cursor=pointer]:
+            - /url: "#"
+          - text: )
+        - paragraph
+        - code [ref=e54]:
+          - generic [ref=e55]: "301"
+          - text: <li class="page-item">
+          - generic [ref=e56]:
+            - text: "302 <a class=\"page-link\" href=\"?page=<?= $pager['currentPage'] - 1 ?><?= !empty($filtros) ? '&' . http_build_query($filtros) : '' ?>\" aria-label=\"Anterior\">"
+            - generic [ref=e57]:
+              - text: 303 <span aria-hidden="true">&laquo;</span>
+              - generic [ref=e58]:
+                - text: 304 </a>
+                - generic [ref=e59]:
+                  - text: 305 </li>
+                  - generic [ref=e60]:
+                    - text: 306 <?php endif;
+                    - generic [ref=e61]:
+                      - text: "?>"
+                      - generic [ref=e62]: "307"
+                      - generic [ref=e63]: "308 <?php for ($i = 1; $i <= $pager['totalPages']; $i++): ?>"
+                      - generic [ref=e64]:
+                        - generic [ref=e65]: "309"
+                        - text: "<li class=\"page-item <?= $i == $pager['currentPage'] ? 'active' : '' ?>\">"
+                        - generic [ref=e66]:
+                          - text: "310 <a class=\"page-link\" href=\"?page=<?= $i ?><?= !empty($filtros) ? '&' . http_build_query($filtros) : '' ?>\">"
+                          - generic [ref=e67]:
+                            - text: "311"
+                            - generic [ref=e68]:
+                              - text: <?= $i ?>
+                              - generic [ref=e69]: "312"
+                              - text: </a>
+                              - generic [ref=e70]:
+                                - text: 313 </li>
+                                - generic [ref=e71]:
+                                  - text: 314 <?php endfor;
+                                  - generic [ref=e72]:
+                                    - text: "?>"
+                                    - generic [ref=e73]: "315"
+      - listitem [ref=e74]:
+        - paragraph [ref=e75]: include SYSTEMPATH\View\View.php — include()
+      - listitem [ref=e76]:
+        - paragraph [ref=e77]: "SYSTEMPATH\\View\\View.php : 227 — CodeIgniter\\View\\View->CodeIgniter\\View\\{closure} ()"
+        - code [ref=e80]:
+          - generic [ref=e81]:
+            - text: "220"
+            - generic [ref=e82]: "221"
+            - text: "$output = (function (): string"
+            - generic [ref=e83]:
+              - text: "{"
+              - generic [ref=e84]: "222"
+              - text: extract($this->tempData
+              - generic [ref=e85]:
+                - text: );
+                - generic [ref=e86]: "223"
+                - text: ob_start
+                - generic [ref=e87]:
+                  - text: ();
+                  - generic [ref=e88]: 224 include
+                  - text: $this->renderVars['file'
+                  - generic [ref=e89]:
+                    - text: "];"
+                    - generic [ref=e90]:
+                      - text: "225"
+                      - generic [ref=e91]: 226 return
+                      - text: "ob_get_clean() ?: ''"
+                      - generic [ref=e92]:
+                        - text: ;
+                        - generic [ref=e93]: "227 })();"
+                        - generic [ref=e94]:
+                          - text: "228"
+                          - generic [ref=e95]: "229"
+                          - generic [ref=e96]:
+                            - text: // Get back current vars
+                            - generic [ref=e97]: "230"
+                            - text: $this->renderVars = $renderVars
+                            - generic [ref=e98]:
+                              - text: ;
+                              - generic [ref=e99]:
+                                - text: "231"
+                                - generic [ref=e100]: "232"
+                                - generic [ref=e101]:
+                                  - text: // When using layouts, the data has already been stored
+                                  - generic [ref=e102]:
+                                    - text: 233 // in $this->sections, and no other valid output
+                                    - generic [ref=e103]: 234 // is allowed in $output so we'll overwrite it.
+      - listitem [ref=e104]:
+        - paragraph [ref=e105]:
+          - text: "SYSTEMPATH\\Common.php : 1173 — CodeIgniter\\View\\View->render ("
+          - link "arguments" [ref=e106] [cursor=pointer]:
+            - /url: "#"
+          - text: )
+        - paragraph
+        - code [ref=e109]:
+          - generic [ref=e110]: "1166"
+          - text: $saveData = $config->saveData
+          - generic [ref=e111]:
+            - text: ;
+            - generic [ref=e112]:
+              - text: "1167"
+              - generic [ref=e113]: 1168 if (
+              - text: array_key_exists('saveData', $options
+              - generic [ref=e114]:
+                - text: ")) {"
+                - generic [ref=e115]: "1169"
+                - text: $saveData = (bool) $options['saveData'
+                - generic [ref=e116]:
+                  - text: "];"
+                  - generic [ref=e117]: 1170 unset(
+                  - text: $options['saveData'
+                  - generic [ref=e118]:
+                    - text: "]);"
+                    - generic [ref=e119]:
+                      - text: "1171 }"
+                      - generic [ref=e120]:
+                        - text: "1172"
+                        - generic [ref=e121]: 1173 return $renderer->setData($data, 'raw')->render($name, $options, $saveData);
+                      - generic [ref=e123]:
+                        - text: "1174 }"
+                        - generic [ref=e124]:
+                          - text: "1175 }"
+                          - generic [ref=e125]:
+                            - text: "1176"
+                            - generic [ref=e126]: 1177 if (!
+                            - text: function_exists('view_cell'
+                            - generic [ref=e127]:
+                              - text: ")) {"
+                              - generic [ref=e128]: "1178"
+                              - generic [ref=e129]:
+                                - text: /**
+                                - generic [ref=e130]:
+                                  - text: 1179 * View cells are used within views to insert HTML chunks that are managed
+                                  - generic [ref=e131]: 1180 * by other classes.
+      - listitem [ref=e132]:
+        - paragraph [ref=e133]: "APPPATH\\Controllers\\AdminBienestarController.php : 923 — view()"
+      - listitem [ref=e134]:
+        - paragraph [ref=e135]: "SYSTEMPATH\\CodeIgniter.php : 933 — App\\Controllers\\AdminBienestarController->solicitudesBecas ()"
+        - code [ref=e138]:
+          - generic [ref=e139]: "926"
+          - generic [ref=e140]:
+            - text: // This is a Web request or PHP CLI request
+            - generic [ref=e141]: "927"
+            - text: $params = $this->router->params
+            - generic [ref=e142]:
+              - text: ();
+              - generic [ref=e143]:
+                - text: "928"
+                - generic [ref=e144]: "929"
+                - generic [ref=e145]:
+                  - text: // The controller method param types may not be string.
+                  - generic [ref=e146]:
+                    - text: "930 // So cannot set `declare(strict_types=1)` in this file."
+                    - generic [ref=e147]: "931"
+                    - text: $output = method_exists($class, '_remap'
+                    - generic [ref=e148]:
+                      - text: )
+                      - generic [ref=e149]: 932 ?
+                      - text: $class->_remap($this->method, ...$params
+                      - generic [ref=e150]:
+                        - text: )
+                        - generic [ref=e151]: "933 : $class->{$this->method}(...$params);"
+                      - generic [ref=e153]:
+                        - text: "934"
+                        - generic [ref=e154]: "935"
+                        - text: $this->benchmark->stop('controller'
+                        - generic [ref=e155]:
+                          - text: );
+                          - generic [ref=e156]:
+                            - text: "936"
+                            - generic [ref=e157]: 937 return
+                            - text: $output
+                            - generic [ref=e158]:
+                              - text: ;
+                              - generic [ref=e159]:
+                                - text: "938 }"
+                                - generic [ref=e160]:
+                                  - text: "939"
+                                  - generic [ref=e161]: "940"
+                                  - text: /**
+      - listitem [ref=e162]:
+        - paragraph [ref=e163]:
+          - text: "SYSTEMPATH\\CodeIgniter.php : 507 — CodeIgniter\\CodeIgniter->runController ("
+          - link "arguments" [ref=e164] [cursor=pointer]:
+            - /url: "#"
+          - text: )
+        - paragraph
+        - code [ref=e167]:
+          - generic [ref=e168]: 500 if (!
+          - text: method_exists($controller, '_remap') && ! is_callable([$controller, $this->method], false
+          - generic [ref=e169]:
+            - text: ")) {"
+            - generic [ref=e170]: 501 throw
+            - text: PageNotFoundException::forMethodNotFound($this->method
+            - generic [ref=e171]:
+              - text: );
+              - generic [ref=e172]:
+                - text: "502 }"
+                - generic [ref=e173]:
+                  - text: "503"
+                  - generic [ref=e174]: "504"
+                  - generic [ref=e175]:
+                    - text: // Is there a "post_controller_constructor" event?
+                    - generic [ref=e176]: "505"
+                    - text: Events::trigger('post_controller_constructor'
+                    - generic [ref=e177]:
+                      - text: );
+                      - generic [ref=e178]:
+                        - text: "506"
+                        - generic [ref=e179]: 507 $returned = $this->runController($controller);
+                      - generic [ref=e181]:
+                        - text: "508 } else {"
+                        - generic [ref=e182]: "509"
+                        - text: $this->benchmark->stop('controller_constructor'
+                        - generic [ref=e183]:
+                          - text: );
+                          - generic [ref=e184]: "510"
+                          - text: $this->benchmark->stop('controller'
+                          - generic [ref=e185]:
+                            - text: );
+                            - generic [ref=e186]:
+                              - text: "511 }"
+                              - generic [ref=e187]:
+                                - text: "512"
+                                - generic [ref=e188]: "513"
+                                - generic [ref=e189]:
+                                  - text: // If $returned is a string, then the controller output something,
+                                  - generic [ref=e190]: 514 // probably a view, instead of echoing it directly. Send it along
+      - listitem [ref=e191]:
+        - paragraph [ref=e192]:
+          - text: "SYSTEMPATH\\CodeIgniter.php : 354 — CodeIgniter\\CodeIgniter->handleRequest ("
+          - link "arguments" [ref=e193] [cursor=pointer]:
+            - /url: "#"
+          - text: )
+        - paragraph
+        - code [ref=e196]:
+          - generic [ref=e197]: "347"
+          - text: $possibleResponse = $this->runRequiredBeforeFilters($filters
+          - generic [ref=e198]:
+            - text: );
+            - generic [ref=e199]:
+              - text: "348"
+              - generic [ref=e200]: "349"
+              - generic [ref=e201]:
+                - text: // If a ResponseInterface instance is returned then send it back to the client and stop
+                - generic [ref=e202]: "350"
+                - text: if ($possibleResponse instanceof ResponseInterface
+                - generic [ref=e203]:
+                  - text: ") {"
+                  - generic [ref=e204]: "351"
+                  - text: $this->response = $possibleResponse
+                  - generic [ref=e205]:
+                    - text: ;
+                    - generic [ref=e206]:
+                      - text: "352 } else {"
+                      - generic [ref=e207]:
+                        - text: "353 try {"
+                        - generic [ref=e208]: 354 $this->response = $this->handleRequest($routes, config(Cache::class), $returnResponse);
+                      - generic [ref=e209]:
+                        - generic [ref=e210]: "355 } catch ("
+                        - text: ResponsableInterface $e
+                        - generic [ref=e211]:
+                          - text: ") {"
+                          - generic [ref=e212]: "356"
+                          - text: $this->outputBufferingEnd
+                          - generic [ref=e213]:
+                            - text: ();
+                            - generic [ref=e214]:
+                              - text: "357"
+                              - generic [ref=e215]: "358"
+                              - text: $this->response = $e->getResponse
+                              - generic [ref=e216]:
+                                - text: ();
+                                - generic [ref=e217]: "359 } catch ("
+                                - text: PageNotFoundException $e
+                                - generic [ref=e218]:
+                                  - text: ") {"
+                                  - generic [ref=e219]: "360"
+                                  - text: $this->response = $this->display404errors($e
+                                  - generic [ref=e220]:
+                                    - text: );
+                                    - generic [ref=e221]: "361 } catch ("
+                                    - text: "Throwable $e) {"
+      - listitem [ref=e222]:
+        - paragraph [ref=e223]: "SYSTEMPATH\\Boot.php : 334 — CodeIgniter\\CodeIgniter->run ()"
+        - code [ref=e226]:
+          - generic [ref=e227]:
+            - text: "327"
+            - generic [ref=e228]: "328"
+            - generic [ref=e229]:
+              - text: /**
+              - generic [ref=e230]:
+                - text: 329 * Now that everything is set up, it's time to actually fire
+                - generic [ref=e231]:
+                  - text: 330 * up the engines and make this app do its thang.
+                  - generic [ref=e232]:
+                    - text: 331 */
+                    - generic [ref=e233]: "332"
+                    - text: "protected static function runCodeIgniter(CodeIgniter $app):"
+                    - generic [ref=e234]:
+                      - text: void
+                      - generic [ref=e235]: "333"
+                      - generic [ref=e236]:
+                        - text: "{"
+                        - generic [ref=e237]: 334 $app->run();
+                      - generic [ref=e239]:
+                        - text: "335 }"
+                        - generic [ref=e240]:
+                          - text: "336"
+                          - generic [ref=e241]: 337 protected static function
+                          - text: "saveConfigCache(FactoriesCache $factoriesCache):"
+                          - generic [ref=e242]:
+                            - text: void
+                            - generic [ref=e243]: "338"
+                            - generic [ref=e244]:
+                              - text: "{"
+                              - generic [ref=e245]: "339"
+                              - text: $factoriesCache->save('config'
+                              - generic [ref=e246]:
+                                - text: );
+                                - generic [ref=e247]:
+                                  - text: "340 }"
+                                  - generic [ref=e248]: "341"
+      - listitem [ref=e249]:
+        - paragraph [ref=e250]:
+          - text: "SYSTEMPATH\\Boot.php : 67 — CodeIgniter\\Boot::runCodeIgniter ("
+          - link "arguments" [ref=e251] [cursor=pointer]:
+            - /url: "#"
+          - text: )
+        - paragraph
+        - code [ref=e254]:
+          - generic [ref=e255]: 60 if (
+          - text: $configCacheEnabled
+          - generic [ref=e256]:
+            - text: ") {"
+            - generic [ref=e257]: "61"
+            - text: $factoriesCache = static::loadConfigCache
+            - generic [ref=e258]:
+              - text: ();
+              - generic [ref=e259]:
+                - text: "62 }"
+                - generic [ref=e260]:
+                  - text: "63"
+                  - generic [ref=e261]: "64 static::"
+                  - text: autoloadHelpers
+                  - generic [ref=e262]:
+                    - text: ();
+                    - generic [ref=e263]:
+                      - text: "65"
+                      - generic [ref=e264]: "66"
+                      - text: $app = static::initializeCodeIgniter
+                      - generic [ref=e265]:
+                        - text: ();
+                        - generic [ref=e266]: 67 static::runCodeIgniter($app);
+                      - generic [ref=e268]:
+                        - text: "68"
+                        - generic [ref=e269]: 69 if (
+                        - text: $configCacheEnabled
+                        - generic [ref=e270]:
+                          - text: ") {"
+                          - generic [ref=e271]: "70 static::"
+                          - text: saveConfigCache($factoriesCache
+                          - generic [ref=e272]:
+                            - text: );
+                            - generic [ref=e273]:
+                              - text: "71 }"
+                              - generic [ref=e274]:
+                                - text: "72"
+                                - generic [ref=e275]: "73"
+                                - generic [ref=e276]:
+                                  - text: // Exits the application, setting the exit code for CLI-based
+                                  - generic [ref=e277]: 74 // applications that might be watching.
+      - listitem [ref=e278]:
+        - paragraph [ref=e279]:
+          - text: "FCPATH\\index.php : 59 — CodeIgniter\\Boot::bootWeb ("
+          - link "arguments" [ref=e280] [cursor=pointer]:
+            - /url: "#"
+          - text: )
+        - paragraph
+        - code [ref=e283]:
+          - generic [ref=e284]: "52"
+          - generic [ref=e285]:
+            - text: // ^^^ Change this line if you move your application folder
+            - generic [ref=e286]:
+              - text: "53"
+              - generic [ref=e287]: "54"
+              - text: $paths = new Paths
+              - generic [ref=e288]:
+                - text: ();
+                - generic [ref=e289]:
+                  - text: "55"
+                  - generic [ref=e290]: "56"
+                  - generic [ref=e291]:
+                    - text: // LOAD THE FRAMEWORK BOOTSTRAP FILE
+                    - generic [ref=e292]: "57"
+                    - text: require $paths->systemDirectory . '/Boot.php'
+                    - generic [ref=e293]:
+                      - text: ;
+                      - generic [ref=e294]:
+                        - text: "58"
+                        - generic [ref=e295]: 59 exit(Boot::bootWeb($paths));
+                      - generic [ref=e297]: "60"

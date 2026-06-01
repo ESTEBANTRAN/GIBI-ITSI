@@ -117,7 +117,7 @@ class AdminBienestarService
         }
 
         // Solicitudes de ayuda pendientes
-        $ayudasPendientes = $this->db->table('solicitudes_ayuda_mejorada')
+        $ayudasPendientes = $this->db->table('solicitudes_ayuda')
             ->where('estado', 'Pendiente')
             ->countAllResults();
         if ($ayudasPendientes > 0) {
@@ -212,12 +212,27 @@ class AdminBienestarService
             ->get()
             ->getResultArray();
 
+        $total = 0;
+        $aprobadas = 0;
+        $pendientes = 0;
+        $rechazadas = 0;
+        foreach ($solicitudes as $s) {
+            $total += $s['total'];
+            if ($s['estado'] === 'Aprobada') $aprobadas = (int)$s['total'];
+            if ($s['estado'] === 'Pendiente' || $s['estado'] === 'En Revisión') $pendientes += (int)$s['total'];
+            if ($s['estado'] === 'Rechazada') $rechazadas = (int)$s['total'];
+        }
+
         return [
             'tipos' => $tipos,
             'solicitudes' => $solicitudes,
             'mas_solicitadas' => $masSolicitadas,
             'total_becas' => $this->db->table('becas')->where('activa', 1)->countAllResults(),
-            'total_solicitudes' => $this->db->table('solicitudes_becas')->countAllResults()
+            'total_solicitudes' => $this->db->table('solicitudes_becas')->countAllResults(),
+            'total' => $total,
+            'aprobadas' => $aprobadas,
+            'pendientes' => $pendientes,
+            'rechazadas' => $rechazadas
         ];
     }
 
@@ -385,7 +400,7 @@ class AdminBienestarService
         }
 
         // Ordenamiento
-        $orden = $filtros['orden'] ?? 'sb.fecha_creacion DESC';
+        $orden = $filtros['orden'] ?? 'sb.fecha_solicitud DESC';
         $builder->orderBy($orden);
 
         // Paginación
@@ -396,6 +411,41 @@ class AdminBienestarService
         }
 
         return $builder->get()->getResultArray();
+    }
+
+    public function contarSolicitudesBecas($filtros = [])
+    {
+        $builder = $this->db->table('solicitudes_becas sb')
+            ->join('usuarios u', 'u.id = sb.estudiante_id')
+            ->join('carreras c', 'c.id = u.carrera_id', 'left')
+            ->join('periodos_academicos p', 'p.id = sb.periodo_id')
+            ->join('becas b', 'b.id = sb.beca_id');
+
+        if (!empty($filtros['estado'])) {
+            $builder->where('sb.estado', $filtros['estado']);
+        }
+        if (!empty($filtros['periodo_id'])) {
+            $builder->where('sb.periodo_id', $filtros['periodo_id']);
+        }
+        if (!empty($filtros['carrera_id'])) {
+            $builder->where('u.carrera_id', $filtros['carrera_id']);
+        }
+        if (!empty($filtros['tipo_beca'])) {
+            $builder->where('b.tipo_beca', $filtros['tipo_beca']);
+        }
+        if (!empty($filtros['beca_id'])) {
+            $builder->where('sb.beca_id', $filtros['beca_id']);
+        }
+        if (!empty($filtros['busqueda'])) {
+            $builder->groupStart()
+                ->like('u.nombre', $filtros['busqueda'])
+                ->orLike('u.apellido', $filtros['busqueda'])
+                ->orLike('u.cedula', $filtros['busqueda'])
+                ->orLike('u.email', $filtros['busqueda'])
+                ->groupEnd();
+        }
+
+        return $builder->countAllResults();
     }
 
     /**

@@ -1,0 +1,11 @@
+[     229ms] [LOG] CSS Styles URL: http://localhost/ITSI/public/sistema/assets/css/styles.min.css @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:37
+[     229ms] [LOG] CSS Custom URL: http://localhost/ITSI/public/sistema/assets/css/custom.css @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:38
+[     238ms] [LOG] jQuery version: 3.7.1 @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:3062
+[     238ms] [LOG] jQuery is properly loaded @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:3066
+[     238ms] [LOG] jQuery cargado correctamente @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:3107
+[     238ms] [LOG] ApexCharts cargado correctamente @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:3114
+[     281ms] [LOG] Estadísticas Estado: [Object, Object, Object, Object] @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:2717
+[     281ms] [LOG] Estadísticas Prioridad: [Object, Object, Object, Object] @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:2718
+[     281ms] [LOG] Datos procesados Estado: {labels: Array(4), values: Array(4)} @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:2719
+[     282ms] [LOG] Datos procesados Prioridad: {labels: Array(4), values: Array(4)} @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:2720
+[ 3032898ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/login:0

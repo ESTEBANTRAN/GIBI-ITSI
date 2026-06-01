@@ -7,15 +7,20 @@ use App\Models\FichaSocioeconomicaModel;
 use App\Models\PeriodoAcademicoModel;
 use App\Models\BecaModel;
 use App\Models\UsuarioModel;
+use App\Security\InputSanitizerTrait;
+use App\Security\SecurityLogger;
 
 class AdminBienestarController extends BaseController
 {
+    use InputSanitizerTrait;
+
     protected $adminService;
     protected $fichaModel;
     protected $periodoModel;
     protected $becaModel;
     protected $usuarioModel;
     protected $db;
+    protected $securityLogger;
 
     public function __construct()
     {
@@ -25,6 +30,7 @@ class AdminBienestarController extends BaseController
         $this->becaModel = new BecaModel();
         $this->usuarioModel = new UsuarioModel();
         $this->db = \Config\Database::connect();
+        $this->securityLogger = new SecurityLogger();
     }
 
     /**
@@ -45,7 +51,7 @@ class AdminBienestarController extends BaseController
      */
     private function verificarPermisos()
     {
-        if (!session('id') || session('rol_id') != 2) {
+        if (!session('id') || session('rol_id') != ROLE_ADMIN_BIENESTAR) {
             return false;
         }
         return true;
@@ -456,133 +462,9 @@ class AdminBienestarController extends BaseController
             
         } catch (\Exception $e) {
             log_message('error', 'Error exportando ficha con plantilla: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Error del sistema: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error del sistema');
         }
     }
-
-    /**
-     * Generar HTML para la ficha socioeconómica (Vista Administrador)
-     */
-    private function generarHTMLFichaAdmin($ficha, $estudiante, $periodo, $datosFicha)
-    {
-        // Función helper para manejar valores de forma segura
-        $safeValue = function($value) {
-            if (is_array($value)) {
-                return implode(', ', array_map(function($item) {
-                    return htmlspecialchars(is_string($item) ? $item : (string)$item);
-                }, $value));
-            }
-            return htmlspecialchars($value ?? '');
-        };
-        
-        $html = '
-        <div class="ficha-container">
-            <div class="ficha-header text-center mb-4">
-                <h4 class="text-primary">UNIDAD DE BIENESTAR INSTITUCIONAL</h4>
-                <h5 class="text-secondary">FICHA SOCIOECONÓMICA - VISTA ADMINISTRADOR</h5>
-                <p class="text-muted">Período: ' . $safeValue($periodo['nombre'] ?? 'N/A') . '</p>
-                <p class="text-muted">Estado: <span class="badge bg-info">' . $safeValue($ficha['estado']) . '</span></p>
-                <p class="text-muted">Fecha de Creación: ' . date('d/m/Y H:i', strtotime($ficha['fecha_creacion'])) . '</p>
-            </div>';
-
-        // 1. INFORMACIÓN DEL ESTUDIANTE
-        $html .= '
-        <div class="card mb-3">
-            <div class="card-header">
-                <h6 class="mb-0">1. INFORMACIÓN DEL ESTUDIANTE</h6>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Apellidos y Nombres:</strong> ' . $safeValue($estudiante['apellido'] . ' ' . $estudiante['nombre']) . '</p>
-                        <p><strong>Cédula:</strong> ' . $safeValue($estudiante['cedula']) . '</p>
-                        <p><strong>Email:</strong> ' . $safeValue($estudiante['email']) . '</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><strong>ID de Ficha:</strong> ' . $safeValue($ficha['id']) . '</p>
-                        <p><strong>Estado de la Ficha:</strong> ' . $safeValue($ficha['estado']) . '</p>
-                        <p><strong>Período Académico:</strong> ' . $safeValue($periodo['nombre']) . '</p>
-                    </div>
-                </div>
-            </div>
-        </div>';
-
-        // 2. DATOS SOCIOECONÓMICOS
-        if (!empty($datosFicha)) {
-            $html .= '
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h6 class="mb-0">2. DATOS SOCIOECONÓMICOS</h6>
-                </div>
-                <div class="card-body">';
-            
-            // Agrupar datos por categorías
-            $categorias = [
-                'ingresos' => ['ingresos_padre', 'ingresos_madre', 'otros_ingresos'],
-                'gastos' => ['gastos_vivienda', 'gastos_alimentacion', 'otros_gastos'],
-                'informacion_familiar' => ['numero_dependientes', 'tipo_vivienda', 'zona_residencia', 'nivel_educativo_padres']
-            ];
-            
-            foreach ($categorias as $categoria => $campos) {
-                $html .= '<div class="row mb-3">
-                    <div class="col-12">
-                        <h6 class="text-primary">' . ucfirst(str_replace('_', ' ', $categoria)) . '</h6>';
-                
-                foreach ($campos as $campo) {
-                    if (isset($datosFicha[$campo])) {
-                        $html .= '<p><strong>' . ucfirst(str_replace('_', ' ', $campo)) . ':</strong> ' . $safeValue($datosFicha[$campo]) . '</p>';
-                    }
-                }
-                
-                $html .= '</div></div>';
-            }
-            
-            // Calcular total de ingresos
-            $totalIngresos = 0;
-            if (isset($datosFicha['ingresos_padre'])) $totalIngresos += floatval($datosFicha['ingresos_padre']);
-            if (isset($datosFicha['ingresos_madre'])) $totalIngresos += floatval($datosFicha['ingresos_madre']);
-            if (isset($datosFicha['otros_ingresos'])) $totalIngresos += floatval($datosFicha['otros_ingresos']);
-            
-            $html .= '
-                <div class="alert alert-success">
-                    <h6><strong>Total de Ingresos Familiares:</strong></h6>
-                    <h4 class="text-success mb-0">$' . number_format($totalIngresos, 2) . '</h4>
-                </div>';
-            
-            $html .= '</div></div>';
-        }
-
-        // 3. INFORMACIÓN DE ADMINISTRACIÓN
-        $html .= '
-        <div class="card mb-3">
-            <div class="card-header">
-                <h6 class="mb-0">3. INFORMACIÓN DE ADMINISTRACIÓN</h6>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Administrador Revisor:</strong> ' . $safeValue(session('nombre') ?? 'N/A') . '</p>
-                        <p><strong>Fecha de Revisión:</strong> ' . date('d/m/Y H:i:s') . '</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><strong>ID de Administrador:</strong> ' . $safeValue(session('id') ?? 'N/A') . '</p>
-                        <p><strong>Rol:</strong> Administrador de Bienestar Estudiantil</p>
-                    </div>
-                </div>
-            </div>
-        </div>';
-
-        // 4. FOOTER
-        $html .= '
-        <div class="text-center mt-4">
-            <p class="text-muted small">Documento generado automáticamente por el Sistema de Bienestar Estudiantil</p>
-            <p class="text-muted small">Instituto Tecnológico Superior de Ibarra - ' . date('Y') . '</p>
-        </div>';
-
-        return $html;
-    }
-
-
 
     // ========================================
     // GESTIÓN DE BECAS
@@ -675,7 +557,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error creando beca: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false, 
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema'
             ]);
         }
     }
@@ -711,7 +593,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error obteniendo beca: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false, 
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema'
             ]);
         }
     }
@@ -778,7 +660,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error actualizando beca: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false, 
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema'
             ]);
         }
     }
@@ -833,7 +715,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error eliminando beca: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false, 
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema'
             ]);
         }
     }
@@ -882,7 +764,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error cambiando estado de beca: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false, 
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema'
             ]);
         }
     }
@@ -978,7 +860,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error obteniendo estadísticas de becas: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false, 
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema'
             ]);
         }
     }
@@ -1016,15 +898,26 @@ class AdminBienestarController extends BaseController
             $periodos = $this->periodoModel->findAll();
             $carreras = $this->db->table('carreras')->where('activa', 1)->get()->getResultArray();
             $becas = $this->becaModel->where('activa', 1)->findAll();
+            $tiposBecas = array_column($this->db->table('becas')->distinct()->select('tipo_beca')->get()->getResultArray(), 'tipo_beca');
+
+            $totalSolicitudes = $this->adminService->contarSolicitudesBecas($filtros);
+            $pager = [
+                'total' => $totalSolicitudes,
+                'perPage' => $filtros['per_page'],
+                'currentPage' => (int)$filtros['page'],
+                'totalPages' => (int)ceil($totalSolicitudes / $filtros['per_page'])
+            ];
 
             return view('AdminBienestar/solicitudes_becas', [
-            'solicitudes' => $solicitudes,
-            'periodos' => $periodos,
-            'carreras' => $carreras,
+                'solicitudes' => $solicitudes,
+                'periodos' => $periodos,
+                'carreras' => $carreras,
                 'becas' => $becas,
-            'estadisticas' => $estadisticas,
+                'tiposBecas' => $tiposBecas,
+                'estadisticas' => $estadisticas,
                 'filtros' => $filtros,
-                'usuario' => $this->getUsuarioActual()
+                'usuario' => $this->getUsuarioActual(),
+                'pager' => $pager
             ]);
         } catch (\Exception $e) {
             log_message('error', 'Error en solicitudes de becas: ' . $e->getMessage());
@@ -1033,7 +926,8 @@ class AdminBienestarController extends BaseController
                 'periodos' => [],
                 'carreras' => [],
                 'becas' => [],
-                'estadisticas' => [],
+                'tiposBecas' => [],
+                'estadisticas' => ['total' => 0, 'aprobadas' => 0, 'pendientes' => 0, 'rechazadas' => 0],
                 'filtros' => [],
                 'usuario' => $this->getUsuarioActual(),
                 'error' => 'Error cargando solicitudes'
@@ -1064,18 +958,16 @@ class AdminBienestarController extends BaseController
             $pagina = $this->request->getGet('page') ?? 1;
             $offset = ($pagina - 1) * $porPagina;
             
-            // Contar total de períodos
-            $sqlCount = "SELECT COUNT(*) as total FROM periodos_academicos";
-            $totalRegistros = $this->db->query($sqlCount)->getRow()->total;
+            // Usar Query Builder para evitar SQL injection
+            $totalRegistros = $this->db->table('periodos_academicos')->countAll();
             $totalPaginas = ceil($totalRegistros / $porPagina);
             
-            // Obtener períodos con paginación
-            $sqlPeriodos = "
-                SELECT * FROM periodos_academicos 
-                ORDER BY fecha_inicio DESC 
-                LIMIT $porPagina OFFSET $offset
-            ";
-            $periodos = $this->db->query($sqlPeriodos)->getResultArray();
+            // Obtener períodos con paginación usando Query Builder
+            $periodos = $this->db->table('periodos_academicos')
+                ->orderBy('fecha_inicio', 'DESC')
+                ->limit((int)$porPagina, (int)$offset)
+                ->get()
+                ->getResultArray();
             
             return view('AdminBienestar/gestion_periodos_academicos', [
                 'periodos' => $periodos,
@@ -1119,26 +1011,22 @@ class AdminBienestarController extends BaseController
             $pagina = $this->request->getGet('page') ?? 1;
             $offset = ($pagina - 1) * $porPagina;
             
-            // Contar total de estudiantes
-            $sqlCount = "
-                SELECT COUNT(*) as total 
-                FROM usuarios u
-                LEFT JOIN carreras c ON c.id = u.carrera_id
-                WHERE u.rol_id = 1
-            ";
-            $totalRegistros = $this->db->query($sqlCount)->getRow()->total;
+            // Usar Query Builder para evitar SQL injection
+            $totalRegistros = $this->db->table('usuarios u')
+                ->join('carreras c', 'c.id = u.carrera_id', 'left')
+                ->where('u.rol_id', 1)
+                ->countAllResults();
             $totalPaginas = ceil($totalRegistros / $porPagina);
             
             // Obtener estudiantes con información completa + LIMIT para paginación
-            $sqlEstudiantes = "
-                SELECT u.*, c.nombre as carrera_nombre
-                FROM usuarios u
-                LEFT JOIN carreras c ON c.id = u.carrera_id
-                WHERE u.rol_id = 1
-                ORDER BY u.created_at DESC
-                LIMIT $porPagina OFFSET $offset
-            ";
-            $estudiantes = $this->db->query($sqlEstudiantes)->getResultArray();
+            $estudiantes = $this->db->table('usuarios u')
+                ->select('u.*, c.nombre as carrera_nombre')
+                ->join('carreras c', 'c.id = u.carrera_id', 'left')
+                ->where('u.rol_id', 1)
+                ->orderBy('u.created_at', 'DESC')
+                ->limit((int)$porPagina, (int)$offset)
+                ->get()
+                ->getResultArray();
 
             // Obtener estadísticas adicionales para cada estudiante
             foreach ($estudiantes as &$estudiante) {
@@ -1160,16 +1048,17 @@ class AdminBienestarController extends BaseController
                     ->countAllResults();
                 $estudiante['total_ayudas'] = $ayudasCount;
 
-                // Obtener última actividad
+                // Obtener última actividad (con parámetros seguros)
+                $estId = (int)$estudiante['id'];
                 $ultimaActividad = $this->db->query("
-                    SELECT fecha_creacion as fecha_actividad, 'ficha' as tipo FROM fichas_socioeconomicas WHERE estudiante_id = {$estudiante['id']}
+                    SELECT fecha_creacion as fecha_actividad, 'ficha' as tipo FROM fichas_socioeconomicas WHERE estudiante_id = ?
                     UNION ALL
-                    SELECT fecha_solicitud as fecha_actividad, 'beca' as tipo FROM solicitudes_becas WHERE estudiante_id = {$estudiante['id']}
+                    SELECT fecha_solicitud as fecha_actividad, 'beca' as tipo FROM solicitudes_becas WHERE estudiante_id = ?
                     UNION ALL
-                    SELECT fecha_solicitud as fecha_actividad, 'ayuda' as tipo FROM solicitudes_ayuda WHERE id_estudiante = {$estudiante['id']}
+                    SELECT fecha_solicitud as fecha_actividad, 'ayuda' as tipo FROM solicitudes_ayuda WHERE id_estudiante = ?
                     ORDER BY fecha_actividad DESC
                     LIMIT 1
-                ")->getRow();
+                ", [$estId, $estId, $estId])->getRow();
                 
                 $estudiante['ultima_actividad'] = $ultimaActividad ? $ultimaActividad->fecha_actividad : null;
                 $estudiante['tipo_ultima_actividad'] = $ultimaActividad ? $ultimaActividad->tipo : null;
@@ -1201,7 +1090,7 @@ class AdminBienestarController extends BaseController
                 'estudiantes' => [],
                 'carreras' => $carreras,
                 'usuario' => $this->getUsuarioActual(),
-                'error' => 'Error cargando estudiantes: ' . $e->getMessage()
+                'error' => 'Error cargando estudiantes'
             ]);
         }
     }
@@ -1280,7 +1169,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error obteniendo historial del estudiante: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false, 
-                'error' => 'Error obteniendo historial: ' . $e->getMessage()
+                'error' => 'Error obteniendo historial'
             ]);
         }
     }
@@ -1453,9 +1342,9 @@ class AdminBienestarController extends BaseController
         } catch (\Exception $e) {
             log_message('error', 'Error generando reporte PDF/CSV: ' . $e->getMessage());
             if ($this->request->getPost('preview') === 'true') {
-                return $this->response->setJSON(['success' => false, 'error' => $e->getMessage()]);
+                return $this->response->setJSON(['success' => false, 'error' => 'Error generando reporte']);
             }
-            return $this->response->setStatusCode(500)->setBody('Error del sistema: ' . $e->getMessage());
+            return $this->response->setStatusCode(500)->setBody('Error del sistema');
         }
     }
     
@@ -1618,7 +1507,7 @@ class AdminBienestarController extends BaseController
             ]);
         } catch (\Exception $e) {
             log_message('error', 'Error guardando configuración: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error del sistema: ' . $e->getMessage()]);
+            return $this->response->setJSON(['success' => false, 'error' => 'Error del sistema']);
         }
     }
 
@@ -1913,7 +1802,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error creando período: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema'
             ]);
         }
     }
@@ -1982,7 +1871,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error actualizando período: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema'
             ]);
         }
     }
@@ -2030,7 +1919,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error actualizando límites: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema'
             ]);
         }
     }
@@ -2083,7 +1972,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error actualizando configuración: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema'
             ]);
         }
     }
@@ -2111,49 +2000,32 @@ class AdminBienestarController extends BaseController
             $pagina = $this->request->getGet('page') ?? 1;
             $offset = ($pagina - 1) * $porPagina;
             
-            // Obtener período de filtro del request (solo si el admin lo especifica)
+            // Obtener período de filtro del request
             $periodoFiltroId = $this->request->getGet('periodo_id');
-
-            $whereClause = "";
+            
+            // Usar Query Builder para evitar SQL injection
+            $builder = $this->db->table('solicitudes_becas sb')
+                ->select('sb.id, sb.estudiante_id, sb.beca_id, sb.periodo_id, sb.estado, sb.observaciones, sb.fecha_solicitud, sb.fecha_revision, sb.revisado_por, sb.motivo_rechazo, sb.documentos_revisados, sb.total_documentos, u.nombre as estudiante_nombre, u.apellido as estudiante_apellido, u.cedula as estudiante_cedula, u.carrera_id, c.nombre as carrera_nombre, b.nombre as beca_nombre, b.tipo_beca, b.monto_beca, pa.nombre as periodo_nombre')
+                ->join('usuarios u', 'u.id = sb.estudiante_id')
+                ->join('carreras c', 'c.id = u.carrera_id', 'left')
+                ->join('becas b', 'b.id = sb.beca_id')
+                ->join('periodos_academicos pa', 'pa.id = sb.periodo_id');
+            
             if (!empty($periodoFiltroId)) {
-                $whereClause = " WHERE sb.periodo_id = " . intval($periodoFiltroId);
+                $builder->where('sb.periodo_id', $periodoFiltroId);
             }
-
+            
             // Contar total de registros
-            $sqlCount = "
-                SELECT COUNT(*) as total
-                FROM solicitudes_becas sb 
-                JOIN usuarios u ON u.id = sb.estudiante_id 
-                LEFT JOIN carreras c ON c.id = u.carrera_id 
-                JOIN becas b ON b.id = sb.beca_id 
-                JOIN periodos_academicos pa ON pa.id = sb.periodo_id
-                $whereClause
-            ";
-            $totalRegistros = $this->db->query($sqlCount)->getRow()->total;
+            $countBuilder = clone $builder;
+            $totalRegistros = $countBuilder->countAllResults(false);
             $totalPaginas = ceil($totalRegistros / $porPagina);
             
-            // SQL DIRECTO para obtener solicitudes con paginación
-            $sqlSolicitudes = "
-                SELECT 
-                    sb.id, sb.estudiante_id, sb.beca_id, sb.periodo_id,
-                    sb.estado, sb.observaciones, sb.fecha_solicitud,
-                    sb.fecha_revision, sb.revisado_por, sb.motivo_rechazo,
-                    sb.documentos_revisados, sb.total_documentos,
-                    u.nombre as estudiante_nombre, u.apellido as estudiante_apellido,
-                    u.cedula as estudiante_cedula, u.carrera_id,
-                    c.nombre as carrera_nombre, b.nombre as beca_nombre,
-                    b.tipo_beca, b.monto_beca, pa.nombre as periodo_nombre
-                FROM solicitudes_becas sb 
-                JOIN usuarios u ON u.id = sb.estudiante_id 
-                LEFT JOIN carreras c ON c.id = u.carrera_id 
-                JOIN becas b ON b.id = sb.beca_id 
-                JOIN periodos_academicos pa ON pa.id = sb.periodo_id
-                $whereClause
-                ORDER BY sb.fecha_solicitud DESC
-                LIMIT $porPagina OFFSET $offset
-            ";
-            
-            $solicitudes = $this->db->query($sqlSolicitudes)->getResultArray();
+            // Obtener solicitudes con paginación
+            $solicitudes = $builder
+                ->orderBy('sb.fecha_solicitud', 'DESC')
+                ->limit((int)$porPagina, (int)$offset)
+                ->get()
+                ->getResultArray();
             
             // Para cada solicitud, obtener conteo real de documentos subidos
             foreach ($solicitudes as &$sol) {
@@ -2177,40 +2049,46 @@ class AdminBienestarController extends BaseController
             }
             unset($sol);
 
-            // SQL directo para filtros
-            $sqlTiposBecas = "SELECT DISTINCT tipo_beca FROM becas";
-            $tiposBecas = $this->db->query($sqlTiposBecas)->getResultArray();
+            // Filtros usando Query Builder
+            $tiposBecas = $this->db->table('becas')
+                ->select('DISTINCT tipo_beca')
+                ->get()
+                ->getResultArray();
             
-            $sqlCarreras = "SELECT DISTINCT carrera FROM usuarios WHERE carrera IS NOT NULL";
-            $carreras = $this->db->query($sqlCarreras)->getResultArray();
+            $carreras = $this->db->table('usuarios')
+                ->select('DISTINCT carrera')
+                ->where('carrera IS NOT NULL')
+                ->get()
+                ->getResultArray();
             
             // Obtener todos los períodos para el dropdown de filtro
             $periodos = $this->periodoModel->orderBy('fecha_inicio', 'DESC')->findAll();
             
-            // SQL directo para estadísticas
-            $sqlEstadisticasEstado = "
-                SELECT estado, COUNT(*) as cantidad 
-                FROM solicitudes_becas 
-                GROUP BY estado
-            ";
-            $estadisticasEstado = $this->db->query($sqlEstadisticasEstado)->getResultArray();
-                
-            $sqlEstadisticasProgreso = "
-                SELECT 
-                    CASE 
-                        WHEN documentos_revisados = 0 THEN '0%'
-                        WHEN documentos_revisados = 1 THEN '20%'
-                        WHEN documentos_revisados = 2 THEN '40%'
-                        WHEN documentos_revisados = 3 THEN '60%'
-                        WHEN documentos_revisados = 4 THEN '80%'
-                        WHEN documentos_revisados >= 5 THEN '100%'
-                    END as progreso,
-                    COUNT(*) as cantidad
-                FROM solicitudes_becas 
-                GROUP BY progreso 
-                ORDER BY progreso
-            ";
-            $estadisticasProgreso = $this->db->query($sqlEstadisticasProgreso)->getResultArray();
+            // Estadísticas usando Query Builder
+            $estadisticasEstado = $this->db->table('solicitudes_becas')
+                ->select('estado, COUNT(*) as cantidad')
+                ->groupBy('estado')
+                ->get()
+                ->getResultArray();
+            
+            // Estadísticas de progreso
+            $todasSolicitudes = $this->db->table('solicitudes_becas')
+                ->select('documentos_revisados')
+                ->get()
+                ->getResultArray();
+            $estadisticasProgreso = [];
+            foreach ($todasSolicitudes as $s) {
+                $rev = (int)($s['documentos_revisados'] ?? 0);
+                $prog = $rev >= 5 ? '100%' : ($rev * 20) . '%';
+                if (!isset($estadisticasProgreso[$prog])) {
+                    $estadisticasProgreso[$prog] = ['progreso' => $prog, 'cantidad' => 0];
+                }
+                $estadisticasProgreso[$prog]['cantidad']++;
+            }
+            $estadisticasProgreso = array_values($estadisticasProgreso);
+            usort($estadisticasProgreso, function($a, $b) {
+                return (int)$a['progreso'] <=> (int)$b['progreso'];
+            });
 
             return view('AdminBienestar/solicitudes_becas_mejorada', [
                 'solicitudes' => $solicitudes,
@@ -2592,6 +2470,128 @@ class AdminBienestarController extends BaseController
     }
 
     // ========================================
+    // OBSERVACIONES Y REVISIÓN DE SOLICITUDES DE BECA
+    // ========================================
+
+    /**
+     * Agregar observación a una solicitud de beca
+     */
+    public function agregarObservacionSolicitud()
+    {
+        if (!$this->verificarPermisos()) {
+            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
+        }
+
+        try {
+            $input = $this->request->getJSON(true);
+            $solicitudId = $input['solicitud_id'] ?? null;
+            $observacion = $input['observacion'] ?? '';
+            $notificarEstudiante = !empty($input['notificar_estudiante']);
+
+            if (!$solicitudId || empty(trim($observacion))) {
+                return $this->response->setJSON(['success' => false, 'error' => 'Datos incompletos: solicitud_id y observación son requeridos']);
+            }
+
+            // Verificar que la solicitud existe
+            $solicitud = $this->db->table('solicitudes_becas')
+                ->where('id', $solicitudId)
+                ->get()
+                ->getRowArray();
+
+            if (!$solicitud) {
+                return $this->response->setJSON(['success' => false, 'error' => 'Solicitud no encontrada']);
+            }
+
+            // Guardar la observación en el campo observaciones_admin (concatenar con las existentes)
+            $observacionesPrevias = $solicitud['observaciones_admin'] ?? '';
+            $nuevaObservacion = date('Y-m-d H:i:s') . ' - Admin #' . session('id') . ': ' . $observacion;
+            $observacionesActualizadas = $observacionesPrevias 
+                ? $observacionesPrevias . "\n" . $nuevaObservacion
+                : $nuevaObservacion;
+
+            $this->db->table('solicitudes_becas')
+                ->where('id', $solicitudId)
+                ->update([
+                    'observaciones_admin' => $observacionesActualizadas,
+                    'observaciones_admin' => $observacionesActualizadas
+                ]);
+
+            // Notificar al estudiante si se solicitó
+            if ($notificarEstudiante) {
+                $this->notificarEstudianteBeca(
+                    $solicitud['estudiante_id'],
+                    'Nueva observación en solicitud de beca',
+                    $observacion
+                );
+            }
+
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Observación agregada exitosamente'
+            ]);
+
+        } catch (\Exception $e) {
+            log_message('error', 'Error agregando observación: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error del sistema']);
+        }
+    }
+
+    /**
+     * Marcar un documento rechazado para revisión nuevamente
+     */
+    public function revisarNuevamenteDocumento()
+    {
+        if (!$this->verificarPermisos()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'No autorizado']);
+        }
+
+        try {
+            $input = $this->request->getJSON(true);
+            $documentoId = $input['documento_id'] ?? null;
+
+            if (!$documentoId) {
+                return $this->response->setJSON(['success' => false, 'message' => 'ID de documento requerido']);
+            }
+
+            // Verificar que el documento existe
+            $documento = $this->db->table('documentos_solicitud_becas')
+                ->where('id', $documentoId)
+                ->get()
+                ->getRowArray();
+
+            if (!$documento) {
+                return $this->response->setJSON(['success' => false, 'message' => 'Documento no encontrado']);
+            }
+
+            if ($documento['estado'] !== 'Rechazado') {
+                return $this->response->setJSON(['success' => false, 'message' => 'Solo se pueden marcar para revisión documentos rechazados']);
+            }
+
+            // Cambiar estado a Pendiente para que el estudiante pueda re-subir
+            $this->db->table('documentos_solicitud_becas')
+                ->where('id', $documentoId)
+                ->update([
+                    'estado' => 'Pendiente',
+                    'observaciones' => 'Solicitada revisión nuevamente por admin #' . session('id'),
+                    'revisado_por' => null,
+                    'fecha_revision' => null
+                ]);
+
+            // Actualizar progreso de la solicitud
+            $this->actualizarProgresoSolicitud($documento['solicitud_beca_id']);
+
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Documento marcado para revisión. El estudiante podrá subir una nueva versión.'
+            ]);
+
+        } catch (\Exception $e) {
+            log_message('error', 'Error marcando documento para revisión: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'message' => 'Error del sistema']);
+        }
+    }
+
+    // ========================================
     // GESTIÓN DE SOLICITUDES DE AYUDA
     // ========================================
 
@@ -2797,7 +2797,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Stack trace: ' . $e->getTraceAsString());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema al procesar la solicitud'
             ]);
         }
     }
@@ -2851,7 +2851,7 @@ class AdminBienestarController extends BaseController
             
         } catch (\Exception $e) {
             log_message('error', 'Error guardando respuesta predefinida: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error del sistema: ' . $e->getMessage()]);
+            return $this->response->setJSON(['success' => false, 'error' => 'Error del sistema al guardar respuesta']);
         }
     }
 
@@ -3020,7 +3020,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error marcando solicitud como resuelta: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema al marcar solicitud'
             ]);
         }
     }
@@ -3055,7 +3055,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error asignando solicitud: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema al asignar solicitud'
             ]);
         }
     }
@@ -3097,7 +3097,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error cambiando prioridad: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema al cambiar prioridad'
             ]);
         }
     }
@@ -3131,7 +3131,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error cerrando solicitud: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema al cerrar solicitud'
             ]);
         }
     }
@@ -3214,7 +3214,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error obteniendo historial de solicitudes: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema al obtener historial'
             ]);
         }
     }
@@ -3247,7 +3247,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error obteniendo período: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema al obtener período'
             ]);
         }
     }
@@ -3310,7 +3310,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error eliminando período: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema al eliminar período'
             ]);
         }
     }
@@ -3415,7 +3415,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error obteniendo detalles del período: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema al obtener detalles del período'
             ]);
         }
     }
@@ -3458,7 +3458,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error exportando períodos: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema al exportar períodos'
             ]);
         }
     }
@@ -3629,7 +3629,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error actualizando contadores: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema al actualizar contadores'
             ]);
         }
     }
@@ -3872,7 +3872,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Stack trace: ' . $e->getTraceAsString());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error exportando solicitudes: ' . $e->getMessage()
+                'error' => 'Error del sistema al exportar solicitudes'
             ]);
         }
     }
@@ -3980,7 +3980,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Stack trace: ' . $e->getTraceAsString());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema al crear respuesta rápida'
             ]);
         }
     }
@@ -4072,7 +4072,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error configurando documentos: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema al configurar documentos'
             ]);
         }
     }
@@ -4113,7 +4113,7 @@ class AdminBienestarController extends BaseController
                 $estadisticas = [
                     'fichas' => $this->fichaModel->where('estudiante_id', $id)->countAllResults(),
                     'solicitudes_becas' => $this->db->table('solicitudes_becas')->where('estudiante_id', $id)->countAllResults(),
-                    'solicitudes_ayuda' => $this->db->table('solicitudes_ayuda_mejorada')->where('estudiante_id', $id)->countAllResults()
+                    'solicitudes_ayuda' => $this->db->table('solicitudes_ayuda')->where('id_estudiante', $id)->countAllResults()
                 ];
             }
 
@@ -4185,7 +4185,7 @@ class AdminBienestarController extends BaseController
             
         } catch (\Exception $e) {
             log_message('error', 'Error creando usuario: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error del sistema: ' . $e->getMessage()]);
+            return $this->response->setJSON(['success' => false, 'error' => 'Error del sistema al crear usuario']);
         }
     }
 
@@ -4201,11 +4201,17 @@ class AdminBienestarController extends BaseController
         try {
             $input = $this->request->getJSON(true);
             $usuarioId = $input['usuario_id'];
-            $activo = $input['activo'];
+            $activo = (int) ($input['activo'] ?? 0);
 
-            $this->usuarioModel->update($usuarioId, ['activo' => $activo]);
+            // Solo permitir operar sobre estudiantes
+            $usuario = $this->usuarioModel->find($usuarioId);
+            if (!$usuario || (int)$usuario['rol_id'] !== ROLE_ESTUDIANTE) {
+                return $this->response->setJSON(['success' => false, 'error' => 'No puedes modificar este usuario']);
+            }
 
-            $this->logAction('cambiar_estado_usuario', 'usuarios', $usuarioId, ['activo' => $activo]);
+            $this->usuarioModel->update($usuarioId, ['estado' => $activo ? 'Activo' : 'Inactivo']);
+
+            $this->logAction('cambiar_estado_usuario', 'usuarios', $usuarioId, ['estado' => $activo ? 'Activo' : 'Inactivo']);
             
             return $this->response->setJSON([
                 'success' => true,
@@ -4231,13 +4237,20 @@ class AdminBienestarController extends BaseController
             $input = $this->request->getJSON(true);
             $usuarioId = $input['usuario_id'];
 
-            // Generar contraseña temporal
-            $nuevaPassword = 'temp' . rand(1000, 9999);
+            // Solo permitir operar sobre estudiantes
+            $usuario = $this->usuarioModel->find($usuarioId);
+            if (!$usuario || (int)$usuario['rol_id'] !== ROLE_ESTUDIANTE) {
+                return $this->response->setJSON(['success' => false, 'error' => 'No puedes resetear la contraseña de este usuario']);
+            }
+
+            // Generar contraseña temporal segura (12 caracteres)
+            $nuevaPassword = bin2hex(random_bytes(6));
             $passwordHash = password_hash($nuevaPassword, PASSWORD_DEFAULT);
 
             $this->usuarioModel->update($usuarioId, [
                 'password_hash' => $passwordHash,
-                'cambiar_password' => 1 // Flag para forzar cambio en próximo login
+                'intentos_fallidos' => 0,
+                'bloqueado_hasta' => null
             ]);
 
             $this->logAction('resetear_password', 'usuarios', $usuarioId, ['password_reseteado' => true]);
@@ -4296,6 +4309,22 @@ class AdminBienestarController extends BaseController
                 'datos' => json_encode($datos),
                 'fecha_creacion' => date('Y-m-d H:i:s')
             ]);
+
+            // También registrar en SecurityLogger para monitoreo de seguridad
+            $nivel = in_array($accion, ['eliminar_beca', 'eliminar_periodo', 'resetear_password', 'cambiar_estado_usuario']) 
+                ? \App\Security\SecurityLogger::LEVEL_DANGER 
+                : \App\Security\SecurityLogger::LEVEL_INFO;
+            $this->securityLogger->log(
+                $nivel,
+                strtoupper($accion),
+                "Acción '{$accion}' en {$tabla} #{$registroId} por usuario {$usuario['id']}",
+                [
+                    'tabla' => $tabla,
+                    'registro_id' => $registroId,
+                    'usuario_id' => $usuario['id'],
+                    'accion' => $accion
+                ]
+            );
         } catch (\Exception $e) {
             log_message('error', 'Error logging action: ' . $e->getMessage());
         }
@@ -4353,7 +4382,7 @@ class AdminBienestarController extends BaseController
             log_message('error', 'Error obteniendo estudiantes sin beca: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false, 
-                'error' => 'Error obteniendo estudiantes: ' . $e->getMessage()
+                'error' => 'Error del sistema al obtener estudiantes'
             ]);
         }
     }
@@ -4408,7 +4437,7 @@ class AdminBienestarController extends BaseController
             
             return $this->response->setJSON([
                 'valido' => false,
-                'mensaje' => 'Error interno del servidor: ' . $e->getMessage()
+                'mensaje' => 'Error interno del servidor al verificar código'
             ]);
         }
     }
@@ -4479,7 +4508,7 @@ class AdminBienestarController extends BaseController
             return [
                 'tipo' => 'Error al obtener información',
                 'id' => $idDocumento,
-                'estado' => 'Error: ' . $e->getMessage()
+                'estado' => 'Error al procesar documento'
             ];
         }
     }

@@ -648,8 +648,12 @@ function probarFuncion() {
 
 function cancelarSolicitud(solicitudId) {
     if (confirm('¿Está seguro de que desea cancelar esta solicitud de beca?')) {
-        fetch(`<?= base_url('estudiante/cancelarSolicitudBeca') ?>/${solicitudId}`, {
-            method: 'POST'
+        fetch('<?= base_url('estudiante/cancelar-solicitud-beca') ?>', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: solicitudId })
         })
         .then(response => response.json())
         .then(data => {

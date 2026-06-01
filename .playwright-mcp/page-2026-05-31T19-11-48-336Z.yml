@@ -1,0 +1,119 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - link "Logo Estudiante Bienestar Estudiantil" [ref=e6] [cursor=pointer]:
+            - /url: http://localhost/ITSI/public/index.php/estudiante
+            - img "Logo" [ref=e7]
+            - generic [ref=e8]:
+              - text: Estudiante Bienestar
+              - text: Estudiantil
+          - generic [ref=e10] [cursor=pointer]: 
+        - navigation [ref=e11]:
+          - region "scrollable content" [ref=e15]:
+            - list [ref=e17]:
+              - listitem [ref=e18]:  INICIO
+              - listitem [ref=e19]:
+                - link " Dashboard" [ref=e20] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante
+                  - generic [ref=e22]: 
+                  - generic [ref=e23]: Dashboard
+              - listitem [ref=e24]:  FORMULARIOS
+              - listitem [ref=e25]:
+                - link " Ficha Socioeconómica" [ref=e26] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante/ficha-socioeconomica
+                  - generic [ref=e28]: 
+                  - generic [ref=e29]: Ficha Socioeconómica
+              - listitem [ref=e30]:
+                - link " Mis Documentos" [ref=e31] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante/documentos
+                  - generic [ref=e33]: 
+                  - generic [ref=e34]: Mis Documentos
+              - listitem [ref=e35]:  BECAS
+              - listitem [ref=e36]:
+                - link " Solicitudes de Becas" [ref=e37] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante/becas
+                  - generic [ref=e39]: 
+                  - generic [ref=e40]: Solicitudes de Becas
+              - listitem [ref=e41]:  SOLICITUDES
+              - listitem [ref=e42]:
+                - link " Solicitudes de Ayuda" [ref=e43] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante/solicitudes-ayuda
+                  - generic [ref=e45]: 
+                  - generic [ref=e46]: Solicitudes de Ayuda
+              - listitem [ref=e47]:  INFORMACIÓN
+              - listitem [ref=e48]:
+                - link " Servicios de Bienestar" [ref=e49] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/servicios
+                  - generic [ref=e51]: 
+                  - generic [ref=e52]: Servicios de Bienestar
+              - listitem [ref=e53]:
+                - link " Información de Becas" [ref=e54] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/becas
+                  - generic [ref=e56]: 
+                  - generic [ref=e57]: Información de Becas
+              - listitem [ref=e58]:
+                - link " Apoyo Psicológico" [ref=e59] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/psicologia
+                  - generic [ref=e61]: 
+                  - generic [ref=e62]: Apoyo Psicológico
+              - listitem [ref=e63]:
+                - link " Servicios de Salud" [ref=e64] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/salud
+                  - generic [ref=e66]: 
+                  - generic [ref=e67]: Servicios de Salud
+              - listitem [ref=e68]:
+                - link " Trabajo Social" [ref=e69] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/trabajo-social
+                  - generic [ref=e71]: 
+                  - generic [ref=e72]: Trabajo Social
+              - listitem [ref=e73]:
+                - link " Orientación Académica" [ref=e74] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/orientacion-academica
+                  - generic [ref=e76]: 
+                  - generic [ref=e77]: Orientación Académica
+    - generic [ref=e78]:
+      - banner [ref=e79]:
+        - navigation [ref=e80]:
+          - link:
+            - /url: http://localhost/ITSI/public/
+          - list [ref=e81]:
+            - listitem [ref=e82]:
+              - link "" [ref=e83] [cursor=pointer]:
+                - /url: javascript:void(0)
+                - generic [ref=e84]: 
+          - list [ref=e86]:
+            - listitem [ref=e87]:
+              - generic [ref=e88]:
+                - generic [ref=e89]: 
+                - text: Bienvenido al sistema, estudiantedos
+            - listitem [ref=e90]:
+              - link "Foto de perfil" [ref=e91] [cursor=pointer]:
+                - /url: javascript:void(0)
+                - img "Foto de perfil" [ref=e92]
+              - text:   
+      - generic [ref=e93]:
+        - generic [ref=e96]:
+          - generic [ref=e97]:
+            - heading "Solicitudes de Ayuda" [level=4] [ref=e98]
+            - paragraph [ref=e99]: Gestiona tus solicitudes de ayuda y apoyo
+          - button " Nueva Solicitud" [ref=e101] [cursor=pointer]:
+            - generic [ref=e102]: 
+            - text: Nueva Solicitud
+        - generic [ref=e105]:
+          - heading " Mis Solicitudes de Ayuda" [level=5] [ref=e107]:
+            - generic [ref=e108]: 
+            - text: Mis Solicitudes de Ayuda
+          - generic [ref=e110]:
+            - generic [ref=e111]: 
+            - paragraph [ref=e112]: No tienes solicitudes de ayuda registradas
+            - button " Crear Primera Solicitud" [ref=e113] [cursor=pointer]:
+              - generic [ref=e114]: 
+              - text: Crear Primera Solicitud
+        - text:               
+      - contentinfo [ref=e116]:
+        - generic [ref=e118]:
+          - img "ITSI Logo" [ref=e120]
+          - paragraph [ref=e122]: Tecnológico Ibarra. © 2024. All Rights Reserved
+  - img [ref=e125] [cursor=pointer]

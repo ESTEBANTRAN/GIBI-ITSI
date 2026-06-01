@@ -121,25 +121,6 @@ class BecaModel extends Model
                    ->findAll();
     }
 
-    /**
-     * Obtener becas activas
-     */
-    public function getBecasActivas()
-    {
-        return $this->where('activa', 1)
-                   ->orderBy('nombre', 'ASC')
-                   ->findAll();
-    }
-
-    /**
-     * Obtener becas por tipo
-     */
-    public function getBecasPorTipo($tipo)
-    {
-        return $this->where('tipo_beca', $tipo)
-                   ->where('activa', 1)
-                   ->findAll();
-    }
 
     /**
      * Obtener estadísticas de becas
@@ -174,39 +155,7 @@ class BecaModel extends Model
         ];
     }
 
-    /**
-     * Buscar becas por criterios
-     */
-    public function buscarBecas($criterios = [])
-    {
-        $builder = $this->builder();
-        
-        if (!empty($criterios['nombre'])) {
-            $builder->like('nombre', $criterios['nombre']);
-        }
-        
-        if (!empty($criterios['tipo_beca'])) {
-            $builder->where('tipo_beca', $criterios['tipo_beca']);
-        }
-        
-        if (isset($criterios['activa'])) {
-            $builder->where('activa', $criterios['activa']);
-        }
-        
-        if (!empty($criterios['periodo_id'])) {
-            $builder->where('periodo_vigente_id', $criterios['periodo_id']);
-        }
-        
-        if (!empty($criterios['monto_min'])) {
-            $builder->where('monto_beca >=', $criterios['monto_min']);
-        }
-        
-        if (!empty($criterios['monto_max'])) {
-            $builder->where('monto_beca <=', $criterios['monto_max']);
-        }
-        
-        return $builder->orderBy('nombre', 'ASC')->get()->getResultArray();
-    }
+
 
     /**
      * Verificar si una beca puede ser eliminada
@@ -221,33 +170,6 @@ class BecaModel extends Model
     }
 
     /**
-     * Obtener becas con cupos disponibles
-     */
-    public function getBecasConCupos()
-    {
-        return $this->where('activa', 1)
-                   ->where('cupos_disponibles >', 0)
-                   ->orWhere('cupos_disponibles IS NULL')
-                   ->findAll();
-    }
-
-    /**
-     * Actualizar cupos disponibles
-     */
-    public function actualizarCupos($becaId, $cuposUtilizados)
-    {
-        $beca = $this->find($becaId);
-        if (!$beca || empty($beca['cupos_disponibles'])) {
-            return false;
-        }
-        
-        $nuevosCupos = max(0, $beca['cupos_disponibles'] - $cuposUtilizados);
-        return $this->update($becaId, ['cupos_disponibles' => $nuevosCupos]);
-    }
-
-
-
-    /**
      * Obtener tipos de beca disponibles
      */
     public function getTiposBeca()
@@ -260,46 +182,5 @@ class BecaModel extends Model
             'Investigación' => 'Beca para proyectos de investigación',
             'Otros' => 'Otros tipos de becas'
         ];
-    }
-
-    /**
-     * Obtener carreras habilitadas para una beca
-     */
-    public function getCarrerasHabilitadas($becaId)
-    {
-        // Campo no disponible en la tabla actual
-        return [];
-    }
-
-    /**
-     * Validar requisitos de una beca
-     */
-    public function validarRequisitos($becaId, $datosEstudiante)
-    {
-        $beca = $this->find($becaId);
-        if (!$beca || !$beca['activa']) {
-            return ['valida' => false, 'mensaje' => 'Beca no disponible'];
-        }
-        
-        // Verificar cupos disponibles
-        if (!empty($beca['cupos_disponibles']) && $beca['cupos_disponibles'] <= 0) {
-            return ['valida' => false, 'mensaje' => 'No hay cupos disponibles'];
-        }
-        
-        // Verificar período
-        if (!empty($beca['periodo_vigente_id'])) {
-            $periodo = $this->db->table('periodos_academicos')->find($beca['periodo_vigente_id']);
-            if ($periodo && !$periodo['activo']) {
-                return ['valida' => false, 'mensaje' => 'Período no activo'];
-            }
-        }
-        
-        // Verificar puntaje mínimo
-        if (!empty($beca['puntaje_minimo_requerido']) && 
-            (!isset($datosEstudiante['puntaje']) || $datosEstudiante['puntaje'] < $beca['puntaje_minimo_requerido'])) {
-            return ['valida' => false, 'mensaje' => 'No cumple con el puntaje mínimo requerido'];
-        }
-        
-        return ['valida' => true, 'mensaje' => 'Requisitos cumplidos'];
     }
 } 

@@ -358,15 +358,50 @@ function cambiarFotoPerfil() {
     xhr.send(formData);
 }
 
-// Manejar envío del formulario de perfil
+// Manejar envío del formulario de perfil con AJAX real
 document.getElementById('perfilForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    // Aquí puedes agregar la lógica para guardar los datos del perfil
+    const formData = new FormData(this);
+    
     Swal.fire({
-        icon: 'success',
-        title: 'Perfil actualizado',
-        text: 'Los datos del perfil se han actualizado correctamente'
+        title: 'Guardando cambios...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    
+    fetch('<?= base_url("index.php/estudiante/actualizar-perfil") ?>', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Perfil actualizado',
+                text: data.message
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.error || 'Error al actualizar el perfil'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: 'No se pudo conectar con el servidor'
+        });
     });
 });
 </script>

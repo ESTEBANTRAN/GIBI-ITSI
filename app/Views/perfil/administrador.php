@@ -38,8 +38,8 @@
                         <h5 class="card-title"><?= session('nombre') ?> <?= session('apellido') ?></h5>
                         <p class="text-muted">
                             <?php 
-                            $rol = session('rol_id') == 2 ? 'Administrativo Bienestar' : 'Super Administrador';
-                            echo $rol;
+                            $rol = session('rol_id') == ROLE_ADMIN_BIENESTAR ? 'Administrativo Bienestar' : 'Super Administrador';
+                            echo esc($rol);
                             ?>
                         </p>
                         <div class="d-flex justify-content-center gap-2">

@@ -7,9 +7,12 @@ use App\Models\GlobalAdmin\UsuarioGlobalModel;
 use App\Models\GlobalAdmin\RolModel;
 use App\Models\GlobalAdmin\SistemaModel;
 use App\Models\GlobalAdmin\BackupModel;
+use App\Security\InputSanitizerTrait;
 
 class GlobalAdminController extends BaseController
 {
+    use InputSanitizerTrait;
+
     protected $usuarioModel;
     protected $rolModel;
     protected $sistemaModel;
@@ -25,6 +28,24 @@ class GlobalAdminController extends BaseController
         
         // Inicializar conexión a la base de datos
         $this->db = \Config\Database::connect();
+    }
+
+    /**
+     * Crea un archivo temporal de credenciales para mysqldump/mysql
+     * evitando exponer la contraseña en procesos del sistema (--password=).
+     */
+    private function getDbCredentialsFile(): string
+    {
+        $tmpFile = tempnam(sys_get_temp_dir(), 'mycnf_');
+        $content = "[client]\n";
+        $content .= "user=\"{$this->db->username}\"\n";
+        if (!empty($this->db->password)) {
+            $content .= "password=\"{$this->db->password}\"\n";
+        }
+        $content .= "host=\"{$this->db->hostname}\"\n";
+        file_put_contents($tmpFile, $content);
+        @chmod($tmpFile, 0600);
+        return $tmpFile;
     }
 
     public function index()
@@ -298,23 +319,20 @@ class GlobalAdminController extends BaseController
         }
 
         try {
-            $host = $this->db->hostname;
-            $username = $this->db->username;
-            $password = $this->db->password;
             $database = $this->db->database;
             $filename = 'backup_' . date('Y-m-d_H-i-s') . '.sql';
             $filepath = WRITEPATH . 'backups/' . $filename;
             if (!is_dir(WRITEPATH . 'backups/')) {
                 mkdir(WRITEPATH . 'backups/', 0755, true);
             }
-            $mysqldump_path = 'C:\xampp\mysql\bin\mysqldump.exe';
+            $mysqldump_path = 'C:\\xampp\\mysql\\bin\\mysqldump.exe';
             if (!file_exists($mysqldump_path)) {
                 $mysqldump_path = 'mysqldump';
             }
-            // Ejecutar mysqldump y capturar la salida
-            $password_str = !empty($password) ? ' --password=' . escapeshellarg($password) : '';
-            $command = '"' . $mysqldump_path . '" --host=' . escapeshellarg($host) . ' --user=' . escapeshellarg($username) . $password_str . ' ' . escapeshellarg($database);
+            $credentialsFile = $this->getDbCredentialsFile();
+            $command = '"' . $mysqldump_path . '" --defaults-extra-file=' . escapeshellarg($credentialsFile) . ' ' . escapeshellarg($database);
             $dump = shell_exec($command);
+            @unlink($credentialsFile);
             if ($dump && strlen($dump) > 1000) {
                 file_put_contents($filepath, $dump);
                 $tamaño = filesize($filepath);
@@ -330,23 +348,23 @@ class GlobalAdminController extends BaseController
                 log_message('info', 'Backup creado exitosamente: ' . $filename);
                 return $this->response->setJSON([
                     'success' => true,
-                    'message' => 'Respaldo creado exitosamente y guardado en: ' . $filepath,
+                    'message' => 'Respaldo creado exitosamente',
                     'filename' => $filename,
                     'download_url' => base_url('index.php/global-admin/descargar-respaldo/' . $this->db->insertID()),
                     'file_size' => $this->formatBytes($tamaño)
                 ]);
             } else {
-                log_message('error', 'Error al crear backup. Comando: ' . $command . ' Output: ' . substr($dump,0,200));
+                log_message('error', 'Error al crear backup.');
                 return $this->response->setJSON([
                     'success' => false,
-                    'error' => 'Error al crear el respaldo. Verifique que mysqldump esté disponible y que el usuario tenga permisos. Output: ' . substr($dump,0,200)
+                    'error' => 'Error al crear el respaldo. Verifique que mysqldump esté disponible y que el usuario tenga permisos.'
                 ]);
             }
         } catch (\Exception $e) {
             log_message('error', 'Error al crear backup: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error al crear el respaldo: ' . $e->getMessage()
+                'error' => 'Error al crear el respaldo'
             ]);
         }
     }
@@ -367,9 +385,6 @@ class GlobalAdminController extends BaseController
         }
 
         try {
-            $host = $this->db->hostname;
-            $username = $this->db->username;
-            $password = $this->db->password;
             $database = $this->db->database;
 
             // Crear nombre del archivo con fecha y hora
@@ -382,16 +397,17 @@ class GlobalAdminController extends BaseController
             }
 
             // Usar ruta absoluta de mysqldump si existe
-            $mysqldump_path = 'C:\xampp\mysql\bin\mysqldump.exe';
+            $mysqldump_path = 'C:\\xampp\\mysql\\bin\\mysqldump.exe';
             if (!file_exists($mysqldump_path)) {
                 $mysqldump_path = 'mysqldump';
             }
             
-            $password_str = !empty($password) ? ' --password=' . escapeshellarg($password) : '';
-            $command = '"' . $mysqldump_path . '" --host=' . escapeshellarg($host) . ' --user=' . escapeshellarg($username) . $password_str . ' ' . escapeshellarg($database) . ' > "' . $filepath . '" 2>&1';
+            $credentialsFile = $this->getDbCredentialsFile();
+            $command = '"' . $mysqldump_path . '" --defaults-extra-file=' . escapeshellarg($credentialsFile) . ' ' . escapeshellarg($database) . ' > "' . $filepath . '" 2>&1';
 
             // Ejecutar comando y capturar salida y código de retorno
             exec($command, $output, $return_var);
+            @unlink($credentialsFile);
 
             if ($return_var === 0 && file_exists($filepath)) {
                 $tamaño = filesize($filepath);
@@ -429,15 +445,17 @@ class GlobalAdminController extends BaseController
                     'file_size' => $fileSizeFormatted
                 ]);
             } else {
+                log_message('error', 'Error al crear respaldo. Código: ' . $return_var);
                 return $this->response->setJSON([
                     'success' => false,
-                    'error' => 'Error al crear el respaldo. Comando ejecutado: ' . $command . ' | Output: ' . implode("\n", $output) . ' | Código de retorno: ' . $return_var
+                    'error' => 'Error al crear el respaldo. Verifique que mysqldump esté disponible.'
                 ]);
             }
         } catch (\Exception $e) {
+            log_message('error', 'Error al crear respaldo: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error al crear el respaldo: ' . $e->getMessage()
+                'error' => 'Error al crear el respaldo'
             ]);
         }
     }
@@ -483,38 +501,38 @@ class GlobalAdminController extends BaseController
             return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
         }
 
-        $id = $this->request->getPost('id');
+        $id = $this->getPostInt('id');
         
         try {
             $respaldo = $this->db->table('respaldos')->where('id', $id)->get()->getRowArray();
             
             if ($respaldo && file_exists($respaldo['ruta_archivo'])) {
                 $file = $respaldo['ruta_archivo'];
-                $host = $this->db->hostname;
-                $username = $this->db->username;
-                $password = $this->db->password;
                 $database = $this->db->database;
                 
-                $mysql_path = 'C:\xampp\mysql\bin\mysql.exe';
+                $mysql_path = 'C:\\xampp\\mysql\\bin\\mysql.exe';
                 if (!file_exists($mysql_path)) {
                     $mysql_path = 'mysql';
                 }
                 
-                $password_str = !empty($password) ? ' --password=' . escapeshellarg($password) : '';
-                $command = '"' . $mysql_path . '" --host=' . escapeshellarg($host) . ' --user=' . escapeshellarg($username) . $password_str . ' ' . escapeshellarg($database) . ' < "' . $file . '" 2>&1';
+                $credentialsFile = $this->getDbCredentialsFile();
+                $command = '"' . $mysql_path . '" --defaults-extra-file=' . escapeshellarg($credentialsFile) . ' ' . escapeshellarg($database) . ' < "' . $file . '" 2>&1';
                 
                 exec($command, $output, $return_var);
+                @unlink($credentialsFile);
                 
                 if ($return_var === 0) {
                     return $this->response->setJSON(['success' => true, 'message' => 'Respaldo restaurado exitosamente']);
                 } else {
-                    return $this->response->setJSON(['success' => false, 'error' => 'Error al restaurar el respaldo. Detalle: ' . implode("\n", $output)]);
+                    log_message('error', 'Error al restaurar respaldo. Código: ' . $return_var);
+                    return $this->response->setJSON(['success' => false, 'error' => 'Error al restaurar el respaldo']);
                 }
             } else {
                 return $this->response->setJSON(['success' => false, 'error' => 'Respaldo no encontrado o archivo no existe']);
             }
         } catch (\Exception $e) {
-            return $this->response->setJSON(['success' => false, 'error' => $e->getMessage()]);
+            log_message('error', 'Error al restaurar respaldo: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error al restaurar el respaldo']);
         }
     }
 
@@ -562,7 +580,7 @@ class GlobalAdminController extends BaseController
             return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
         }
 
-        $id = $this->request->getPost('id');
+        $id = $this->getPostInt('id');
         
         try {
             $respaldo = $this->db->table('respaldos')->where('id', $id)->get()->getRowArray();
@@ -582,7 +600,8 @@ class GlobalAdminController extends BaseController
                 return $this->response->setJSON(['success' => false, 'error' => 'Respaldo no encontrado']);
             }
         } catch (\Exception $e) {
-            return $this->response->setJSON(['success' => false, 'error' => $e->getMessage()]);
+            log_message('error', 'Error al eliminar respaldo: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error al eliminar el respaldo']);
         }
     }
 
@@ -611,7 +630,8 @@ class GlobalAdminController extends BaseController
                 'message' => "Se eliminaron {$deleted} respaldos antiguos y se limpió el registro"
             ]);
         } catch (\Exception $e) {
-            return $this->response->setJSON(['success' => false, 'error' => $e->getMessage()]);
+            log_message('error', 'Error al limpiar respaldos: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error al limpiar los respaldos']);
         }
     }
 
@@ -623,18 +643,30 @@ class GlobalAdminController extends BaseController
 
         try {
             $data = [
-                'frecuencia' => $this->request->getPost('frecuencia'),
-                'retener_dias' => $this->request->getPost('retener_dias'),
-                'automatico' => $this->request->getPost('automatico') ? 1 : 0,
-                'comprimir' => $this->request->getPost('comprimir') ? 1 : 0
+                'frecuencia' => $this->getPostString('frecuencia'),
+                'retener_dias' => $this->getPostString('retener_dias'),
+                'automatico' => $this->getPostBool('automatico') ? 1 : 0,
+                'comprimir' => $this->getPostBool('comprimir') ? 1 : 0
             ];
             
-            // Aquí guardarías en la base de datos o archivo de configuración
-            // Por ahora simulamos éxito
+            foreach ($data as $clave => $valor) {
+                $exists = $this->db->table('configuracion_sistema')
+                    ->where('clave', 'backup_' . $clave)
+                    ->countAllResults();
+                if ($exists > 0) {
+                    $this->db->table('configuracion_sistema')
+                        ->where('clave', 'backup_' . $clave)
+                        ->update(['valor' => $valor]);
+                } else {
+                    $this->db->table('configuracion_sistema')
+                        ->insert(['clave' => 'backup_' . $clave, 'valor' => $valor]);
+                }
+            }
             
             return $this->response->setJSON(['success' => true, 'message' => 'Configuración guardada exitosamente']);
         } catch (\Exception $e) {
-            return $this->response->setJSON(['success' => false, 'error' => $e->getMessage()]);
+            log_message('error', 'Error guardando config respaldos: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error al guardar la configuración']);
         }
     }
 
@@ -668,7 +700,8 @@ class GlobalAdminController extends BaseController
                 ]
             ]);
         } catch (\Exception $e) {
-            return $this->response->setJSON(['success' => false, 'error' => $e->getMessage()]);
+            log_message('error', 'Error obteniendo estadísticas respaldos: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error al obtener estadísticas']);
         }
     }
 
@@ -736,21 +769,19 @@ class GlobalAdminController extends BaseController
         }
 
         try {
-            // Simular log específico
-            $log = [
-                'id' => $id,
-                'fecha' => date('Y-m-d H:i:s'),
-                'nivel' => 'INFO',
-                'usuario' => 'superadmin',
-                'accion' => 'Login exitoso',
-                'mensaje' => 'Usuario superadmin inició sesión correctamente',
-                'ip' => '192.168.1.1',
-                'detalles' => 'Sesión iniciada desde navegador Chrome v120.0.0.0'
-            ];
+            $log = $this->db->table('logs')->where('id', $id)->get()->getRowArray();
+            
+            if (!$log) {
+                return $this->response->setJSON(['success' => false, 'error' => 'Log no encontrado']);
+            }
+
+            $usuario = $this->db->table('usuarios')->where('id', $log['id_usuario'])->get()->getRowArray();
+            $log['nombre_usuario'] = $usuario ? $usuario['nombre'] . ' ' . $usuario['apellido'] : 'Sistema';
             
             return $this->response->setJSON(['success' => true, 'log' => $log]);
         } catch (\Exception $e) {
-            return $this->response->setJSON(['success' => false, 'error' => $e->getMessage()]);
+            log_message('error', 'Error obteniendo log: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error al obtener el log']);
         }
     }
 
@@ -760,13 +791,14 @@ class GlobalAdminController extends BaseController
             return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
         }
 
-        $id = $this->request->getPost('id');
+        $id = $this->getPostInt('id');
         
         try {
-            // Simular eliminación de log
+            $this->db->table('logs')->where('id', $id)->delete();
             return $this->response->setJSON(['success' => true, 'message' => 'Log eliminado exitosamente']);
         } catch (\Exception $e) {
-            return $this->response->setJSON(['success' => false, 'error' => $e->getMessage()]);
+            log_message('error', 'Error eliminando log: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error al eliminar el log']);
         }
     }
 
@@ -777,10 +809,15 @@ class GlobalAdminController extends BaseController
         }
 
         try {
-            // Simular limpieza de logs
-            return $this->response->setJSON(['success' => true, 'message' => 'Logs antiguos eliminados exitosamente']);
+            $dias = $this->getPostInt('dias') ?: 90;
+            $fechaLimite = date('Y-m-d', strtotime("-{$dias} days"));
+            
+            $this->db->table('logs')->where('fecha_creacion <', $fechaLimite)->delete();
+            
+            return $this->response->setJSON(['success' => true, 'message' => "Logs anteriores a {$dias} días eliminados exitosamente"]);
         } catch (\Exception $e) {
-            return $this->response->setJSON(['success' => false, 'error' => $e->getMessage()]);
+            log_message('error', 'Error limpiando logs: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error al limpiar los logs']);
         }
     }
 
@@ -855,7 +892,8 @@ class GlobalAdminController extends BaseController
                 ]
             ]);
         } catch (\Exception $e) {
-            return $this->response->setJSON(['success' => false, 'error' => $e->getMessage()]);
+            log_message('error', 'Error obteniendo estadísticas logs: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error al obtener estadísticas']);
         }
     }
 
@@ -915,7 +953,7 @@ class GlobalAdminController extends BaseController
             log_message('error', 'Error obteniendo estadísticas globales: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false, 
-                'error' => 'Error al obtener estadísticas: ' . $e->getMessage()
+                'error' => 'Error al obtener estadísticas'
             ]);
         }
     }
@@ -1071,32 +1109,42 @@ class GlobalAdminController extends BaseController
     private function obtenerKPIsEstadisticas()
     {
         try {
-            // Cálculo de KPIs
             $totalUsuarios = $this->db->table('usuarios')->countAllResults();
             $usuariosActivos = $this->db->table('usuarios')->where('estado', 'Activo')->countAllResults();
-            
+            $usuariosBloqueados = $this->db->table('usuarios')->where('estado', 'Suspendido')->countAllResults();
+            $usuariosInactivos = $this->db->table('usuarios')->where('estado', 'Inactivo')->countAllResults();
+
             $crecimientoUsuarios = $this->calcularCambioUsuarios();
             $tasaActividad = $totalUsuarios > 0 ? round(($usuariosActivos / $totalUsuarios) * 100, 1) : 0;
-            $indiceSeguridad = 95; // Simulado
-            $coberturaRespaldos = 100; // Simulado
-            
-            // Análisis de seguridad
-            $accesosExitosos = 85; // Simulado
-            $intentosFallidos = 10; // Simulado
-            $usuariosBloqueados = 2; // Simulado
-            $respaldosAutomaticos = 100; // Simulado
+
+            $totalRespaldos = $this->db->table('backups')->countAllResults();
+            $respaldosRecientes = $this->db->table('backups')
+                ->where('created_at >=', date('Y-m-d', strtotime('-30 days')))
+                ->countAllResults();
+            $coberturaRespaldos = $totalRespaldos > 0 ? round(($respaldosRecientes / max($totalRespaldos, 1)) * 100, 1) : 0;
+
+            $totalLogs = $this->db->table('logs')->countAllResults();
+            $loginsExitosos = $this->db->table('logs')
+                ->like('accion', 'login_exitoso')
+                ->where('fecha_creacion >=', date('Y-m-d', strtotime('-30 days')))
+                ->countAllResults();
+            $intentosFallidos = $this->db->table('logs')
+                ->like('accion', 'login_fallido')
+                ->where('fecha_creacion >=', date('Y-m-d', strtotime('-30 days')))
+                ->countAllResults();
 
             return [
                 'crecimiento_usuarios' => $crecimientoUsuarios,
                 'tasa_actividad' => $tasaActividad,
-                'indice_seguridad' => $indiceSeguridad,
+                'indice_seguridad' => $totalLogs > 0 ? round(($loginsExitosos / max($totalLogs, 1)) * 100, 1) : 0,
                 'cobertura_respaldos' => $coberturaRespaldos,
-                'accesos_exitosos' => $accesosExitosos,
+                'accesos_exitosos' => $loginsExitosos,
                 'intentos_fallidos' => $intentosFallidos,
                 'usuarios_bloqueados' => $usuariosBloqueados,
-                'respaldos_automaticos' => $respaldosAutomaticos
+                'respaldos_automaticos' => $respaldosRecientes
             ];
         } catch (\Exception $e) {
+            log_message('error', 'Error calculando KPIs: ' . $e->getMessage());
             return [
                 'crecimiento_usuarios' => 0,
                 'tasa_actividad' => 0,
@@ -1243,15 +1291,11 @@ class GlobalAdminController extends BaseController
             // Si hay error, mostrar información de debug
             log_message('error', 'Error generando PDF: ' . $e->getMessage());
             
-            // Mostrar error en HTML
+            // Mostrar error en HTML genérico
+            log_message('error', 'Error generando PDF usuarios: ' . $e->getMessage() . ' en ' . $e->getFile() . ':' . $e->getLine());
             header('Content-Type: text/html; charset=utf-8');
             echo '<h1>Error generando PDF</h1>';
-            echo '<p><strong>Error:</strong> ' . $e->getMessage() . '</p>';
-            echo '<p><strong>Archivo:</strong> ' . $e->getFile() . '</p>';
-            echo '<p><strong>Línea:</strong> ' . $e->getLine() . '</p>';
-            echo '<hr>';
-            echo '<h2>Usuarios encontrados:</h2>';
-            echo '<p>Total: ' . count($usuarios) . '</p>';
+            echo '<p>Ocurrió un error al generar el reporte. Por favor intente nuevamente.</p>';
         }
     }
 
@@ -1284,10 +1328,10 @@ class GlobalAdminController extends BaseController
             return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
         }
 
-        $nombre = $this->request->getPost('nombre');
-        $descripcion = $this->request->getPost('descripcion') ?? '';
-        $codigo = $this->request->getPost('codigo') ?? '';
-        $activo = $this->request->getPost('activo') ? 1 : 0;
+        $nombre = $this->getPostString('nombre');
+        $descripcion = $this->getPostString('descripcion', '');
+        $codigo = $this->getPostString('codigo', '');
+        $activo = $this->getPostBool('activo') ? 1 : 0;
 
         // Validar que el nombre no esté vacío
         if (empty($nombre)) {
@@ -1308,7 +1352,8 @@ class GlobalAdminController extends BaseController
             $this->rolModel->insert($data);
             return $this->response->setJSON(['success' => true, 'message' => 'Rol creado exitosamente']);
         } catch (\Exception $e) {
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al crear el rol: ' . $e->getMessage()]);
+            log_message('error', 'Error creando rol: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error al crear el rol']);
         }
     }
 
@@ -1333,11 +1378,11 @@ class GlobalAdminController extends BaseController
             return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
         }
 
-        $id = $this->request->getPost('id');
-        $nombre = $this->request->getPost('nombre');
-        $descripcion = $this->request->getPost('descripcion') ?? '';
-        $codigo = $this->request->getPost('codigo') ?? '';
-        $activo = $this->request->getPost('activo') ? 1 : 0;
+        $id = $this->getPostInt('id');
+        $nombre = $this->getPostString('nombre');
+        $descripcion = $this->getPostString('descripcion', '');
+        $codigo = $this->getPostString('codigo', '');
+        $activo = $this->getPostBool('activo') ? 1 : 0;
 
         // Validar que el nombre no esté vacío
         if (empty($nombre)) {
@@ -1358,7 +1403,8 @@ class GlobalAdminController extends BaseController
             $this->rolModel->update($id, $data);
             return $this->response->setJSON(['success' => true, 'message' => 'Rol actualizado exitosamente']);
         } catch (\Exception $e) {
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al actualizar el rol: ' . $e->getMessage()]);
+            log_message('error', 'Error actualizando rol: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error al actualizar el rol']);
         }
     }
 
@@ -1368,7 +1414,7 @@ class GlobalAdminController extends BaseController
             return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
         }
 
-        $id = $this->request->getPost('id');
+        $id = $this->getPostInt('id');
 
         // No permitir eliminar roles del sistema (ID 1, 2, 4)
         if (in_array($id, [1, 2, 4])) {
@@ -1384,7 +1430,8 @@ class GlobalAdminController extends BaseController
             $this->rolModel->delete($id);
             return $this->response->setJSON(['success' => true, 'message' => 'Rol eliminado exitosamente']);
         } catch (\Exception $e) {
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al eliminar el rol: ' . $e->getMessage()]);
+            log_message('error', 'Error eliminando rol: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error al eliminar el rol']);
         }
     }
 
@@ -1400,8 +1447,7 @@ class GlobalAdminController extends BaseController
             return $this->response->setJSON(['success' => false, 'error' => 'Rol no encontrado']);
         }
 
-        // Por ahora, simulamos permisos basados en el ID del rol
-        $permisos = $this->getPermisosSimulados($id);
+        $permisos = $this->getPermisosFromDatabase($id);
 
         return $this->response->setJSON([
             'success' => true, 
@@ -1410,9 +1456,9 @@ class GlobalAdminController extends BaseController
         ]);
     }
 
-    private function getPermisosSimulados($rol_id)
+    private function getPermisosFromDatabase($rol_id)
     {
-        $permisos = [
+        $permisosBase = [
             'dashboard' => false,
             'usuarios' => false,
             'roles' => false,
@@ -1423,33 +1469,15 @@ class GlobalAdminController extends BaseController
             'reportes' => false
         ];
 
-        switch ($rol_id) {
-            case 1: // Estudiante
-                $permisos['dashboard'] = true;
-                $permisos['fichas'] = true;
-                $permisos['becas'] = true;
-                $permisos['solicitudes'] = true;
-                break;
-            case 2: // Administrativo Bienestar
-                $permisos['dashboard'] = true;
-                $permisos['fichas'] = true;
-                $permisos['becas'] = true;
-                $permisos['solicitudes'] = true;
-                $permisos['reportes'] = true;
-                break;
-            case 4: // Super Administrador
-                $permisos['dashboard'] = true;
-                $permisos['usuarios'] = true;
-                $permisos['roles'] = true;
-                $permisos['configuracion'] = true;
-                $permisos['fichas'] = true;
-                $permisos['becas'] = true;
-                $permisos['solicitudes'] = true;
-                $permisos['reportes'] = true;
-                break;
+        $rol = $this->rolModel->find($rol_id);
+        if ($rol && !empty($rol['permisos'])) {
+            $permisosJson = json_decode($rol['permisos'], true);
+            if (is_array($permisosJson)) {
+                return array_merge($permisosBase, $permisosJson);
+            }
         }
 
-        return $permisos;
+        return $permisosBase;
     }
 
     public function configuracionSistema()
@@ -1472,7 +1500,7 @@ class GlobalAdminController extends BaseController
             log_message('error', 'GlobalAdmin::configuracionSistema - Error: ' . $e->getMessage());
             return view('GlobalAdmin/configuracion_sistema', [
                 'configuracion' => [],
-                'error' => 'Error cargando configuración: ' . $e->getMessage()
+                'error' => 'Error cargando configuración del sistema'
             ]);
         }
     }
@@ -1550,7 +1578,7 @@ class GlobalAdminController extends BaseController
             ]);
         } catch (\Exception $e) {
             log_message('error', 'Error guardando configuración: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error del sistema: ' . $e->getMessage()]);
+            return $this->response->setJSON(['success' => false, 'error' => 'Error del sistema']);
         }
     }
 
@@ -1712,7 +1740,7 @@ class GlobalAdminController extends BaseController
         }
 
         try {
-            $usuario_id = $this->request->getPost('id');
+            $usuario_id = $this->getPostInt('id');
             
             if (empty($usuario_id)) {
                 return $this->response->setJSON(['error' => 'ID de usuario requerido'])->setStatusCode(400);
@@ -1805,21 +1833,23 @@ class GlobalAdminController extends BaseController
 
         try {
             $datos = $this->request->getPost();
-            
-            // Aquí iría la lógica para actualizar el perfil en la BD
-            // Por ahora solo actualizamos la sesión
-            
-            session()->set([
-                'nombre' => $datos['nombre'],
-                'apellido' => $datos['apellido'],
-                'email' => $datos['email'],
-                'telefono' => $datos['telefono'],
-                'direccion' => $datos['direccion']
-            ]);
+
+            $data = [
+                'nombre' => $datos['nombre'] ?? session('nombre'),
+                'apellido' => $datos['apellido'] ?? session('apellido'),
+                'email' => $datos['email'] ?? session('email'),
+                'telefono' => $datos['telefono'] ?? session('telefono'),
+                'direccion' => $datos['direccion'] ?? session('direccion'),
+            ];
+
+            $this->db->table('usuarios')->where('id', session('id'))->update($data);
+
+            session()->set($data);
 
             return redirect()->back()->with('success', 'Perfil actualizado exitosamente.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error al actualizar perfil: ' . $e->getMessage());
+            log_message('error', 'Error actualizando perfil: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error al actualizar perfil');
         }
     }
 
@@ -1843,7 +1873,8 @@ class GlobalAdminController extends BaseController
             
             return $this->response->setJSON(['error' => 'Error al subir la imagen'])->setStatusCode(400);
         } catch (\Exception $e) {
-            return $this->response->setJSON(['error' => $e->getMessage()])->setStatusCode(500);
+            log_message('error', 'Error subiendo foto: ' . $e->getMessage());
+            return $this->response->setJSON(['error' => 'Error al subir la imagen'])->setStatusCode(500);
         }
     }
 
@@ -1872,13 +1903,36 @@ class GlobalAdminController extends BaseController
 
         try {
             $datos = $this->request->getPost();
-            
-            // Aquí iría la lógica para cambiar la contraseña en la BD
-            // Por ahora solo retornamos éxito
-            
+            $passwordActual = $datos['password_actual'] ?? '';
+            $nuevaPassword = $datos['new_password'] ?? '';
+            $confirmarPassword = $datos['confirm_password'] ?? '';
+
+            if (empty($passwordActual) || empty($nuevaPassword) || empty($confirmarPassword)) {
+                return redirect()->back()->with('error', 'Todos los campos son requeridos.');
+            }
+
+            $usuario = $this->db->table('usuarios')->where('id', session('id'))->get()->getRowArray();
+
+            if (!password_verify($passwordActual, $usuario['password_hash'])) {
+                return redirect()->back()->with('error', 'La contraseña actual no es correcta.');
+            }
+
+            if ($nuevaPassword !== $confirmarPassword) {
+                return redirect()->back()->with('error', 'Las contraseñas no coinciden.');
+            }
+
+            if (strlen($nuevaPassword) < 8) {
+                return redirect()->back()->with('error', 'La contraseña debe tener al menos 8 caracteres.');
+            }
+
+            $this->db->table('usuarios')
+                ->where('id', session('id'))
+                ->update(['password_hash' => password_hash($nuevaPassword, PASSWORD_DEFAULT)]);
+
             return redirect()->back()->with('success', 'Contraseña cambiada exitosamente.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error al cambiar contraseña: ' . $e->getMessage());
+            log_message('error', 'Error cambiando contraseña: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error al cambiar contraseña');
         }
     }
 
@@ -1890,13 +1944,21 @@ class GlobalAdminController extends BaseController
 
         try {
             $datos = $this->request->getPost();
-            
-            // Aquí iría la lógica para configurar notificaciones
-            // Por ahora solo retornamos éxito
-            
+
+            $configNotif = json_encode([
+                'email_notificaciones' => $datos['email_notificaciones'] ?? true,
+                'backup_notificaciones' => $datos['backup_notificaciones'] ?? true,
+                'login_notificaciones' => $datos['login_notificaciones'] ?? false,
+            ]);
+
+            $this->db->table('usuarios')
+                ->where('id', session('id'))
+                ->update(['configuraciones_usuario' => $configNotif]);
+
             return redirect()->back()->with('success', 'Configuración de notificaciones actualizada.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error al actualizar configuración: ' . $e->getMessage());
+            log_message('error', 'Error en config notificaciones: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error al actualizar configuración');
         }
     }
 
@@ -1907,13 +1969,19 @@ class GlobalAdminController extends BaseController
         }
 
         try {
-            // Aquí iría la lógica para eliminar la cuenta
-            // Por ahora solo destruimos la sesión
-            
+            $userId = session('id');
+
+            $this->db->table('usuarios')->where('id', $userId)->update([
+                'estado' => 'Inactivo',
+                'email' => 'deleted_' . $userId . '_' . session('email'),
+                'cedula' => 'DEL_' . $userId,
+            ]);
+
             session()->destroy();
-            return redirect()->to('/login')->with('success', 'Cuenta eliminada exitosamente.');
+            return redirect()->to('/login')->with('success', 'Cuenta desactivada exitosamente.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error al eliminar cuenta: ' . $e->getMessage());
+            log_message('error', 'Error eliminando cuenta: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error al eliminar cuenta');
         }
     }
 
@@ -1924,27 +1992,45 @@ class GlobalAdminController extends BaseController
         }
 
         try {
-            // Aquí iría la lógica para exportar datos
-            // Por ahora solo retornamos un mensaje
-            
-            return redirect()->back()->with('success', 'Datos exportados exitosamente.');
+            $usuario = $this->db->table('usuarios')->where('id', session('id'))->get()->getRowArray();
+            unset($usuario['password_hash']);
+
+            $filename = 'mis_datos_' . date('Y-m-d') . '.json';
+            $filepath = WRITEPATH . 'temp/' . $filename;
+
+            file_put_contents($filepath, json_encode($usuario, JSON_PRETTY_PRINT));
+
+            return $this->response->download($filepath, null)->setFileName($filename);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error al exportar datos: ' . $e->getMessage());
+            log_message('error', 'Error exportando datos: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error al exportar datos');
         }
     }
 
+    /**
+     * @deprecated Endpoint de depuración. No usar en producción.
+     * Se mantiene solo para referencia durante desarrollo.
+     */
     public function testBusqueda()
     {
+        if (ENVIRONMENT !== 'development') {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
         if (!session('id') || session('rol_id') != 4) {
             return redirect()->to('/login');
         }
 
+        // Registrar acceso a endpoint de depuración
+        log_message('warning', 'Acceso a endpoint de depuración testBusqueda por usuario ID: ' . session('id'));
+
         $search = $this->request->getGet('search') ?? '';
         
-        // Obtener todos los usuarios sin paginación para verificar la búsqueda
+        // Limitar resultados para no exponer datos masivos
+        $limit = min((int)$this->request->getGet('limit') ?: 20, 50);
+        
         $usuarios = $this->usuarioModel->getTodosLosUsuariosConRoles();
         
-        // Filtrar manualmente para verificar
         $resultados = [];
         foreach ($usuarios as $usuario) {
             $nombreCompleto = $usuario['nombre'] . ' ' . $usuario['apellido'];
@@ -1955,93 +2041,74 @@ class GlobalAdminController extends BaseController
                 stripos($usuario['nombre_rol'], $search) !== false) {
                 $resultados[] = $usuario;
             }
+            if (count($resultados) >= $limit) {
+                break;
+            }
         }
         
-        echo "<h1>Prueba de Búsqueda</h1>";
-        echo "<p>Término de búsqueda: '$search'</p>";
-        echo "<p>Total usuarios en BD: " . count($usuarios) . "</p>";
-        echo "<p>Resultados encontrados: " . count($resultados) . "</p>";
+        echo "<h1>🔧 Endpoint de Depuración - Test Búsqueda</h1>";
+        echo "<p><strong>⚠️ ADVERTENCIA:</strong> Este es un endpoint de depuración. No debe usarse en producción.</p>";
+        echo "<p>Término de búsqueda: '" . esc($search) . "'</p>";
+        echo "<p>Total usuarios encontrados (limitado a {$limit}): " . count($resultados) . "</p>";
         echo "<h2>Resultados:</h2>";
         echo "<table border='1'>";
         echo "<tr><th>ID</th><th>Nombre</th><th>Email</th><th>Rol</th></tr>";
         foreach ($resultados as $usuario) {
             echo "<tr>";
-            echo "<td>" . $usuario['id'] . "</td>";
-            echo "<td>" . $usuario['nombre'] . " " . $usuario['apellido'] . "</td>";
-            echo "<td>" . $usuario['email'] . "</td>";
-            echo "<td>" . $usuario['nombre_rol'] . "</td>";
+            echo "<td>" . esc($usuario['id']) . "</td>";
+            echo "<td>" . esc($usuario['nombre'] . ' ' . $usuario['apellido']) . "</td>";
+            echo "<td>" . esc($usuario['email']) . "</td>";
+            echo "<td>" . esc($usuario['nombre_rol']) . "</td>";
             echo "</tr>";
         }
         echo "</table>";
     }
 
+    /**
+     * @deprecated Endpoint de depuración. No usar en producción.
+     * Se mantiene solo para referencia durante desarrollo.
+     */
     public function testBusquedaDetallada()
     {
+        if (ENVIRONMENT !== 'development') {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
         if (!session('id') || session('rol_id') != 4) {
             return redirect()->to('/login');
         }
 
+        // Registrar acceso a endpoint de depuración
+        log_message('warning', 'Acceso a endpoint de depuración testBusquedaDetallada por usuario ID: ' . session('id'));
+
         $search = $this->request->getGet('search') ?? '';
-        $page = $this->request->getGet('page') ?? 1;
-        $perPage = 30;
+        $page = max(1, min((int)$this->request->getGet('page') ?: 1, 10)); // Máx 10 páginas
+        $perPage = min((int)$this->request->getGet('per_page') ?: 30, 50); // Máx 50 por página
         
-        echo "<h1>Prueba Detallada de Búsqueda</h1>";
-        echo "<p>Término de búsqueda: '$search'</p>";
-        echo "<p>Página: $page</p>";
-        echo "<p>Usuarios por página: $perPage</p>";
+        echo "<h1>🔧 Endpoint de Depuración - Test Búsqueda Detallada</h1>";
+        echo "<p><strong>⚠️ ADVERTENCIA:</strong> Este es un endpoint de depuración. No debe usarse en producción.</p>";
+        echo "<p>Término de búsqueda: '" . esc($search) . "'</p>";
+        echo "<p>Página: " . esc((string)$page) . "</p>";
+        echo "<p>Usuarios por página: " . esc((string)$perPage) . "</p>";
         
         // Obtener datos con paginación
         $data = $this->usuarioModel->getUsuariosConRolesPaginados($page, $perPage, $search);
         
         echo "<h2>Resultados de la Consulta Paginada:</h2>";
-        echo "<p>Total usuarios encontrados: " . $data['total'] . "</p>";
-        echo "<p>Página actual: " . $data['current_page'] . "</p>";
-        echo "<p>Total páginas: " . $data['total_pages'] . "</p>";
-        echo "<p>Usuarios en esta página: " . count($data['usuarios']) . "</p>";
+        echo "<p>Total usuarios encontrados: " . esc((string)$data['total']) . "</p>";
+        echo "<p>Página actual: " . esc((string)$data['current_page']) . "</p>";
+        echo "<p>Total páginas: " . esc((string)$data['total_pages']) . "</p>";
+        echo "<p>Usuarios en esta página: " . esc((string)count($data['usuarios'])) . "</p>";
         
         echo "<h3>Usuarios en esta página:</h3>";
         echo "<table border='1'>";
         echo "<tr><th>ID</th><th>Nombre</th><th>Email</th><th>Rol</th></tr>";
         foreach ($data['usuarios'] as $usuario) {
             echo "<tr>";
-            echo "<td>" . $usuario['id'] . "</td>";
-            echo "<td>" . $usuario['nombre'] . " " . $usuario['apellido'] . "</td>";
-            echo "<td>" . $usuario['email'] . "</td>";
-            echo "<td>" . $usuario['nombre_rol'] . "</td>";
-            echo "</tr>";
-        }
-        echo "</table>";
-        
-        // Obtener todos los usuarios para comparar
-        $todosUsuarios = $this->usuarioModel->getTodosLosUsuariosConRoles();
-        
-        echo "<h2>Comparación con Todos los Usuarios:</h2>";
-        echo "<p>Total usuarios en BD: " . count($todosUsuarios) . "</p>";
-        
-        // Filtrar manualmente
-        $resultadosManuales = [];
-        foreach ($todosUsuarios as $usuario) {
-            $nombreCompleto = $usuario['nombre'] . ' ' . $usuario['apellido'];
-            if (empty($search) || 
-                stripos($nombreCompleto, $search) !== false ||
-                stripos($usuario['email'], $search) !== false ||
-                stripos($usuario['cedula'], $search) !== false ||
-                stripos($usuario['nombre_rol'], $search) !== false) {
-                $resultadosManuales[] = $usuario;
-            }
-        }
-        
-        echo "<p>Resultados filtrados manualmente: " . count($resultadosManuales) . "</p>";
-        
-        echo "<h3>Usuarios que coinciden con la búsqueda:</h3>";
-        echo "<table border='1'>";
-        echo "<tr><th>ID</th><th>Nombre</th><th>Email</th><th>Rol</th></tr>";
-        foreach ($resultadosManuales as $usuario) {
-            echo "<tr>";
-            echo "<td>" . $usuario['id'] . "</td>";
-            echo "<td>" . $usuario['nombre'] . " " . $usuario['apellido'] . "</td>";
-            echo "<td>" . $usuario['email'] . "</td>";
-            echo "<td>" . $usuario['nombre_rol'] . "</td>";
+            echo "<td>" . esc($usuario['id']) . "</td>";
+            echo "<td>" . esc($usuario['nombre'] . ' ' . $usuario['apellido']) . "</td>";
+            echo "<td>" . esc($usuario['email']) . "</td>";
+            echo "<td>" . esc($usuario['nombre_rol']) . "</td>";
             echo "</tr>";
         }
         echo "</table>";
@@ -2138,25 +2205,17 @@ class GlobalAdminController extends BaseController
             
             // Estadísticas de usuarios por rol
             $stats['usuarios'] = [
-                'estudiantes' => $this->db->table('usuarios')->where('rol_id', 1)->countAllResults(),
-                'admin_bienestar' => $this->db->table('usuarios')->where('rol_id', 2)->countAllResults(),
-                'super_admin' => $this->db->table('usuarios')->where('rol_id', 3)->countAllResults()
+                'estudiantes' => $this->db->table('usuarios')->where('rol_id', ROLE_ESTUDIANTE)->countAllResults(),
+                'admin_bienestar' => $this->db->table('usuarios')->where('rol_id', ROLE_ADMIN_BIENESTAR)->countAllResults(),
+                'super_admin' => $this->db->table('usuarios')->where('rol_id', ROLE_SUPER_ADMIN)->countAllResults()
             ];
             
-            // Estadísticas de solicitudes de ayuda (si existe la tabla mejorada)
-            try {
-                $stats['solicitudes_ayuda'] = [
-                    'total' => $this->db->table('solicitudes_ayuda_mejorada')->countAllResults(),
-                    'abiertas' => $this->db->table('solicitudes_ayuda_mejorada')->where('estado', 'Abierta')->countAllResults(),
-                    'resueltas' => $this->db->table('solicitudes_ayuda_mejorada')->where('estado', 'Resuelta')->countAllResults()
-                ];
-            } catch (\Exception $e) {
-                $stats['solicitudes_ayuda'] = [
-                    'total' => 0,
-                    'abiertas' => 0,
-                    'resueltas' => 0
-                ];
-            }
+            // Estadísticas de solicitudes de ayuda
+            $stats['solicitudes_ayuda'] = [
+                'total' => $this->db->table('solicitudes_ayuda')->countAllResults(),
+                'abiertas' => $this->db->table('solicitudes_ayuda')->where('estado', 'Pendiente')->countAllResults(),
+                'resueltas' => $this->db->table('solicitudes_ayuda')->where('estado', 'Resuelta')->countAllResults()
+            ];
             
             // Rendimiento del sistema (últimas 24 horas)
             $stats['rendimiento'] = [
@@ -2166,16 +2225,10 @@ class GlobalAdminController extends BaseController
                 'nuevas_solicitudes_hoy' => $this->db->table('solicitudes_becas')
                     ->where('fecha_solicitud >=', date('Y-m-d H:i:s', strtotime('-24 hours')))
                     ->countAllResults(),
-                'nuevas_ayudas_hoy' => 0 // Por defecto si no existe la tabla
+                'nuevas_ayudas_hoy' => $this->db->table('solicitudes_ayuda')
+                    ->where('fecha_solicitud >=', date('Y-m-d H:i:s', strtotime('-24 hours')))
+                    ->countAllResults()
             ];
-            
-            try {
-                $stats['rendimiento']['nuevas_ayudas_hoy'] = $this->db->table('solicitudes_ayuda_mejorada')
-                    ->where('fecha_creacion >=', date('Y-m-d H:i:s', strtotime('-24 hours')))
-                    ->countAllResults();
-            } catch (\Exception $e) {
-                // Tabla no existe
-            }
             
             // Alertas y problemas
             $stats['alertas'] = $this->getAlertasSistema();
@@ -2359,8 +2412,8 @@ class GlobalAdminController extends BaseController
             return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
         }
 
-        $respaldoId = $this->request->getPost('respaldo_id');
-        $emailDestino = $this->request->getPost('email');
+        $respaldoId = $this->getPostInt('respaldo_id');
+        $emailDestino = $this->getPostString('email');
         
         if (!$respaldoId || !$emailDestino) {
             return $this->response->setJSON(['success' => false, 'error' => 'ID de respaldo y email son requeridos']);
@@ -2414,7 +2467,7 @@ class GlobalAdminController extends BaseController
             log_message('error', 'Error al enviar respaldo por email: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error al enviar el respaldo por correo: ' . $e->getMessage()
+                'error' => 'Error al enviar el respaldo por correo'
             ]);
         }
     }

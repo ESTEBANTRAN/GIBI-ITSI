@@ -21,9 +21,9 @@ class EmailHelper
         try {
             $db = \Config\Database::connect();
             
-            // Cargar configuración de la base de datos (con valores por defecto por si acaso)
-            $smtpUser = self::getValorDb($db, 'gmail_correo', 'bienestar.itsi.info@gmail.com');
-            $smtpPass = self::getValorDb($db, 'gmail_clave', 'itsi1234bienestar');
+            // Cargar configuración de la base de datos (con valores del archivo .env como fallback)
+            $smtpUser = self::getValorDb($db, 'gmail_correo', env('EMAIL_SMTP_USER', 'bienestar.itsi.info@gmail.com'));
+            $smtpPass = self::getValorDb($db, 'gmail_clave', env('EMAIL_SMTP_PASS', ''));
             $smtpHost = self::getValorDb($db, 'gmail_smtp_host', 'smtp.gmail.com');
             $smtpPort = (int)self::getValorDb($db, 'gmail_smtp_port', '587');
             $smtpCrypto = self::getValorDb($db, 'gmail_smtp_crypto', 'tls');

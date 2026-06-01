@@ -1,0 +1,239 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - link "Logo Estudiante Bienestar Estudiantil" [ref=e6] [cursor=pointer]:
+          - /url: http://localhost/ITSI/public/index.php/estudiante
+          - img "Logo" [ref=e7]
+          - generic [ref=e8]:
+            - text: Estudiante Bienestar
+            - text: Estudiantil
+        - text: 
+      - navigation [ref=e9]:
+        - region "scrollable content" [ref=e13]:
+          - list [ref=e15]:
+            - listitem [ref=e16]:  INICIO
+            - listitem [ref=e17]:
+              - link " Dashboard" [ref=e18] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante
+                - generic [ref=e20]: 
+                - generic [ref=e21]: Dashboard
+            - listitem [ref=e22]:  FORMULARIOS
+            - listitem [ref=e23]:
+              - link " Ficha Socioeconómica" [ref=e24] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/ficha-socioeconomica
+                - generic [ref=e26]: 
+                - generic [ref=e27]: Ficha Socioeconómica
+            - listitem [ref=e28]:
+              - link " Mis Documentos" [ref=e29] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/documentos
+                - generic [ref=e31]: 
+                - generic [ref=e32]: Mis Documentos
+            - listitem [ref=e33]:  BECAS
+            - listitem [ref=e34]:
+              - link " Solicitudes de Becas" [ref=e35] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/becas
+                - generic [ref=e37]: 
+                - generic [ref=e38]: Solicitudes de Becas
+            - listitem [ref=e39]:  SOLICITUDES
+            - listitem [ref=e40]:
+              - link " Solicitudes de Ayuda" [ref=e41] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/solicitudes-ayuda
+                - generic [ref=e43]: 
+                - generic [ref=e44]: Solicitudes de Ayuda
+            - listitem [ref=e45]:  INFORMACIÓN
+            - listitem [ref=e46]:
+              - link " Servicios de Bienestar" [ref=e47] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/servicios
+                - generic [ref=e49]: 
+                - generic [ref=e50]: Servicios de Bienestar
+            - listitem [ref=e51]:
+              - link " Información de Becas" [ref=e52] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/becas
+                - generic [ref=e54]: 
+                - generic [ref=e55]: Información de Becas
+            - listitem [ref=e56]:
+              - link " Apoyo Psicológico" [ref=e57] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/psicologia
+                - generic [ref=e59]: 
+                - generic [ref=e60]: Apoyo Psicológico
+            - listitem [ref=e61]:
+              - link " Servicios de Salud" [ref=e62] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/salud
+                - generic [ref=e64]: 
+                - generic [ref=e65]: Servicios de Salud
+            - listitem [ref=e66]:
+              - link " Trabajo Social" [ref=e67] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/trabajo-social
+                - generic [ref=e69]: 
+                - generic [ref=e70]: Trabajo Social
+            - listitem [ref=e71]:
+              - link " Orientación Académica" [ref=e72] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/orientacion-academica
+                - generic [ref=e74]: 
+                - generic [ref=e75]: Orientación Académica
+  - generic [ref=e76]:
+    - banner [ref=e77]:
+      - navigation [ref=e78]:
+        - link:
+          - /url: http://localhost/ITSI/public/
+        - list: 
+        - list [ref=e80]:
+          - listitem [ref=e81]:
+            - generic [ref=e82]:
+              - generic [ref=e83]: 
+              - text: Bienvenido al sistema, estudiantedos
+          - listitem [ref=e84]:
+            - link "Foto de perfil" [ref=e85] [cursor=pointer]:
+              - /url: javascript:void(0)
+              - img "Foto de perfil" [ref=e86]
+            - text:   
+    - generic [ref=e87]:
+      - generic [ref=e88]:
+        - generic [ref=e91]:
+          - generic [ref=e92]:
+            - heading "💰 Sistema de Becas" [level=2] [ref=e93]
+            - paragraph [ref=e94]: Gestiona tus solicitudes de becas y oportunidades disponibles
+          - button " Actualizar" [ref=e96] [cursor=pointer]:
+            - generic [ref=e97]: 
+            - text: Actualizar
+        - alert [ref=e100]:
+          - generic [ref=e101]: 
+          - generic [ref=e102]:
+            - heading "No habilitado para solicitar becas" [level=5] [ref=e103]
+            - paragraph [ref=e104]: No se ha creado la ficha socioeconómica para este período
+            - link " Crear ficha socioeconómica" [ref=e106] [cursor=pointer]:
+              - /url: http://localhost/ITSI/public/estudiante/ficha-socioeconomica
+              - generic [ref=e107]: 
+              - text: Crear ficha socioeconómica
+        - generic [ref=e108]:
+          - generic [ref=e111]:
+            - generic [ref=e113]: 
+            - heading "1" [level=5] [ref=e114]
+            - paragraph [ref=e115]: Fichas Creadas
+            - text: 0 aprobadas
+          - generic [ref=e118]:
+            - generic [ref=e120]: 
+            - heading "2" [level=5] [ref=e121]
+            - paragraph [ref=e122]: Solicitudes Totales
+            - text: 0 pendientes
+          - generic [ref=e125]:
+            - generic [ref=e127]: 
+            - heading "0" [level=5] [ref=e128]
+            - paragraph [ref=e129]: Becas Aprobadas
+            - text: ¡Felicitaciones!
+          - generic [ref=e132]:
+            - generic [ref=e134]: 
+            - heading "1" [level=5] [ref=e135]
+            - paragraph [ref=e136]: Becas Disponibles
+            - text: Para solicitar
+        - generic [ref=e139]:
+          - generic [ref=e140]:
+            - heading " Mis Solicitudes de Becas" [level=5] [ref=e141]:
+              - generic [ref=e142]: 
+              - text: Mis Solicitudes de Becas
+            - button " Probar Función" [ref=e144] [cursor=pointer]:
+              - generic [ref=e145]: 
+              - text: Probar Función
+          - table [ref=e148]:
+            - rowgroup [ref=e149]:
+              - row "Beca Estado Fecha Solicitud Progreso Documentos Monto Acciones" [ref=e150]:
+                - columnheader "Beca" [ref=e151]
+                - columnheader "Estado" [ref=e152]
+                - columnheader "Fecha Solicitud" [ref=e153]
+                - columnheader "Progreso Documentos" [ref=e154]
+                - columnheader "Monto" [ref=e155]
+                - columnheader "Acciones" [ref=e156]
+            - rowgroup [ref=e157]:
+              - row "Beca Socioeconómica Rechazada 13/08/2025 22:43 0/0 subidos $0   Debug" [ref=e158]:
+                - cell "Beca Socioeconómica" [ref=e159]:
+                  - strong [ref=e161]: Beca Socioeconómica
+                - cell "Rechazada" [ref=e162]:
+                  - generic [ref=e163]: Rechazada
+                - cell "13/08/2025 22:43" [ref=e164]:
+                  - text: 13/08/2025
+                  - text: 22:43
+                - cell "0/0 subidos" [ref=e165]:
+                  - generic [ref=e166]:
+                    - 'progressbar "Aprobados: 0"'
+                    - 'progressbar "En revisión: 0"'
+                  - text: 0/0 subidos
+                - cell "$0" [ref=e167]:
+                  - strong [ref=e168]: $0
+                - cell "  Debug" [ref=e169]:
+                  - generic [ref=e170]:
+                    - button "" [ref=e171] [cursor=pointer]:
+                      - generic [ref=e172]: 
+                    - button " Debug" [ref=e173] [cursor=pointer]:
+                      - generic [ref=e174]: 
+                      - text: Debug
+              - row "Beca Socioeconómica Postulada 13/08/2025 22:42 0/0 subidos $0   " [ref=e175]:
+                - cell "Beca Socioeconómica" [ref=e176]:
+                  - strong [ref=e178]: Beca Socioeconómica
+                - cell "Postulada" [ref=e179]:
+                  - generic [ref=e180]: Postulada
+                - cell "13/08/2025 22:42" [ref=e181]:
+                  - text: 13/08/2025
+                  - text: 22:42
+                - cell "0/0 subidos" [ref=e182]:
+                  - generic [ref=e183]:
+                    - 'progressbar "Aprobados: 0"'
+                    - 'progressbar "En revisión: 0"'
+                  - text: 0/0 subidos
+                - cell "$0" [ref=e184]:
+                  - strong [ref=e185]: $0
+                - cell "  " [ref=e186]:
+                  - generic [ref=e187]:
+                    - button "" [ref=e188] [cursor=pointer]:
+                      - generic [ref=e189]: 
+                    - button "" [ref=e190] [cursor=pointer]:
+                      - generic [ref=e191]: 
+                    - button "" [ref=e192] [cursor=pointer]:
+                      - generic [ref=e193]: 
+        - generic [ref=e196]:
+          - generic [ref=e197]:
+            - heading " Becas Disponibles" [level=5] [ref=e198]:
+              - generic [ref=e199]: 
+              - text: Becas Disponibles
+            - generic [ref=e201]: 1 becas disponibles
+          - generic [ref=e206]:
+            - generic [ref=e207]:
+              - heading "2024-1" [level=6] [ref=e208]
+              - generic [ref=e210]: "Período: 2024-1"
+            - paragraph [ref=e211]: fvsvfv...
+            - generic [ref=e212]:
+              - generic [ref=e213]:
+                - generic [ref=e214]: "Monto:"
+                - strong [ref=e215]: $100
+              - generic [ref=e216]:
+                - generic [ref=e217]: "Cupos:"
+                - generic [ref=e218]: 30 disponibles
+              - generic [ref=e219]:
+                - generic [ref=e220]: "Documentos:"
+                - generic [ref=e221]: N/A requeridos
+              - generic [ref=e222]:
+                - strong [ref=e224]: "Documentos requeridos:"
+                - generic [ref=e225]:
+                  - generic [ref=e226]: cedula
+                  - generic [ref=e227]: no posesion vehicular
+            - alert [ref=e228]:
+              - generic [ref=e229]:
+                - generic [ref=e230]: 
+                - strong [ref=e231]: "Requisito pendiente:"
+              - generic [ref=e232]: No se ha creado la ficha socioeconómica para este período
+              - link " Crear ficha socioeconómica" [ref=e234] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/estudiante/ficha-socioeconomica
+                - generic [ref=e235]: 
+                - text: Crear ficha socioeconómica
+            - generic [ref=e236]:
+              - button " Ver Detalles" [ref=e237] [cursor=pointer]:
+                - generic [ref=e238]: 
+                - text: Ver Detalles
+              - button " Requisitos Pendientes" [disabled]:
+                - generic: 
+                - text: Requisitos Pendientes
+      - text:   
+    - contentinfo [ref=e240]:
+      - generic [ref=e242]:
+        - img "ITSI Logo" [ref=e244]
+        - paragraph [ref=e246]: Tecnológico Ibarra. © 2024. All Rights Reserved

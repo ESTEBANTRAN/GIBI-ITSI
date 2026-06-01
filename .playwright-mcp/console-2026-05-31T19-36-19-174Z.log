@@ -1,0 +1,86 @@
+[     259ms] [LOG] CSS Styles URL: http://localhost/ITSI/public/sistema/assets/css/styles.min.css @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:35
+[     259ms] [LOG] CSS Custom URL: http://localhost/ITSI/public/sistema/assets/css/custom.css @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:36
+[     268ms] [LOG] jQuery version: 3.7.1 @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:2206
+[     268ms] [LOG] jQuery is properly loaded @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:2210
+[     268ms] [LOG] jQuery cargado correctamente @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:2251
+[     268ms] [LOG] ApexCharts cargado correctamente @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:2258
+[     300ms] [LOG] Document ready - iniciando carga de solicitudes... @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:1577
+[     301ms] [LOG] Cargando solicitudes... @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:1663
+[     327ms] [WARNING] jQuery.Deferred exception: $(...).DataTable is not a function TypeError: $(...).DataTable is not a function
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:1591:40)
+    at e (https://code.jquery.com/jquery-3.7.1.min.js:2:27028)
+    at t (https://code.jquery.com/jquery-3.7.1.min.js:2:27330) undefined @ https://code.jquery.com/jquery-3.7.1.min.js:1
+[     335ms] Uncaught TypeError: $(...).DataTable is not a function
+    at <anonymous> (http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:1590:39)
+    at e (https://code.jquery.com/jquery-3.7.1.min.js:1:27027)
+    at t (https://code.jquery.com/jquery-3.7.1.min.js:1:27329)
+[     422ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost/ITSI/public/index.php/admin-bienestar/obtener-periodos-academicos:0
+[     423ms] [ERROR] Error de conexión al cargar períodos @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:1743
+[     424ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost/ITSI/public/index.php/admin-bienestar/obtener-solicitudes-becas:0
+[     425ms] [ERROR] Error AJAX solicitudes: error Not Found @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:1696
+[     425ms] [ERROR] Respuesta del servidor: {
+    "title": "CodeIgniter\\Exceptions\\PageNotFoundException",
+    "type": "CodeIgniter\\Exceptions\\PageNotFoundException",
+    "code": 404,
+    "message": "Can't find a route for 'GET: admin-bienestar/obtener-solicitudes-becas'.",
+    "file": "C:\\xampp\\htdocs\\ITSI\\vendor\\codeigniter4\\framework\\system\\CodeIgniter.php",
+    "line": 983,
+    "trace": [
+        {
+            "file": "C:\\xampp\\htdocs\\ITSI\\vendor\\codeigniter4\\framework\\system\\CodeIgniter.php",
+            "line": 983,
+            "function": "forPageNotFound",
+            "class": "CodeIgniter\\Exceptions\\PageNotFoundException",
+            "type": "::",
+            "args": [
+                "Can't find a route for 'GET: admin-bienestar/obtener-solicitudes-becas'."
+            ]
+        },
+        {
+            "file": "C:\\xampp\\htdocs\\ITSI\\vendor\\codeigniter4\\framework\\system\\CodeIgniter.php",
+            "line": 360,
+            "function": "display404errors",
+            "class": "CodeIgniter\\CodeIgniter",
+            "type": "->",
+            "args": [
+                {}
+            ]
+        },
+        {
+            "file": "C:\\xampp\\htdocs\\ITSI\\vendor\\codeigniter4\\framework\\system\\Boot.php",
+            "line": 334,
+            "function": "run",
+            "class": "CodeIgniter\\CodeIgniter",
+            "type": "->",
+            "args": []
+        },
+        {
+            "file": "C:\\xampp\\htdocs\\ITSI\\vendor\\codeigniter4\\framework\\system\\Boot.php",
+            "line": 67,
+            "function": "runCodeIgniter",
+            "class": "CodeIgniter\\Boot",
+            "type": "::",
+            "args": [
+                {}
+            ]
+        },
+        {
+            "file": "C:\\xampp\\htdocs\\ITSI\\public\\index.php",
+            "line": 59,
+            "function": "bootWeb",
+            "class": "CodeIgniter\\Boot",
+            "type": "::",
+            "args": [
+                {
+                    "systemDirectory": "C:\\xampp\\htdocs\\ITSI\\app\\Config/../../vendor/codeigniter4/framework/system",
+                    "appDirectory": "C:\\xampp\\htdocs\\ITSI\\app\\Config/..",
+                    "writableDirectory": "C:\\xampp\\htdocs\\ITSI\\app\\Config/../../writable",
+                    "testsDirectory": "C:\\xampp\\htdocs\\ITSI\\app\\Config/../../tests",
+                    "viewDirectory": "C:\\xampp\\htdocs\\ITSI\\app\\Config/../Views"
+                }
+            ]
+        }
+    ]
+} @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:1697
+[     439ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost/ITSI/public/index.php/admin-bienestar/obtener-becas:0
+[     439ms] [ERROR] Error de conexión al cargar becas @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:1721

@@ -1796,7 +1796,7 @@ function procesarEvaluacionMasiva() {
                                         </tr>
                                         <tr>
                                             <td class="text-center fw-bold">B</td>
-                                            <td class="text-center">500 – 1000</td>
+                                            <td class="text-center">501 – 1000</td>
                                             <td class="text-center">
                                                 <div class="form-check d-flex justify-content-center">
                                                     <input class="form-check-input" type="radio" name="categoria_socioeconomica" id="categoria_b" value="B">
@@ -1808,7 +1808,7 @@ function procesarEvaluacionMasiva() {
                                         </tr>
                                         <tr>
                                             <td class="text-center fw-bold">C</td>
-                                            <td class="text-center">1000 – 1500</td>
+                                            <td class="text-center">1001 – 1500</td>
                                             <td class="text-center">
                                                 <div class="form-check d-flex justify-content-center">
                                                     <input class="form-check-input" type="radio" name="categoria_socioeconomica" id="categoria_c" value="C">

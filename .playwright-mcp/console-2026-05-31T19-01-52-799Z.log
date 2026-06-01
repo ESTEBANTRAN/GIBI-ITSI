@@ -1,0 +1,10 @@
+[     227ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/login:0
+[    9807ms] [LOG] Funciones cargadas correctamente @ http://localhost/ITSI/public/index.php/global-admin/dashboard:723
+[    9807ms] [LOG] crearBackup disponible: function @ http://localhost/ITSI/public/index.php/global-admin/dashboard:724
+[    9802ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)

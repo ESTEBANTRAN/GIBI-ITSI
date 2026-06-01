@@ -1,0 +1,20 @@
+[     229ms] [LOG] CSS Styles URL: http://localhost/ITSI/public/sistema/assets/css/styles.min.css @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:32
+[     229ms] [LOG] CSS Custom URL: http://localhost/ITSI/public/sistema/assets/css/custom.css @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:33
+[     270ms] [LOG] jQuery version: 3.7.1 @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:3057
+[     270ms] [LOG] jQuery is properly loaded @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:3061
+[     271ms] [LOG] jQuery cargado correctamente @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:3102
+[     271ms] [LOG] ApexCharts cargado correctamente @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:3109
+[     271ms] [LOG] Estadísticas Estado: [Object, Object, Object, Object] @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:2712
+[     272ms] [LOG] Estadísticas Prioridad: [Object, Object, Object, Object] @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:2713
+[     272ms] [LOG] Datos procesados Estado: {labels: Array(4), values: Array(4)} @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:2714
+[     272ms] [LOG] Datos procesados Prioridad: {labels: Array(4), values: Array(4)} @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:2715
+[    8137ms] [LOG] CSS Styles URL: http://localhost/ITSI/public/sistema/assets/css/styles.min.css @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:32
+[    8137ms] [LOG] CSS Custom URL: http://localhost/ITSI/public/sistema/assets/css/custom.css @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:33
+[    8169ms] [LOG] jQuery version: 3.7.1 @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:3057
+[    8170ms] [LOG] jQuery is properly loaded @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:3061
+[    8170ms] [LOG] jQuery cargado correctamente @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:3102
+[    8170ms] [LOG] ApexCharts cargado correctamente @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:3109
+[    8171ms] [LOG] Estadísticas Estado: [Object, Object, Object, Object] @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:2712
+[    8171ms] [LOG] Estadísticas Prioridad: [Object, Object, Object, Object] @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:2713
+[    8171ms] [LOG] Datos procesados Estado: {labels: Array(4), values: Array(4)} @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:2714
+[    8171ms] [LOG] Datos procesados Prioridad: {labels: Array(4), values: Array(4)} @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda:2715

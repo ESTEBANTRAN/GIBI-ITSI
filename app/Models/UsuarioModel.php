@@ -71,37 +71,6 @@ final class UsuarioModel extends Model
     protected $skipValidation = false;
     protected $cleanValidationRules = true;
     
-    /**
-     * Obtener usuarios con información del rol
-     */
-    public function getUsuariosConRol(): array
-    {
-        $db = \Config\Database::connect();
-        
-        return $db->table('usuarios u')
-            ->select('u.*, r.nombre as rol_nombre, r.descripcion as rol_descripcion')
-            ->join('roles r', 'r.id = u.rol_id')
-            ->orderBy('u.nombre', 'ASC')
-            ->get()
-            ->getResultArray();
-    }
-    
-    /**
-     * Obtener usuario específico con información del rol
-     */
-    public function getUsuarioConRol(int $usuarioId): ?array
-    {
-        $db = \Config\Database::connect();
-        
-        $usuario = $db->table('usuarios u')
-            ->select('u.*, r.nombre as rol_nombre, r.descripcion as rol_descripcion')
-            ->join('roles r', 'r.id = u.rol_id')
-            ->where('u.id', $usuarioId)
-            ->get()
-            ->getRowArray();
-        
-        return $usuario;
-    }
     
     /**
      * Buscar usuario por identificador (cédula o email)
@@ -140,30 +109,8 @@ final class UsuarioModel extends Model
                    ->findAll();
     }
     
-    /**
-     * Obtener usuarios inactivos
-     */
-    public function getUsuariosInactivos(): array
-    {
-        return $this->where('estado !=', 'Activo')
-                   ->orderBy('nombre', 'ASC')
-                   ->findAll();
-    }
-    
-    /**
-     * Buscar usuarios por término
-     */
-    public function buscarUsuarios(string $termino): array
-    {
-        return $this->like('nombre', $termino)
-                   ->orLike('apellido', $termino)
-                   ->orLike('cedula', $termino)
-                   ->orLike('email', $termino)
-                   ->orderBy('nombre', 'ASC')
-                   ->findAll();
-    }
-    
-    /**
+
+        /**
      * Obtener estadísticas de usuarios
      */
     public function getEstadisticasUsuarios(): array

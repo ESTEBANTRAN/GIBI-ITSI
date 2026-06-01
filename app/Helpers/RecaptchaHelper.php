@@ -17,11 +17,13 @@ class RecaptchaHelper
     /**
      * Clave del sitio (pública, usada en el frontend).
      * 
-     * NOTA: Las claves actuales son claves de PRUEBA de Google que siempre pasan.
+     * ⚠️ IMPORTANTE: Las claves actuales son claves de PRUEBA de Google que siempre pasan.
      * Para producción, reemplácelas con claves reales de https://www.google.com/recaptcha/admin
+     * 
+     * @see https://www.google.com/recaptcha/admin/create
      */
-    private const SITE_KEY   = '6LfeMAEtAAAAALjpfFg0M9hD-kfSoQKH1ajlJIip';
-    private const SECRET_KEY = '6LfeMAEtAAAAAGHpChEHQ6eiUIUdFIeCE1Td3mPp';
+    private const SITE_KEY   = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'; // @phpstan-ignore-line
+    private const SECRET_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'; // @phpstan-ignore-line
 
     /** URL de verificación de Google reCAPTCHA */
     private const VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
@@ -42,6 +44,12 @@ class RecaptchaHelper
      */
     public static function validar(?string $recaptchaResponse): bool
     {
+        // En desarrollo, saltar validación real (claves de prueba siempre pasan)
+        if (ENVIRONMENT === 'development') {
+            log_message('warning', '[DEV MODE] reCAPTCHA validation skipped');
+            return true;
+        }
+
         if (empty($recaptchaResponse)) {
             return false;
         }

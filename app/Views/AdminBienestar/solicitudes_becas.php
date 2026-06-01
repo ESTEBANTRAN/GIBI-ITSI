@@ -386,24 +386,9 @@ let paginaActual = 1;
 const solicitudesPorPagina = 10;
 let filtrosAplicados = {};
 
-// Inicialización
 $(document).ready(function() {
-    console.log('Document ready - iniciando carga de solicitudes...');
-    cargarSolicitudes();
-    cargarBecas();
-    cargarPeriodos();
-    
-    // Eventos de filtros
-    $('#filtroEstudiante').on('input', aplicarFiltros);
-    $('#filtroBeca, #filtroTipo, #filtroEstado, #filtroPeriodo').on('change', aplicarFiltros);
-});
-
-// Inicialización de DataTable y funcionalidad
-$(document).ready(function() {
-    // Inicializar DataTable con configuración
-    var table = $('#tablaSolicitudes').DataTable({
+    const table = $('#tablaSolicitudes').DataTable({
         "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json",
             "search": "Buscar:",
             "lengthMenu": "Mostrar _MENU_ registros por página",
             "zeroRecords": "No se encontraron registros",
@@ -424,12 +409,10 @@ $(document).ready(function() {
                "<'row'<'col-sm-12'tr>>" +
                "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
         "initComplete": function() {
-            // Inicializar tooltips
             $('[data-bs-toggle="tooltip"]').tooltip();
         }
     });
 
-    // Aplicar filtros
     function aplicarFiltros() {
         var filtroEstudiante = $('#filtroEstudiante').val().toLowerCase();
         var filtroBeca = $('#filtroBeca').val();
@@ -437,7 +420,6 @@ $(document).ready(function() {
         var filtroEstado = $('#filtroEstado').val();
         var filtroPeriodo = $('#filtroPeriodo').val();
         
-        // Construir URL con filtros
         var params = new URLSearchParams();
         if (filtroEstudiante) params.set('estudiante', filtroEstudiante);
         if (filtroBeca) params.set('beca', filtroBeca);
@@ -445,28 +427,23 @@ $(document).ready(function() {
         if (filtroEstado) params.set('estado', filtroEstado);
         if (filtroPeriodo) params.set('periodo', filtroPeriodo);
         
-        // Redirigir con los filtros aplicados
         window.location.href = '?' + params.toString();
     }
 
-    // Eventos de filtros
     $('#filtroEstudiante').on('keyup', function(e) {
         if (e.key === 'Enter') aplicarFiltros();
     });
     
     $('#filtroBeca, #filtroTipo, #filtroEstado, #filtroPeriodo').on('change', aplicarFiltros);
     
-    // Búsqueda rápida en la tabla
     $('#busquedaRapida').on('keyup', function() {
         table.search(this.value).draw();
     });
     
-    // Botón de búsqueda
     $('#btnBuscar').on('click', function() {
         table.search($('#busquedaRapida').val()).draw();
     });
     
-    // Limpiar filtros
     $('#btnLimpiarFiltros').on('click', function() {
         window.location.href = '<?= current_url() ?>';
     });
@@ -559,232 +536,23 @@ function cargarPeriodos() {
     });
 }
 
-// Aplicar filtros
 function aplicarFiltros() {
-    console.log('Aplicando filtros solicitudes...');
-    console.log('solicitudesData disponible:', typeof solicitudesData !== 'undefined' ? solicitudesData.length : 'undefined');
-    
-    if (typeof solicitudesData === 'undefined' || !solicitudesData) {
-        console.error('solicitudesData no está disponible para filtrar');
-        return;
-    }
-    
-    const estudianteFiltro = $('#filtroEstudiante').val().toLowerCase();
-    const becaFiltro = $('#filtroBeca').val();
-    const tipoFiltro = $('#filtroTipo').val();
-    const estadoFiltro = $('#filtroEstado').val();
-    const periodoFiltro = $('#filtroPeriodo').val();
-    
-    filtrosAplicados = { 
-        estudiante: estudianteFiltro, 
-        beca: becaFiltro, 
-        tipo: tipoFiltro,
-        estado: estadoFiltro,
-        periodo: periodoFiltro
-    };
-    
-    solicitudesFiltradas = solicitudesData.filter(solicitud => {
-        const cumpleEstudiante = !estudianteFiltro || 
-            solicitud.estudiante_nombre.toLowerCase().includes(estudianteFiltro) ||
-            solicitud.estudiante_apellido.toLowerCase().includes(estudianteFiltro);
-        const cumpleBeca = !becaFiltro || solicitud.beca_id == becaFiltro;
-        const cumpleTipo = !tipoFiltro || solicitud.tipo_beca === tipoFiltro;
-        const cumpleEstado = !estadoFiltro || solicitud.estado === estadoFiltro;
-        const cumplePeriodo = !periodoFiltro || solicitud.periodo_id == periodoFiltro;
-        
-        return cumpleEstudiante && cumpleBeca && cumpleTipo && cumpleEstado && cumplePeriodo;
-    });
-    
-    console.log('Solicitudes filtradas:', solicitudesFiltradas.length);
-    
-    paginaActual = 1;
-    mostrarSolicitudesPaginadas();
-    actualizarFiltrosActivos();
+    const params = new URLSearchParams();
+    const estudiante = $('#filtroEstudiante').val();
+    const beca = $('#filtroBeca').val();
+    const tipo = $('#filtroTipo').val();
+    const estado = $('#filtroEstado').val();
+    const periodo = $('#filtroPeriodo').val();
+    if (estudiante) params.set('busqueda', estudiante);
+    if (beca) params.set('beca_id', beca);
+    if (tipo) params.set('tipo_beca', tipo);
+    if (estado) params.set('estado', estado);
+    if (periodo) params.set('periodo_id', periodo);
+    window.location.href = '?' + params.toString();
 }
 
-// Limpiar filtros
 function limpiarFiltros() {
-    $('#filtroEstudiante').val('');
-    $('#filtroBeca').val('');
-    $('#filtroTipo').val('');
-    $('#filtroEstado').val('');
-    $('#filtroPeriodo').val('');
-    aplicarFiltros();
-}
-
-// Actualizar filtros activos
-function actualizarFiltrosActivos() {
-    const filtros = [];
-    if (filtrosAplicados.estudiante) filtros.push(`Estudiante: "${filtrosAplicados.estudiante}"`);
-    if (filtrosAplicados.beca) {
-        const beca = $('#filtroBeca option:selected').text();
-        filtros.push(`Beca: ${beca}`);
-    }
-    if (filtrosAplicados.tipo) filtros.push(`Tipo: ${filtrosAplicados.tipo}`);
-    if (filtrosAplicados.estado) filtros.push(`Estado: ${filtrosAplicados.estado}`);
-    if (filtrosAplicados.periodo) {
-        const periodo = $('#filtroPeriodo option:selected').text();
-        filtros.push(`Período: ${periodo}`);
-    }
-    
-    $('#filtrosActivos').text(filtros.length > 0 ? `Filtros activos: ${filtros.join(', ')}` : '');
-}
-
-// Mostrar solicitudes paginadas
-function mostrarSolicitudesPaginadas() {
-    console.log('Mostrando solicitudes paginadas...');
-    console.log('solicitudesFiltradas:', solicitudesFiltradas ? solicitudesFiltradas.length : 'undefined');
-    console.log('paginaActual:', paginaActual);
-    
-    if (typeof solicitudesFiltradas === 'undefined' || !solicitudesFiltradas) {
-        console.error('solicitudesFiltradas no está disponible');
-        return;
-    }
-    
-    const inicio = (paginaActual - 1) * solicitudesPorPagina;
-    const fin = inicio + solicitudesPorPagina;
-    const solicitudesPagina = solicitudesFiltradas.slice(inicio, fin);
-    
-    console.log('Solicitudes para mostrar en esta página:', solicitudesPagina.length);
-    
-    const tbody = $('#tbodySolicitudes');
-    tbody.empty();
-    
-    if (solicitudesFiltradas.length === 0) {
-        tbody.html(`
-            <tr>
-                <td colspan="9" class="text-center text-muted">
-                    <i class="fas fa-search mr-2"></i>No se encontraron solicitudes con los filtros aplicados
-                </td>
-            </tr>
-        `);
-        actualizarPaginacion(0);
-        actualizarContadores(0);
-        return;
-    }
-    
-    solicitudesPagina.forEach(function(solicitud) {
-        const tr = `
-            <tr>
-                <td class="text-center font-weight-bold" style="color: #000 !important; font-weight: 700 !important;">${solicitud.id}</td>
-                <td style="color: #000 !important; font-weight: 700 !important;">
-                    <div class="font-weight-bold text-primary">${solicitud.estudiante_nombre} ${solicitud.estudiante_apellido}</div>
-                    <small class="text-muted">ID: ${solicitud.estudiante_id}</small>
-                </td>
-                <td style="color: #000 !important; font-weight: 700 !important;">
-                    <div class="font-weight-bold">${solicitud.beca_nombre}</div>
-                    <small class="text-muted">ID: ${solicitud.beca_id}</small>
-                </td>
-                <td class="text-center">
-                    <span class="badge badge-info" style="color: #000 !important; font-weight: 700 !important;">
-                        <i class="fas fa-tag mr-1"></i>${solicitud.tipo_beca}
-                    </span>
-                </td>
-                <td style="color: #000 !important; font-weight: 700 !important;">
-                    <span class="badge badge-secondary">
-                        <i class="fas fa-calendar mr-1"></i>${solicitud.periodo_nombre}
-                    </span>
-                </td>
-                <td class="text-center">
-                    <span class="badge badge-${getBadgeClass(solicitud.estado)}" style="color: #000 !important; font-weight: 700 !important;">
-                        <i class="fas fa-${getEstadoIcon(solicitud.estado)} mr-1"></i>${solicitud.estado}
-                    </span>
-                </td>
-                <td class="text-center" style="color: #000 !important; font-weight: 700 !important;">
-                    <div class="font-weight-bold">${formatearFecha(solicitud.fecha_solicitud)}</div>
-                    <small class="text-muted">${formatearHora(solicitud.fecha_solicitud)}</small>
-                </td>
-                <td class="text-center">
-                    <div class="progress" style="height: 20px;">
-                        <div class="progress-bar bg-${getProgressColor(solicitud.porcentaje_avance)}" 
-                             role="progressbar" 
-                             style="width: ${solicitud.porcentaje_avance || 0}%" 
-                             aria-valuenow="${solicitud.porcentaje_avance || 0}" 
-                             aria-valuemin="0" 
-                             aria-valuemax="100">
-                            <span style="color: #000 !important; font-weight: 700 !important;">${solicitud.porcentaje_avance || 0}%</span>
-                        </div>
-                    </div>
-                </td>
-                <td class="text-center">
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="verSolicitud(${solicitud.id})" title="Ver detalles">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-success" onclick="aprobarSolicitud(${solicitud.id})" title="Aprobar" ${solicitud.estado !== 'En Revisión' ? 'disabled' : ''}>
-                            <i class="fas fa-check"></i>
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="rechazarSolicitud(${solicitud.id})" title="Rechazar" ${solicitud.estado !== 'En Revisión' ? 'disabled' : ''}>
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        `;
-        tbody.append(tr);
-    });
-    
-    actualizarPaginacion(solicitudesFiltradas.length);
-    actualizarContadores(solicitudesFiltradas.length);
-}
-
-// Actualizar paginación
-function actualizarPaginacion(totalSolicitudes) {
-    const totalPaginas = Math.ceil(totalSolicitudes / solicitudesPorPagina);
-    const paginacion = $('#paginacionSolicitudes');
-    paginacion.empty();
-    
-    if (totalPaginas <= 1) return;
-    
-    // Botón anterior
-    const btnAnterior = `
-        <li class="page-item ${paginaActual === 1 ? 'disabled' : ''}">
-            <a class="page-link" href="#" onclick="cambiarPagina(${paginaActual - 1})">
-                <i class="fas fa-chevron-left"></i>
-            </a>
-        </li>
-    `;
-    paginacion.append(btnAnterior);
-    
-    // Números de página
-    for (let i = 1; i <= totalPaginas; i++) {
-        if (i === 1 || i === totalPaginas || (i >= paginaActual - 2 && i <= paginaActual + 2)) {
-            const btnPagina = `
-                <li class="page-item ${i === paginaActual ? 'active' : ''}">
-                    <a class="page-link" href="#" onclick="cambiarPagina(${i})">${i}</a>
-                </li>
-            `;
-            paginacion.append(btnPagina);
-        } else if (i === paginaActual - 3 || i === paginaActual + 3) {
-            paginacion.append('<li class="page-item disabled"><span class="page-link">...</span></li>');
-        }
-    }
-    
-    // Botón siguiente
-    const btnSiguiente = `
-        <li class="page-item ${paginaActual === totalPaginas ? 'disabled' : ''}">
-            <a class="page-link" href="#" onclick="cambiarPagina(${paginaActual + 1})">
-                <i class="fas fa-chevron-right"></i>
-            </a>
-        </li>
-    `;
-    paginacion.append(btnSiguiente);
-}
-
-// Cambiar página
-function cambiarPagina(pagina) {
-    if (pagina < 1 || pagina > Math.ceil(solicitudesFiltradas.length / solicitudesPorPagina)) return;
-    paginaActual = pagina;
-    mostrarSolicitudesPaginadas();
-}
-
-// Actualizar contadores
-function actualizarContadores(totalSolicitudes) {
-    const inicio = (paginaActual - 1) * solicitudesPorPagina + 1;
-    const fin = Math.min(paginaActual * solicitudesPorPagina, totalSolicitudes);
-    
-    $('#contadorSolicitudes').text(`Mostrando ${inicio} a ${fin} de ${totalSolicitudes} solicitudes`);
-    $('#infoPaginacion').text(`Mostrando ${inicio} a ${fin} de ${totalSolicitudes} solicitudes`);
+    window.location.href = '<?= current_url() ?>';
 }
 
 // Formatear fecha

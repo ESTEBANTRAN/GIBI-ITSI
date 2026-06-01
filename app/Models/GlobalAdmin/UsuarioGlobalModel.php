@@ -51,54 +51,6 @@ class UsuarioGlobalModel extends Model
     }
 
     /**
-     * Obtiene usuarios activos
-     */
-    public function getUsuariosActivos()
-    {
-        return $this->where('estado', 'Activo')->findAll();
-    }
-
-    /**
-     * Obtiene usuarios bloqueados
-     */
-    public function getUsuariosBloqueados()
-    {
-        return $this->where('estado', 'Bloqueado')->findAll();
-    }
-
-    /**
-     * Bloquea un usuario
-     */
-    public function bloquearUsuario($id, $motivo = '')
-    {
-        return $this->update($id, [
-            'estado' => 'Bloqueado',
-            'bloqueado_hasta' => date('Y-m-d H:i:s', strtotime('+24 hours')),
-            'intentos_login' => 0
-        ]);
-    }
-
-    /**
-     * Desbloquea un usuario
-     */
-    public function desbloquearUsuario($id)
-    {
-        return $this->update($id, [
-            'estado' => 'Activo',
-            'bloqueado_hasta' => null,
-            'intentos_login' => 0
-        ]);
-    }
-
-    /**
-     * Cambia el rol de un usuario
-     */
-    public function cambiarRol($id, $nuevo_rol_id)
-    {
-        return $this->update($id, ['rol_id' => $nuevo_rol_id]);
-    }
-
-    /**
      * Obtiene estadísticas de usuarios
      */
     public function getEstadisticasUsuarios()
@@ -122,22 +74,6 @@ class UsuarioGlobalModel extends Model
     }
 
     /**
-     * Busca usuarios por término
-     */
-    public function buscarUsuarios($termino)
-    {
-        return $this->select('usuarios.*, roles.nombre as nombre_rol')
-                    ->join('roles', 'roles.id = usuarios.rol_id')
-                    ->groupStart()
-                        ->like('usuarios.nombre', $termino)
-                        ->orLike('usuarios.apellido', $termino)
-                        ->orLike('usuarios.email', $termino)
-                        ->orLike('usuarios.cedula', $termino)
-                    ->groupEnd()
-                    ->findAll();
-    }
-
-    /**
      * Obtiene actividad reciente de usuarios
      */
     public function getActividadReciente($limite = 10)
@@ -156,37 +92,6 @@ class UsuarioGlobalModel extends Model
     public function actualizarUltimoAcceso($id)
     {
         return $this->update($id, ['ultimo_acceso' => date('Y-m-d H:i:s')]);
-    }
-
-    /**
-     * Incrementa intentos de login
-     */
-    public function incrementarIntentosLogin($id)
-    {
-        $usuario = $this->find($id);
-        $intentos = ($usuario['intentos_login'] ?? 0) + 1;
-        
-        $data = ['intentos_login' => $intentos];
-        
-        // Bloquear después de 5 intentos
-        if ($intentos >= 5) {
-            $data['estado'] = 'Bloqueado';
-            $data['bloqueado_hasta'] = date('Y-m-d H:i:s', strtotime('+1 hour'));
-        }
-        
-        return $this->update($id, $data);
-    }
-
-    /**
-     * Resetea intentos de login
-     */
-    public function resetearIntentosLogin($id)
-    {
-        return $this->update($id, [
-            'intentos_login' => 0,
-            'estado' => 'Activo',
-            'bloqueado_hasta' => null
-        ]);
     }
 
     /**

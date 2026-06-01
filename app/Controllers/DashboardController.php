@@ -30,13 +30,13 @@ class DashboardController extends BaseController
 
         $rol_id = session('rol_id');
         
-        if ($rol_id == 1) {
+        if ($rol_id == ROLE_ESTUDIANTE) {
             // Estudiante
             return redirect()->to('/estudiante');
-        } elseif ($rol_id == 2) {
+        } elseif ($rol_id == ROLE_ADMIN_BIENESTAR) {
             // Administrativo Bienestar
             return redirect()->to('/admin-bienestar');
-        } elseif ($rol_id == 4) {
+        } elseif ($rol_id == ROLE_SUPER_ADMIN) {
             // Super Administrador
             return redirect()->to('/global-admin/dashboard');
         }
@@ -46,27 +46,27 @@ class DashboardController extends BaseController
 
     public function adminBienestar()
     {
-        if (!session('id') || session('rol_id') != 2) {
+        if (!session('id') || session('rol_id') != ROLE_ADMIN_BIENESTAR) {
             return redirect()->to('/login');
         }
 
-        // Estadísticas de formularios
+        // Estadísticas de formularios (estados reales de la BD: Borrador, Enviada, Revisada, Aprobada, Rechazada)
         $totalFormularios = $this->fichaModel->countAllResults();
-        $formulariosPendientes = $this->fichaModel->where('estado', 'Pendiente')->countAllResults();
-        $formulariosAprobados = $this->fichaModel->where('estado', 'Aprobado')->countAllResults();
-        $formulariosRechazados = $this->fichaModel->where('estado', 'Rechazado')->countAllResults();
+        $formulariosPendientes = $this->fichaModel->where('estado', 'Enviada')->countAllResults();
+        $formulariosAprobados = $this->fichaModel->where('estado', 'Aprobada')->countAllResults();
+        $formulariosRechazados = $this->fichaModel->where('estado', 'Rechazada')->countAllResults();
 
         // Estadísticas de becas
         $totalBecas = $this->becaModel->countAllResults();
         $becasActivas = $this->becaModel->where('estado', 'Activa')->countAllResults();
-        $solicitudesBecas = \Config\Database::connect()->table('solicitudes_becas')->where('estado', 'Pendiente')->countAllResults();
+        $solicitudesBecas = \Config\Database::connect()->table('solicitudes_becas')->where('estado', 'Postulada')->countAllResults();
 
-        // Estadísticas de solicitudes
+        // Estadísticas de solicitudes de ayuda (estados: Pendiente, En Proceso, Resuelta, Cerrada)
         $totalSolicitudes = $this->solicitudModel->countAllResults();
         $solicitudesPendientes = $this->solicitudModel->where('estado', 'Pendiente')->countAllResults();
 
         // Estadísticas de estudiantes
-        $totalEstudiantes = $this->usuarioModel->where('rol_id', 1)->countAllResults();
+        $totalEstudiantes = $this->usuarioModel->where('rol_id', ROLE_ESTUDIANTE)->countAllResults();
 
         // Obtener actividad reciente
         $actividadRecienteLogs = \Config\Database::connect()->table('logs l')
@@ -127,25 +127,25 @@ class DashboardController extends BaseController
         }
 
         try {
-            // Estadísticas de formularios
+            // Estadísticas de formularios (estados reales: Borrador, Enviada, Revisada, Aprobada, Rechazada)
             $totalFormularios = $this->fichaModel->countAllResults();
-            $formulariosPendientes = $this->fichaModel->where('estado', 'Pendiente')->countAllResults();
-            $formulariosAprobados = $this->fichaModel->where('estado', 'Aprobado')->countAllResults();
-            $formulariosRechazados = $this->fichaModel->where('estado', 'Rechazado')->countAllResults();
+            $formulariosPendientes = $this->fichaModel->where('estado', 'Enviada')->countAllResults();
+            $formulariosAprobados = $this->fichaModel->where('estado', 'Aprobada')->countAllResults();
+            $formulariosRechazados = $this->fichaModel->where('estado', 'Rechazada')->countAllResults();
 
             // Estadísticas de becas
             $totalBecas = $this->becaModel->countAllResults();
             $becasActivas = $this->becaModel->where('estado', 'Activa')->countAllResults();
-            $solicitudesBecas = \Config\Database::connect()->table('solicitudes_becas')->where('estado', 'Pendiente')->countAllResults();
+            $solicitudesBecas = \Config\Database::connect()->table('solicitudes_becas')->where('estado', 'Postulada')->countAllResults();
 
-            // Estadísticas de solicitudes
+            // Estadísticas de solicitudes de ayuda (estados: Pendiente, En Proceso, Resuelta, Cerrada)
             $totalSolicitudes = $this->solicitudModel->countAllResults();
             $solicitudesPendientes = $this->solicitudModel->where('estado', 'Pendiente')->countAllResults();
             $solicitudesEnProceso = $this->solicitudModel->where('estado', 'En Proceso')->countAllResults();
             $solicitudesResueltas = $this->solicitudModel->where('estado', 'Resuelta')->countAllResults();
 
             // Estadísticas de estudiantes
-            $totalEstudiantes = $this->usuarioModel->where('rol_id', 1)->countAllResults();
+            $totalEstudiantes = $this->usuarioModel->where('rol_id', ROLE_ESTUDIANTE)->countAllResults();
 
             $estadisticas = [
                 'formularios' => [
@@ -216,7 +216,86 @@ class DashboardController extends BaseController
     }
 
     /**
-     * Actualiza el dashboard
+     * Obtiene datos de estadísticas como array (sin Response wrapper)
+     */
+    private function obtenerDatosEstadisticas(): array
+    {
+        // Estadísticas de formularios (estados reales: Borrador, Enviada, Revisada, Aprobada, Rechazada)
+        $totalFormularios = $this->fichaModel->countAllResults();
+        $formulariosPendientes = $this->fichaModel->where('estado', 'Enviada')->countAllResults();
+        $formulariosAprobados = $this->fichaModel->where('estado', 'Aprobada')->countAllResults();
+        $formulariosRechazados = $this->fichaModel->where('estado', 'Rechazada')->countAllResults();
+
+        $totalBecas = $this->becaModel->countAllResults();
+        $becasActivas = $this->becaModel->where('estado', 'Activa')->countAllResults();
+        $solicitudesBecas = \Config\Database::connect()->table('solicitudes_becas')->where('estado', 'Postulada')->countAllResults();
+
+        $totalSolicitudes = $this->solicitudModel->countAllResults();
+        $solicitudesPendientes = $this->solicitudModel->where('estado', 'Pendiente')->countAllResults();
+        $solicitudesEnProceso = $this->solicitudModel->where('estado', 'En Proceso')->countAllResults();
+        $solicitudesResueltas = $this->solicitudModel->where('estado', 'Resuelta')->countAllResults();
+
+        $totalEstudiantes = $this->usuarioModel->where('rol_id', ROLE_ESTUDIANTE)->countAllResults();
+
+        return [
+            'formularios' => [
+                'total' => $totalFormularios,
+                'pendientes' => $formulariosPendientes,
+                'aprobados' => $formulariosAprobados,
+                'rechazados' => $formulariosRechazados
+            ],
+            'becas' => [
+                'total' => $totalBecas,
+                'activas' => $becasActivas,
+                'solicitudes' => $solicitudesBecas
+            ],
+            'solicitudes' => [
+                'total' => $totalSolicitudes,
+                'pendientes' => $solicitudesPendientes,
+                'en_proceso' => $solicitudesEnProceso,
+                'resueltas' => $solicitudesResueltas
+            ],
+            'estudiantes' => [
+                'total' => $totalEstudiantes
+            ]
+        ];
+    }
+
+    /**
+     * Obtiene datos de actividad reciente como array (sin Response wrapper)
+     */
+    private function obtenerDatosActividadReciente(): array
+    {
+        $actividadRecienteLogs = \Config\Database::connect()->table('logs l')
+            ->select('l.accion, l.fecha_creacion as fecha, u.nombre, u.apellido')
+            ->join('usuarios u', 'u.id = l.id_usuario', 'left')
+            ->orderBy('l.fecha_creacion', 'DESC')
+            ->limit(5)
+            ->get()
+            ->getResultArray();
+
+        $actividadFormateada = [];
+        foreach ($actividadRecienteLogs as $log) {
+            $estado = 'Completado';
+            if (strpos(strtolower($log['accion']), 'rechaz') !== false || strpos(strtolower($log['accion']), 'eliminar') !== false) {
+                $estado = 'Rechazado';
+            } elseif (strpos(strtolower($log['accion']), 'pendient') !== false || strpos(strtolower($log['accion']), 'solicitud') !== false) {
+                $estado = 'Pendiente';
+            }
+
+            $actividadFormateada[] = [
+                'accion' => ucfirst(str_replace('_', ' ', $log['accion'])),
+                'usuario' => ($log['nombre'] && $log['apellido']) ? $log['nombre'] . ' ' . $log['apellido'] : 'Sistema',
+                'fecha' => 'Hace ' . \CodeIgniter\I18n\Time::parse($log['fecha'])->humanize(),
+                'estado' => $estado
+            ];
+        }
+
+        return $actividadFormateada;
+    }
+
+    /**
+     * Actualiza el dashboard (usa métodos privados para datos directos)
      */
     public function actualizarDashboard()
     {
@@ -225,8 +304,8 @@ class DashboardController extends BaseController
         }
 
         try {
-            $estadisticas = $this->getEstadisticas();
-            $actividad = $this->getActividadReciente();
+            $estadisticas = $this->obtenerDatosEstadisticas();
+            $actividad = $this->obtenerDatosActividadReciente();
 
             return $this->response->setJSON([
                 'success' => true,

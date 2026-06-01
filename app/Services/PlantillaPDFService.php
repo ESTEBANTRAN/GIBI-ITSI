@@ -344,48 +344,4 @@ class PlantillaPDFService
         return $html;
     }
 
-    /**
-     * Generar PDF de cualquier tipo usando plantilla
-     */
-    public function generarPDFConPlantilla($tipo, $datos, $opciones = [])
-    {
-        switch ($tipo) {
-            case 'ficha_socioeconomica':
-                return $this->generarFichaSocioeconomicaPDF(
-                    $datos['ficha'],
-                    $datos['estudiante'],
-                    $datos['periodo'],
-                    $datos['datosFicha']
-                );
-            
-            case 'reporte_becas':
-                return $this->generarReporteBecasPDF($datos, $opciones);
-            
-            case 'solicitud_ayuda':
-                return $this->generarSolicitudAyudaPDF($datos, $opciones);
-            
-            default:
-                throw new \Exception('Tipo de documento no soportado: ' . $tipo);
-        }
-    }
-
-    /**
-     * Generar PDF de reporte de becas
-     */
-    public function generarReporteBecasPDF($datos, $opciones)
-    {
-        // Implementar generación de reporte de becas
-        // Similar a ficha socioeconómica pero con datos de becas
-        return null; // Placeholder
-    }
-
-    /**
-     * Generar PDF de solicitud de ayuda
-     */
-    public function generarSolicitudAyudaPDF($datos, $opciones)
-    {
-        // Implementar generación de solicitud de ayuda
-        // Similar a ficha socioeconómica pero con datos de ayuda
-        return null; // Placeholder
-    }
 }

@@ -13,21 +13,22 @@ class FichaSocioeconomicaModel extends Model
         'periodo_id', 
         'json_data', 
         'estado', 
+        'revisada_por_admin',
+        'fecha_revision_admin',
         'observaciones_admin',
         'fecha_creacion', 
         'fecha_envio', 
-        'fecha_revision'
+        'fecha_revision',
+        'revisado_por',
+        'fecha_actualizacion',
+        'actualizado_por',
+        'puntaje_calculado',
+        'relacionada_beca',
+        'fecha_relacion_beca'
     ];
     protected $useTimestamps = false;
     protected $createdField = 'fecha_creacion';
     protected $updatedField = 'fecha_actualizacion';
-
-    public function getFichasPorEstudiante($estudiante_id)
-    {
-        return $this->where('estudiante_id', $estudiante_id)
-                    ->orderBy('fecha_creacion', 'DESC')
-                    ->findAll();
-    }
 
     public function getFichasConPeriodo($estudiante_id)
     {
@@ -44,45 +45,6 @@ class FichaSocioeconomicaModel extends Model
                     ->join('periodos_academicos', 'periodos_academicos.id = fichas_socioeconomicas.periodo_id')
                     ->where('fichas_socioeconomicas.id', $id)
                     ->where('fichas_socioeconomicas.estudiante_id', $estudiante_id)
-                    ->first();
-    }
-
-    public function verificarFichaExistente($estudiante_id, $periodo_id)
-    {
-        return $this->where('estudiante_id', $estudiante_id)
-                    ->where('periodo_id', $periodo_id)
-                    ->first();
-    }
-
-    public function getFichasAprobadas($estudiante_id)
-    {
-        return $this->where('estudiante_id', $estudiante_id)
-                    ->where('estado', 'Aprobada')
-                    ->findAll();
-    }
-
-    public function getFichasPendientes($estudiante_id)
-    {
-        return $this->where('estudiante_id', $estudiante_id)
-                    ->whereIn('estado', ['Borrador', 'Enviada'])
-                    ->findAll();
-    }
-
-    public function getFichasParaAdmin()
-    {
-        return $this->select('fichas_socioeconomicas.*, usuarios.nombre, usuarios.apellido, usuarios.cedula, usuarios.email, periodos_academicos.nombre as nombre_periodo')
-                    ->join('usuarios', 'usuarios.id = fichas_socioeconomicas.estudiante_id')
-                    ->join('periodos_academicos', 'periodos_academicos.id = fichas_socioeconomicas.periodo_id')
-                    ->orderBy('fichas_socioeconomicas.fecha_creacion', 'DESC')
-                    ->findAll();
-    }
-
-    public function getFichaParaAdmin($id)
-    {
-        return $this->select('fichas_socioeconomicas.*, usuarios.nombre, usuarios.apellido, usuarios.cedula, usuarios.email, periodos_academicos.nombre as nombre_periodo')
-                    ->join('usuarios', 'usuarios.id = fichas_socioeconomicas.estudiante_id')
-                    ->join('periodos_academicos', 'periodos_academicos.id = fichas_socioeconomicas.periodo_id')
-                    ->where('fichas_socioeconomicas.id', $id)
                     ->first();
     }
 

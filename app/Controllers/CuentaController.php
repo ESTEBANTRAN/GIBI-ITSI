@@ -3,9 +3,12 @@
 namespace App\Controllers;
 
 use App\Models\UsuarioModel;
+use App\Security\InputSanitizerTrait;
 
 class CuentaController extends BaseController
 {
+    use InputSanitizerTrait;
+
     protected $usuarioModel;
 
     public function __construct()
@@ -21,10 +24,10 @@ class CuentaController extends BaseController
 
         $rol_id = session('rol_id');
         
-        if ($rol_id == 1) {
+        if ($rol_id == ROLE_ESTUDIANTE) {
             // Estudiante
             return view('cuenta/estudiante');
-        } elseif ($rol_id == 2 || $rol_id == 4) {
+        } elseif ($rol_id == ROLE_ADMIN_BIENESTAR || $rol_id == ROLE_SUPER_ADMIN) {
             // Administrativo Bienestar o Super Administrador
             return view('cuenta/administrador');
         } else {
@@ -49,8 +52,8 @@ class CuentaController extends BaseController
         }
 
         $userId = session('id');
-        $passwordActual = $this->request->getPost('password_actual');
-        $passwordNuevo = $this->request->getPost('password_nuevo');
+        $passwordActual = $this->getPostString('password_actual');
+        $passwordNuevo = $this->getPostString('password_nuevo');
 
         // Obtener usuario actual
         $usuario = $this->usuarioModel->find($userId);
@@ -85,9 +88,9 @@ class CuentaController extends BaseController
         $userId = session('id');
         
         $data = [
-            'notificaciones_email' => $this->request->getPost('notificaciones_email') ? 1 : 0,
-            'notificaciones_sms' => $this->request->getPost('notificaciones_sms') ? 1 : 0,
-            'notificaciones_push' => $this->request->getPost('notificaciones_push') ? 1 : 0
+            'notificaciones_email' => $this->getPostString('notificaciones_email') ? 1 : 0,
+            'notificaciones_sms' => $this->getPostString('notificaciones_sms') ? 1 : 0,
+            'notificaciones_push' => $this->getPostString('notificaciones_push') ? 1 : 0
         ];
 
         if ($this->usuarioModel->update($userId, $data)) {
@@ -104,7 +107,7 @@ class CuentaController extends BaseController
         }
 
         $userId = session('id');
-        $password = $this->request->getPost('password_confirmar');
+        $password = $this->getPostString('password_confirmar');
 
         if (empty($password)) {
             return redirect()->back()->with('error', 'Debe confirmar su contraseña para eliminar la cuenta.');

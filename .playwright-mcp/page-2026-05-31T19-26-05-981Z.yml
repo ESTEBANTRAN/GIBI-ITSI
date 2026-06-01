@@ -1,0 +1,158 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - link "Logo Estudiante Bienestar Estudiantil" [ref=e6] [cursor=pointer]:
+          - /url: http://localhost/ITSI/public/index.php/estudiante
+          - img "Logo" [ref=e7]
+          - generic [ref=e8]:
+            - text: Estudiante Bienestar
+            - text: Estudiantil
+        - text: 
+      - navigation [ref=e9]:
+        - region "scrollable content" [ref=e13]:
+          - list [ref=e15]:
+            - listitem [ref=e16]:  INICIO
+            - listitem [ref=e17]:
+              - link " Dashboard" [ref=e18] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante
+                - generic [ref=e20]: 
+                - generic [ref=e21]: Dashboard
+            - listitem [ref=e22]:  FORMULARIOS
+            - listitem [ref=e23]:
+              - link " Ficha Socioeconómica" [ref=e24] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/ficha-socioeconomica
+                - generic [ref=e26]: 
+                - generic [ref=e27]: Ficha Socioeconómica
+            - listitem [ref=e28]:
+              - link " Mis Documentos" [ref=e29] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/documentos
+                - generic [ref=e31]: 
+                - generic [ref=e32]: Mis Documentos
+            - listitem [ref=e33]:  BECAS
+            - listitem [ref=e34]:
+              - link " Solicitudes de Becas" [ref=e35] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/becas
+                - generic [ref=e37]: 
+                - generic [ref=e38]: Solicitudes de Becas
+            - listitem [ref=e39]:  SOLICITUDES
+            - listitem [ref=e40]:
+              - link " Solicitudes de Ayuda" [ref=e41] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/solicitudes-ayuda
+                - generic [ref=e43]: 
+                - generic [ref=e44]: Solicitudes de Ayuda
+            - listitem [ref=e45]:  INFORMACIÓN
+            - listitem [ref=e46]:
+              - link " Servicios de Bienestar" [ref=e47] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/servicios
+                - generic [ref=e49]: 
+                - generic [ref=e50]: Servicios de Bienestar
+            - listitem [ref=e51]:
+              - link " Información de Becas" [ref=e52] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/becas
+                - generic [ref=e54]: 
+                - generic [ref=e55]: Información de Becas
+            - listitem [ref=e56]:
+              - link " Apoyo Psicológico" [ref=e57] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/psicologia
+                - generic [ref=e59]: 
+                - generic [ref=e60]: Apoyo Psicológico
+            - listitem [ref=e61]:
+              - link " Servicios de Salud" [ref=e62] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/salud
+                - generic [ref=e64]: 
+                - generic [ref=e65]: Servicios de Salud
+            - listitem [ref=e66]:
+              - link " Trabajo Social" [ref=e67] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/trabajo-social
+                - generic [ref=e69]: 
+                - generic [ref=e70]: Trabajo Social
+            - listitem [ref=e71]:
+              - link " Orientación Académica" [ref=e72] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/orientacion-academica
+                - generic [ref=e74]: 
+                - generic [ref=e75]: Orientación Académica
+  - generic [ref=e76]:
+    - banner [ref=e77]:
+      - navigation [ref=e78]:
+        - link:
+          - /url: http://localhost/ITSI/public/
+        - list: 
+        - list [ref=e80]:
+          - listitem [ref=e81]:
+            - generic [ref=e82]:
+              - generic [ref=e83]: 
+              - text: Bienvenido al sistema, estudiantedos
+          - listitem [ref=e84]:
+            - link "Foto de perfil" [ref=e85] [cursor=pointer]:
+              - /url: javascript:void(0)
+              - img "Foto de perfil" [ref=e86]
+            - text:   
+    - generic [ref=e87]:
+      - generic [ref=e90]:
+        - generic [ref=e91]:
+          - heading "Solicitudes de Ayuda" [level=4] [ref=e92]
+          - paragraph [ref=e93]: Gestiona tus solicitudes de ayuda y apoyo
+        - button " Nueva Solicitud" [ref=e95] [cursor=pointer]:
+          - generic [ref=e96]: 
+          - text: Nueva Solicitud
+      - generic [ref=e99]:
+        - heading " Mis Solicitudes de Ayuda" [level=5] [ref=e101]:
+          - generic [ref=e102]: 
+          - text: Mis Solicitudes de Ayuda
+        - generic [ref=e104]:
+          - generic [ref=e105]: 
+          - paragraph [ref=e106]: No tienes solicitudes de ayuda registradas
+          - button " Crear Primera Solicitud" [ref=e107] [cursor=pointer]:
+            - generic [ref=e108]: 
+            - text: Crear Primera Solicitud
+      - dialog [ref=e117]:
+        - generic [ref=e118]:
+          - generic [ref=e119]:
+            - heading " Nueva Solicitud de Ayuda" [level=5] [ref=e120]:
+              - generic [ref=e121]: 
+              - text: Nueva Solicitud de Ayuda
+            - button [ref=e122] [cursor=pointer]
+          - generic [ref=e123]:
+            - generic [ref=e124]:
+              - generic [ref=e125]:
+                - generic [ref=e127]:
+                  - generic [ref=e128]: Categoría *
+                  - combobox [ref=e129]:
+                    - option "Seleccionar categoría"
+                    - option "Académicas" [selected]:  Académicas
+                    - option "Económicas":  Económicas
+                    - option "Salud":  Salud
+                    - option "Vivienda":  Vivienda
+                    - option "Sociales":  Sociales
+                    - option "Técnicas":  Técnicas
+                    - option "Otro Asunto":  Otro Asunto
+                - generic [ref=e131]:
+                  - generic [ref=e132]: Prioridad *
+                  - combobox [ref=e133]:
+                    - option "Seleccionar prioridad" [selected]
+                    - option "Baja"
+                    - option "Media"
+                    - option "Alta"
+                    - option "Urgente"
+              - generic [ref=e136]:
+                - generic [ref=e137]: Asunto *
+                - textbox "Breve descripción del motivo de la solicitud" [ref=e138]: Solicitud de prueba académica
+              - text: 
+              - generic [ref=e139]:
+                - generic [ref=e140]: Descripción Detallada *
+                - textbox "Describe detalladamente tu solicitud de ayuda..." [active] [ref=e141]: Esta es una solicitud de ayuda de prueba para verificar el funcionamiento del sistema.
+              - generic [ref=e142]:
+                - generic [ref=e143]: 
+                - strong [ref=e144]: "Información:"
+                - text: Tu solicitud será revisada por el personal de Bienestar Estudiantil. Te notificaremos sobre cualquier actualización.
+            - generic [ref=e145]:
+              - button "Cancelar" [ref=e146] [cursor=pointer]
+              - button " Enviar Solicitud" [ref=e147] [cursor=pointer]:
+                - generic [ref=e148]: 
+                - text: Enviar Solicitud
+      - text:    
+    - contentinfo [ref=e110]:
+      - generic [ref=e112]:
+        - img "ITSI Logo" [ref=e114]
+        - paragraph [ref=e116]: Tecnológico Ibarra. © 2024. All Rights Reserved

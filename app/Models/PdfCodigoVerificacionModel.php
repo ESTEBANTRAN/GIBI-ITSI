@@ -136,34 +136,5 @@ class PdfCodigoVerificacionModel extends Model
         
         return $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
     }
-    
-    /**
-     * Obtener estadísticas de códigos
-     */
-    public function obtenerEstadisticas()
-    {
-        $total = $this->countAll();
-        $activos = $this->where('estado', 'activo')->countAllResults();
-        $verificados = $this->where('estado', 'verificado')->countAllResults();
-        $expirados = $this->where('estado', 'expirado')->countAllResults();
-        
-        return [
-            'total' => $total,
-            'activos' => $activos,
-            'verificados' => $verificados,
-            'expirados' => $expirados
-        ];
-    }
-    
-    /**
-     * Limpiar códigos expirados (más de 30 días)
-     */
-    public function limpiarCodigosExpirados()
-    {
-        $fechaLimite = date('Y-m-d H:i:s', strtotime('-30 days'));
-        return $this->where('fecha_generacion <', $fechaLimite)
-                   ->where('estado', 'activo')
-                   ->set(['estado' => 'expirado'])
-                   ->update();
-    }
 }
+

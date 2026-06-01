@@ -76,7 +76,7 @@ class PlantillasController extends Controller
             log_message('error', 'Error probando plantilla personalizada: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error generando PDF: ' . $e->getMessage()
+                'error' => 'Error generando PDF'
             ]);
         }
     }
@@ -143,7 +143,7 @@ class PlantillasController extends Controller
             log_message('error', 'Error probando plantilla de Word: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error generando PDF: ' . $e->getMessage()
+                'error' => 'Error generando PDF'
             ]);
         }
     }
@@ -177,7 +177,7 @@ class PlantillasController extends Controller
             }
             
             // Verificar tipo de archivo
-            if ($archivo->getClientMimeType() !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+            if ($archivo->getMimeType() !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
                 return $this->response->setJSON([
                     'success' => false,
                     'error' => 'Solo se permiten archivos .docx'
@@ -213,7 +213,7 @@ class PlantillasController extends Controller
             log_message('error', 'Error subiendo plantilla: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema'
             ]);
         }
     }
@@ -249,7 +249,7 @@ class PlantillasController extends Controller
             log_message('error', 'Error eliminando plantilla: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'error' => 'Error del sistema: ' . $e->getMessage()
+                'error' => 'Error del sistema'
             ]);
         }
     }

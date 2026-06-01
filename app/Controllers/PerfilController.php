@@ -3,9 +3,12 @@
 namespace App\Controllers;
 
 use App\Models\UsuarioModel;
+use App\Security\InputSanitizerTrait;
 
 class PerfilController extends BaseController
 {
+    use InputSanitizerTrait;
+
     protected $usuarioModel;
 
     public function __construct()
@@ -21,10 +24,10 @@ class PerfilController extends BaseController
 
         $rol_id = session('rol_id');
         
-        if ($rol_id == 1) {
+        if ($rol_id == ROLE_ESTUDIANTE) {
             // Estudiante
             return view('perfil/estudiante');
-        } elseif ($rol_id == 2 || $rol_id == 4) {
+        } elseif ($rol_id == ROLE_ADMIN_BIENESTAR || $rol_id == ROLE_SUPER_ADMIN) {
             // Administrativo Bienestar o Super Administrador
             return view('perfil/administrador');
         } else {
@@ -42,7 +45,7 @@ class PerfilController extends BaseController
         $rol_id = session('rol_id');
 
         // Validar datos según el rol
-        if ($rol_id == 1) {
+        if ($rol_id == ROLE_ESTUDIANTE) {
             // Validación para estudiantes
             $rules = [
                 'nombre' => 'required|min_length[2]|max_length[50]',
@@ -70,22 +73,22 @@ class PerfilController extends BaseController
 
         // Preparar datos para actualizar
         $data = [
-            'nombre' => $this->request->getPost('nombre'),
-            'apellido' => $this->request->getPost('apellido'),
-            'email' => $this->request->getPost('email'),
-            'telefono' => $this->request->getPost('telefono'),
-            'direccion' => $this->request->getPost('direccion')
+            'nombre' => $this->getPostString('nombre'),
+            'apellido' => $this->getPostString('apellido'),
+            'email' => $this->getPostString('email'),
+            'telefono' => $this->getPostString('telefono'),
+            'direccion' => $this->getPostString('direccion')
         ];
 
         // Agregar campos específicos de estudiantes
-        if ($rol_id == 1) {
-            $data['carrera'] = $this->request->getPost('carrera');
-            $data['semestre'] = $this->request->getPost('semestre');
+        if ($rol_id == ROLE_ESTUDIANTE) {
+            $data['carrera'] = $this->getPostString('carrera');
+            $data['semestre'] = $this->getPostString('semestre');
         }
 
         // Verificar si se está cambiando la contraseña
-        $password = $this->request->getPost('password');
-        $confirmPassword = $this->request->getPost('confirm_password');
+        $password = $this->getPostString('password');
+        $confirmPassword = $this->getPostString('confirm_password');
 
         if (!empty($password)) {
             if ($password !== $confirmPassword) {
@@ -108,7 +111,7 @@ class PerfilController extends BaseController
                 'direccion' => $data['direccion']
             ]);
 
-            if ($rol_id == 1) {
+            if ($rol_id == ROLE_ESTUDIANTE) {
                 session()->set([
                     'carrera' => $data['carrera'],
                     'semestre' => $data['semestre']
@@ -135,7 +138,7 @@ class PerfilController extends BaseController
 
         // Validar tipo de archivo
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-        if (!in_array($file->getClientMimeType(), $allowedTypes)) {
+        if (!in_array($file->getMimeType(), $allowedTypes)) {
             return $this->response->setJSON(['error' => 'Tipo de archivo no permitido'])->setStatusCode(400);
         }
 

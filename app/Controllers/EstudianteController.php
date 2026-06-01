@@ -9,10 +9,13 @@ use App\Models\SolicitudBecaModel;
 use App\Models\SolicitudAyudaModel;
 use App\Models\PeriodoAcademicoModel;
 use App\Services\EstudianteBecasService;
-use App\Helpers\GoogleDriveHelper;
+use App\Security\InputSanitizerTrait;
 
 class EstudianteController extends BaseController
 {
+    use InputSanitizerTrait;
+
+    protected $db;
     protected $usuarioModel;
     protected $fichaModel;
     protected $becaModel;
@@ -35,7 +38,7 @@ class EstudianteController extends BaseController
 
     public function index()
     {
-        if (!session('id') || session('rol_id') != 1) {
+        if (!session('id') || session('rol_id') != ROLE_ESTUDIANTE) {
             return redirect()->to('/login');
         }
 
@@ -88,7 +91,7 @@ class EstudianteController extends BaseController
 
     public function fichaSocioeconomica()
     {
-        if (!session('id') || session('rol_id') != 1) {
+        if (!session('id') || session('rol_id') != ROLE_ESTUDIANTE) {
             return redirect()->to('/login');
         }
 
@@ -103,12 +106,12 @@ class EstudianteController extends BaseController
 
     public function crearFicha()
     {
-        if (!session('id') || session('rol_id') != 1) {
+        if (!session('id') || session('rol_id') != ROLE_ESTUDIANTE) {
             return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
         }
 
         // Obtener datos básicos del formulario
-        $periodo_id = $this->request->getPost('periodo_id');
+        $periodo_id = $this->getPostInt('periodo_id');
         
         if (!$periodo_id) {
             return $this->response->setJSON(['success' => false, 'error' => 'Período académico es requerido']);
@@ -138,7 +141,7 @@ class EstudianteController extends BaseController
         $datosFicha = [];
         
         // Obtener todos los campos del formulario
-        $campos = $this->request->getPost();
+        $campos = $this->getPostSanitized();
         foreach ($campos as $campo => $valor) {
             if ($campo !== 'periodo_id') {
                 $datosFicha[$campo] = $valor;
@@ -193,9 +196,10 @@ class EstudianteController extends BaseController
                 ]);
             }
         } catch (\Exception $e) {
+            log_message('error', 'Error al crear ficha: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false, 
-                'error' => 'Error al crear ficha: ' . $e->getMessage()
+                'error' => 'Error al crear ficha'
             ]);
         }
     }
@@ -204,7 +208,7 @@ class EstudianteController extends BaseController
 
     public function testCrearFicha()
     {
-        if (!session('id') || session('rol_id') != 1) {
+        if (!session('id') || session('rol_id') != ROLE_ESTUDIANTE) {
             return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
         }
 
@@ -234,9 +238,10 @@ class EstudianteController extends BaseController
                 ]);
             }
         } catch (\Exception $e) {
+            log_message('error', 'Error en testCrearFicha: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false, 
-                'error' => 'Excepción: ' . $e->getMessage()
+                'error' => 'Error del sistema'
             ]);
         }
     }
@@ -264,11 +269,11 @@ class EstudianteController extends BaseController
 
     public function enviarFicha()
     {
-        if (!session('id') || session('rol_id') != 1) {
+        if (!session('id') || session('rol_id') != ROLE_ESTUDIANTE) {
             return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
         }
 
-        $id = $this->request->getPost('id');
+        $id = $this->getPostInt('id');
 
         // Verificar que la ficha pertenezca al estudiante
         $ficha = $this->fichaModel->where('id', $id)
@@ -290,13 +295,14 @@ class EstudianteController extends BaseController
             ]);
             return $this->response->setJSON(['success' => true, 'message' => 'Ficha enviada exitosamente']);
         } catch (\Exception $e) {
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al enviar ficha: ' . $e->getMessage()]);
+            log_message('error', 'Error al enviar ficha: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error al enviar ficha']);
         }
     }
 
     public function exportarFichaPDF($id)
     {
-        if (!session('id') || session('rol_id') != 1) {
+        if (!session('id') || session('rol_id') != ROLE_ESTUDIANTE) {
             return redirect()->to('/login');
         }
 
@@ -558,7 +564,7 @@ class EstudianteController extends BaseController
 
     public function becas()
     {
-        if (!session('id') || session('rol_id') != 1) {
+        if (!session('id') || session('rol_id') != ROLE_ESTUDIANTE) {
             return redirect()->to('/login');
         }
 
@@ -610,7 +616,7 @@ class EstudianteController extends BaseController
 
     public function solicitudesAyuda()
     {
-        if (!session('id') || session('rol_id') != 1) {
+        if (!session('id') || session('rol_id') != ROLE_ESTUDIANTE) {
             return redirect()->to('/login');
         }
 
@@ -627,7 +633,7 @@ class EstudianteController extends BaseController
 
     public function documentos()
     {
-        if (!session('id') || session('rol_id') != 1) {
+        if (!session('id') || session('rol_id') != ROLE_ESTUDIANTE) {
             return redirect()->to('/login');
         }
 
@@ -655,7 +661,7 @@ class EstudianteController extends BaseController
 
     public function perfil()
     {
-        if (!session('id') || session('rol_id') != 1) {
+        if (!session('id') || session('rol_id') != ROLE_ESTUDIANTE) {
             return redirect()->to('/login');
         }
 
@@ -681,7 +687,7 @@ class EstudianteController extends BaseController
 
     public function cuenta()
     {
-        if (!session('id') || session('rol_id') != 1) {
+        if (!session('id') || session('rol_id') != ROLE_ESTUDIANTE) {
             return redirect()->to('/login');
         }
 
@@ -699,7 +705,7 @@ class EstudianteController extends BaseController
         }
 
         try {
-            $input = $this->request->getJSON(true);
+            $input = $this->getJsonSanitized();
             
             // Usar el período enviado desde el frontend, o el activo como fallback
             $periodoId = $input['periodo_id'] ?? null;
@@ -729,9 +735,10 @@ class EstudianteController extends BaseController
             
         } catch (\Exception $e) {
             log_message('error', 'Error al solicitar beca: ' . $e->getMessage());
+            log_message('error', 'Error al procesar solicitud de beca: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false, 
-                'error' => 'Error al procesar la solicitud: ' . $e->getMessage()
+                'error' => 'Error al procesar la solicitud'
             ]);
         }
     }
@@ -742,13 +749,29 @@ class EstudianteController extends BaseController
             return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
         }
 
-        $id = $this->request->getJSON()->id;
+        $json = $this->getJsonSanitized();
+        $id = $json['id'] ?? 0;
 
         try {
-            $this->becaModel->deleteSolicitud($id);
+            $solicitud = $this->db->table('solicitudes_becas')
+                ->where('id', $id)
+                ->where('estudiante_id', session('id'))
+                ->get()
+                ->getRowArray();
+
+            if (!$solicitud) {
+                return $this->response->setJSON(['success' => false, 'error' => 'Solicitud no encontrada']);
+            }
+
+            $this->db->table('solicitudes_becas')
+                ->where('id', $id)
+                ->where('estudiante_id', session('id'))
+                ->update(['estado' => 'Rechazada', 'observaciones' => 'Cancelada por el estudiante']);
+
             return $this->response->setJSON(['success' => true, 'message' => 'Solicitud cancelada exitosamente']);
         } catch (\Exception $e) {
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al cancelar solicitud: ' . $e->getMessage()]);
+            log_message('error', 'Error al cancelar solicitud: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error al cancelar solicitud']);
         }
     }
 
@@ -759,7 +782,7 @@ class EstudianteController extends BaseController
         }
 
         try {
-            $input = $this->request->getPost();
+            $input = $this->getPostSanitized();
             
             // Validar que se seleccionó una categoría
             if (empty($input['categoria_id'])) {
@@ -800,28 +823,33 @@ class EstudianteController extends BaseController
         }
 
         try {
-            $input = $this->request->getJSON();
-            
-            // Validar que se seleccionó una categoría
-            if (empty($input->categoria_id)) {
+            $input = $this->getJsonSanitized();
+            $solicitudId = $input['id'] ?? 0;
+
+            // Validar que la solicitud pertenece al estudiante
+            $solicitud = $this->solicitudModel->where('id', $solicitudId)->where('id_estudiante', session('id'))->first();
+            if (!$solicitud) {
+                return $this->response->setJSON(['success' => false, 'error' => 'Solicitud no encontrada']);
+            }
+
+            if (empty($input['categoria_id'])) {
                 return $this->response->setJSON(['success' => false, 'error' => 'Debe seleccionar una categoría']);
             }
             
-            // Verificar si es "Otro Asunto" y requiere descripción personalizada
             $categoriaModel = new \App\Models\CategoriaSolicitudAyudaModel();
-            if ($categoriaModel->esOtroAsunto($input->categoria_id) && empty($input->asunto_personalizado)) {
+            if ($categoriaModel->esOtroAsunto($input['categoria_id']) && empty($input['asunto_personalizado'])) {
                 return $this->response->setJSON(['success' => false, 'error' => 'Para "Otro Asunto" debe proporcionar una descripción personalizada']);
             }
             
             $data = [
-                'asunto' => $input->asunto,
-                'categoria_id' => $input->categoria_id,
-                'asunto_personalizado' => $input->asunto_personalizado ?? null,
-                'descripcion' => $input->descripcion,
-                'prioridad' => $input->prioridad
+                'asunto' => $input['asunto'],
+                'categoria_id' => $input['categoria_id'],
+                'asunto_personalizado' => $input['asunto_personalizado'] ?? null,
+                'descripcion' => $input['descripcion'],
+                'prioridad' => $input['prioridad']
             ];
             
-            $this->solicitudModel->update($input->id, $data);
+            $this->solicitudModel->update($solicitudId, $data);
             
             return $this->response->setJSON(['success' => true, 'message' => 'Solicitud actualizada exitosamente']);
             
@@ -837,13 +865,20 @@ class EstudianteController extends BaseController
             return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
         }
 
-        $id = $this->request->getJSON()->id;
+        $json = $this->getJsonSanitized();
+        $id = $json['id'] ?? 0;
 
         try {
-            $this->solicitudModel->delete($id);
+            $solicitud = $this->solicitudModel->where('id', $id)->where('id_estudiante', session('id'))->first();
+            if (!$solicitud) {
+                return $this->response->setJSON(['success' => false, 'error' => 'Solicitud no encontrada']);
+            }
+
+            $this->solicitudModel->update($id, ['estado' => 'Cerrada']);
             return $this->response->setJSON(['success' => true, 'message' => 'Solicitud cancelada exitosamente']);
         } catch (\Exception $e) {
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al cancelar solicitud: ' . $e->getMessage()]);
+            log_message('error', 'Error al cancelar solicitud: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error al cancelar solicitud']);
         }
     }
 
@@ -879,7 +914,7 @@ class EstudianteController extends BaseController
             return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
         }
 
-        $ficha_id = $this->request->getPost('ficha_id');
+        $ficha_id = $this->getPostInt('ficha_id');
         
         // Verificar que la ficha pertenezca al estudiante y esté en borrador
         $ficha = $this->fichaModel->where('id', $ficha_id)
@@ -895,7 +930,7 @@ class EstudianteController extends BaseController
         $datosFicha = [];
         
         // Obtener todos los campos del formulario
-        $campos = $this->request->getPost();
+        $campos = $this->getPostSanitized();
         foreach ($campos as $campo => $valor) {
             if ($campo !== 'ficha_id' && $campo !== 'periodo_id') {
                 $datosFicha[$campo] = $valor;
@@ -931,7 +966,8 @@ class EstudianteController extends BaseController
             $this->fichaModel->update($ficha_id, $data);
             return $this->response->setJSON(['success' => true, 'message' => 'Ficha actualizada exitosamente']);
         } catch (\Exception $e) {
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al actualizar ficha: ' . $e->getMessage()]);
+            log_message('error', 'Error al actualizar ficha: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error al actualizar ficha']);
         }
     }
 
@@ -942,21 +978,22 @@ class EstudianteController extends BaseController
         }
 
         $data = [
-            'nombre' => $this->request->getPost('nombre'),
-            'apellido' => $this->request->getPost('apellido'),
-            'cedula' => $this->request->getPost('cedula'),
-            'email' => $this->request->getPost('email'),
-            'telefono' => $this->request->getPost('telefono'),
-            'direccion' => $this->request->getPost('direccion'),
-            'carrera' => $this->request->getPost('carrera'),
-            'semestre' => $this->request->getPost('semestre')
+            'nombre' => $this->getPostString('nombre'),
+            'apellido' => $this->getPostString('apellido'),
+            'cedula' => $this->getPostString('cedula'),
+            'email' => $this->getPostString('email'),
+            'telefono' => $this->getPostString('telefono'),
+            'direccion' => $this->getPostString('direccion'),
+            'carrera' => $this->getPostString('carrera'),
+            'semestre' => $this->getPostString('semestre')
         ];
 
         try {
             $this->usuarioModel->update(session('id'), $data);
             return $this->response->setJSON(['success' => true, 'message' => 'Perfil actualizado exitosamente']);
         } catch (\Exception $e) {
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al actualizar perfil: ' . $e->getMessage()]);
+            log_message('error', 'Error al actualizar perfil: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error al actualizar perfil']);
         }
     }
 
@@ -972,9 +1009,31 @@ class EstudianteController extends BaseController
             return $this->response->setJSON(['success' => false, 'error' => 'Archivo no válido']);
         }
 
+        // Validar tipo MIME (solo imágenes)
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!in_array($file->getMimeType(), $allowedMimes)) {
+            return $this->response->setJSON(['success' => false, 'error' => 'Solo se permiten imágenes (JPG, PNG, GIF, WebP)']);
+        }
+
+        // Validar extensión
+        $allowedExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        $ext = strtolower($file->getExtension());
+        if (!in_array($ext, $allowedExts)) {
+            return $this->response->setJSON(['success' => false, 'error' => 'Extensión de archivo no permitida']);
+        }
+
+        // Validar tamaño (máximo 2MB)
+        if ($file->getSize() > 2 * 1024 * 1024) {
+            return $this->response->setJSON(['success' => false, 'error' => 'La imagen no puede superar los 2MB']);
+        }
+
         try {
             $fileName = $file->getRandomName();
-            $file->move(WRITEPATH . 'uploads/perfiles', $fileName);
+            $uploadDir = ROOTPATH . 'public/uploads/perfiles';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $file->move($uploadDir, $fileName);
 
             $this->usuarioModel->update(session('id'), [
                 'foto_perfil' => 'uploads/perfiles/' . $fileName
@@ -982,7 +1041,8 @@ class EstudianteController extends BaseController
 
             return $this->response->setJSON(['success' => true, 'message' => 'Foto actualizada exitosamente']);
         } catch (\Exception $e) {
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al cambiar foto: ' . $e->getMessage()]);
+            log_message('error', 'Error al cambiar foto: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error al cambiar foto']);
         }
     }
 
@@ -1007,7 +1067,8 @@ class EstudianteController extends BaseController
             ]);
             return $this->response->setJSON(['success' => true, 'message' => 'Contraseña cambiada exitosamente']);
         } catch (\Exception $e) {
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al cambiar contraseña: ' . $e->getMessage()]);
+            log_message('error', 'Error al cambiar contraseña: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error al cambiar contraseña']);
         }
     }
 
@@ -1162,6 +1223,86 @@ class EstudianteController extends BaseController
     /**
      * Obtener becas disponibles para el estudiante
      */
+    /**
+     * Devuelve HTML con los detalles de una beca para el modal
+     */
+    public function detalleBeca($becaId)
+    {
+        if (!session('id') || session('rol_id') != 1) {
+            return 'No autorizado';
+        }
+
+        try {
+            $beca = $this->db->table('becas b')
+                ->select('b.*, p.nombre as periodo_nombre')
+                ->join('periodos_academicos p', 'p.id = b.periodo_id', 'left')
+                ->where('b.id', $becaId)
+                ->get()
+                ->getRowArray();
+
+            if (!$beca) {
+                return '<div class="alert alert-danger">Beca no encontrada</div>';
+            }
+
+            // Parsear documentos requisitos
+            $documentos = [];
+            if (!empty($beca['documentos_requisitos'])) {
+                $documentos = json_decode($beca['documentos_requisitos'], true) ?? [];
+            }
+
+            $html = '
+            <div class="beca-detalle">
+                <div class="text-center mb-4">
+                    <h4 class="text-primary">' . esc($beca['nombre']) . '</h4>
+                    <span class="badge bg-info fs-6">' . esc($beca['tipo_beca']) . '</span>
+                </div>
+                <hr>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>Monto:</strong> <span class="text-success">$' . number_format($beca['monto_beca'] ?? 0, 0, ',', '.') . '</span></p>
+                        <p><strong>Período:</strong> ' . esc($beca['periodo_nombre'] ?? 'Sin período') . '</p>
+                        <p><strong>Cupos disponibles:</strong> ' . ($beca['cupos_disponibles'] ?? 'N/A') . '</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Estado:</strong> ' . ($beca['activa'] ? '<span class="badge bg-success">Activa</span>' : '<span class="badge bg-secondary">Inactiva</span>') . '</p>
+                        <p><strong>Puntaje mínimo:</strong> ' . ($beca['puntaje_minimo'] ?? 'N/A') . '</p>
+                    </div>
+                </div>';
+
+            if (!empty($beca['descripcion'])) {
+                $html .= '<div class="mb-3">
+                    <h6>Descripción</h6>
+                    <p class="text-muted">' . nl2br(esc($beca['descripcion'])) . '</p>
+                </div>';
+            }
+
+            if (!empty($beca['requisitos'])) {
+                $html .= '<div class="mb-3">
+                    <h6>Requisitos</h6>
+                    <p class="text-muted">' . nl2br(esc($beca['requisitos'])) . '</p>
+                </div>';
+            }
+
+            if (!empty($documentos)) {
+                $html .= '<div class="mb-3">
+                    <h6>Documentos Requeridos</h6>
+                    <div class="d-flex flex-wrap gap-2">';
+                foreach ($documentos as $doc) {
+                    $html .= '<span class="badge bg-warning text-dark">' . esc($doc) . '</span>';
+                }
+                $html .= '</div></div>';
+            }
+
+            $html .= '</div>';
+
+            return $html;
+
+        } catch (\Exception $e) {
+            log_message('error', 'Error en detalleBeca: ' . $e->getMessage());
+            return '<div class="alert alert-danger">Error al cargar detalles de la beca</div>';
+        }
+    }
+
     public function obtenerBecasDisponibles()
     {
         try {
@@ -1230,101 +1371,6 @@ class EstudianteController extends BaseController
     }
 
     /**
-     * Verificar elegibilidad para una beca específica
-     */
-    public function verificarElegibilidadBeca()
-    {
-        try {
-            if (!session('id') || session('rol_id') != 1) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'Acceso no autorizado'
-                ]);
-            }
-
-            $estudianteId = session('id');
-            $becaId = $this->request->getPost('beca_id');
-            
-            if (empty($becaId)) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'ID de beca es obligatorio'
-                ]);
-            }
-
-            // Verificar ficha socioeconómica aprobada
-            $fichaModel = new \App\Models\FichaSocioeconomicaModel();
-            $fichaAprobada = $fichaModel->where('estudiante_id', $estudianteId)
-                                       ->where('estado', 'Aprobada')
-                                       ->first();
-
-            if (!$fichaAprobada) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'Debe tener una ficha socioeconómica aprobada',
-                    'elegible' => false
-                ]);
-            }
-
-            // Verificar si ya solicitó esta beca
-            $solicitudModel = new \App\Models\SolicitudBecaModel();
-            $solicitudExistente = $solicitudModel->where('estudiante_id', $estudianteId)
-                                                ->where('beca_id', $becaId)
-                                                ->whereIn('estado', ['Postulada', 'En Revisión', 'Aprobada'])
-                                                ->first();
-
-            if ($solicitudExistente) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'Ya tiene una solicitud activa para esta beca',
-                    'elegible' => false
-                ]);
-            }
-
-            // Obtener información de la beca
-            $becaModel = new \App\Models\BecaModel();
-            $beca = $becaModel->find($becaId);
-
-            if (!$beca || $beca['estado'] !== 'Activa') {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'La beca no está disponible',
-                    'elegible' => false
-                ]);
-            }
-
-            // Verificar cupos disponibles
-            if ($beca['cupos_disponibles'] && $beca['cupos_disponibles'] > 0) {
-                $solicitudesAprobadas = $solicitudModel->where('beca_id', $becaId)
-                                                      ->where('estado', 'Aprobada')
-                                                      ->countAllResults();
-
-                if ($solicitudesAprobadas >= $beca['cupos_disponibles']) {
-                    return $this->response->setJSON([
-                        'success' => false,
-                        'message' => 'La beca no tiene cupos disponibles',
-                        'elegible' => false
-                    ]);
-                }
-            }
-
-            return $this->response->setJSON([
-                'success' => true,
-                'message' => 'Estudiante elegible para la beca',
-                'elegible' => true,
-                'beca' => $beca
-            ]);
-
-        } catch (\Exception $e) {
-            log_message('error', 'Error al verificar elegibilidad: ' . $e->getMessage());
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Error interno del servidor'
-            ]);
-        }
-    }
-
-    /**
      * Obtener estado de una solicitud de beca
      */
     public function estadoSolicitudBeca($id)
@@ -1371,569 +1417,6 @@ class EstudianteController extends BaseController
                 'success' => false,
                 'message' => 'Error interno del servidor'
             ]);
-        }
-    }
-
-    /**
-     * Actualizar documentos de una solicitud de beca
-     */
-    public function actualizarDocumentosBeca()
-    {
-        try {
-            if (!session('id') || session('rol_id') != 1) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'Acceso no autorizado'
-                ]);
-            }
-
-            $estudianteId = session('id');
-            $solicitudId = $this->request->getPost('solicitud_id');
-            $documentoRequisitoId = $this->request->getPost('documento_requisito_id');
-            
-            if (empty($solicitudId) || empty($documentoRequisitoId)) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'Parámetros incompletos'
-                ]);
-            }
-
-            // Verificar que la solicitud pertenece al estudiante
-            $solicitudModel = new \App\Models\SolicitudBecaModel();
-            $solicitud = $solicitudModel->where('id', $solicitudId)
-                                       ->where('estudiante_id', $estudianteId)
-                                       ->first();
-
-            if (!$solicitud) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'Solicitud no encontrada'
-                ]);
-            }
-
-            // Verificar que la solicitud esté en estado válido para actualizar
-            if (!in_array($solicitud['estado'], ['Postulada', 'En Revisión'])) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'No se puede actualizar documentos en el estado actual'
-                ]);
-            }
-
-            // Procesar archivo subido
-            $archivo = $this->request->getFile('documento');
-            
-            if (!$archivo->isValid()) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'Archivo no válido'
-                ]);
-            }
-
-            // Validar tipo de archivo
-            $tiposPermitidos = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'];
-            $extension = $archivo->getExtension();
-            
-            if (!in_array(strtolower($extension), $tiposPermitidos)) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'Tipo de archivo no permitido'
-                ]);
-            }
-
-            // Validar tamaño (máximo 10MB)
-            if ($archivo->getSize() > 10 * 1024 * 1024) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'El archivo excede el tamaño máximo permitido (10MB)'
-                ]);
-            }
-
-            // Generar nombre único para el archivo
-            $nombreArchivo = 'doc_' . $solicitudId . '_' . $documentoRequisitoId . '_' . time() . '.' . $extension;
-            $rutaDestino = 'uploads/becas/documentos/';
-            
-            // Crear directorio si no existe
-            if (!is_dir($rutaDestino)) {
-                mkdir($rutaDestino, 0755, true);
-            }
-
-            // Mover archivo
-            $archivo->move($rutaDestino, $nombreArchivo);
-            $rutaCompleta = $rutaDestino . $nombreArchivo;
-
-            // Guardar información en la base de datos
-            $documentoModel = new \App\Models\SolicitudBecaDocumentoModel();
-            
-            // Verificar si ya existe un documento para este requisito
-            $documentoExistente = $documentoModel->where('solicitud_beca_id', $solicitudId)
-                                                ->where('documento_requisito_id', $documentoRequisitoId)
-                                                ->first();
-
-            $datosDocumento = [
-                'solicitud_beca_id' => $solicitudId,
-                'documento_requisito_id' => $documentoRequisitoId,
-                'nombre_archivo' => $archivo->getClientName(),
-                'ruta_archivo' => $rutaCompleta,
-                'tipo_archivo' => $archivo->getClientMimeType(),
-                'tamano_archivo' => $archivo->getSize(),
-                'estado' => 'Pendiente',
-                'fecha_subida' => date('Y-m-d H:i:s')
-            ];
-
-            if ($documentoExistente) {
-                // Actualizar documento existente
-                $documentoModel->update($documentoExistente['id'], $datosDocumento);
-                $mensaje = 'Documento actualizado exitosamente';
-            } else {
-                // Crear nuevo documento
-                $documentoModel->insert($datosDocumento);
-                $mensaje = 'Documento subido exitosamente';
-            }
-
-            // Actualizar porcentaje de avance de la solicitud
-            $this->actualizarPorcentajeAvanceSolicitud($solicitudId);
-
-            return $this->response->setJSON([
-                'success' => true,
-                'message' => $mensaje
-            ]);
-
-        } catch (\Exception $e) {
-            log_message('error', 'Error al actualizar documentos: ' . $e->getMessage());
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Error interno del servidor'
-            ]);
-        }
-    }
-
-    /**
-     * Descargar documento de beca
-     */
-    public function descargarDocumentoBeca($id)
-    {
-        try {
-            if (!session('id') || session('rol_id') != 1) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'Acceso no autorizado'
-                ]);
-            }
-
-            $estudianteId = session('id');
-            
-            $documentoModel = new \App\Models\SolicitudBecaDocumentoModel();
-            $documento = $documentoModel->select('solicitudes_becas_documentos.*, solicitudes_becas.estudiante_id')
-                                       ->join('solicitudes_becas', 'solicitudes_becas.id = solicitudes_becas_documentos.solicitud_beca_id')
-                                       ->where('solicitudes_becas_documentos.id', $id)
-                                       ->where('solicitudes_becas.estudiante_id', $estudianteId)
-                                       ->first();
-
-            if (!$documento) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'Documento no encontrado'
-                ]);
-            }
-
-            $rutaArchivo = $documento['ruta_archivo'];
-            
-            if (!file_exists($rutaArchivo)) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'Archivo no encontrado en el servidor'
-                ]);
-            }
-
-            // Descargar archivo
-            return $this->response->download($rutaArchivo, $documento['nombre_archivo']);
-
-        } catch (\Exception $e) {
-            log_message('error', 'Error al descargar documento: ' . $e->getMessage());
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Error interno del servidor'
-            ]);
-        }
-    }
-
-    // ========================================
-    // MÉTODOS PRIVADOS DE APOYO
-    // ========================================
-
-    /**
-     * Actualizar porcentaje de avance de una solicitud
-     */
-    private function actualizarPorcentajeAvanceSolicitud($solicitudId)
-    {
-        try {
-            $documentoModel = new \App\Models\SolicitudBecaDocumentoModel();
-            $solicitudModel = new \App\Models\SolicitudBecaModel();
-            
-            // Obtener total de documentos requisitos
-            $totalDocumentos = $documentoModel->where('solicitud_beca_id', $solicitudId)->countAllResults();
-            
-            if ($totalDocumentos > 0) {
-                // Obtener documentos subidos (estado != Pendiente)
-                $documentosSubidos = $documentoModel->where('solicitud_beca_id', $solicitudId)
-                                                    ->where('estado !=', 'Pendiente')
-                                                    ->countAllResults();
-                
-                // Obtener documentos aprobados
-                $documentosAprobados = $documentoModel->where('solicitud_beca_id', $solicitudId)
-                                                    ->where('estado', 'Aprobado')
-                                                    ->countAllResults();
-                
-                // Calcular porcentaje basado en documentos subidos
-                $porcentaje = round(($documentosSubidos / $totalDocumentos) * 100, 1);
-                
-                // Actualizar solicitud
-                $solicitudModel->update($solicitudId, [
-                    'porcentaje_avance' => $porcentaje,
-                    'total_documentos' => $totalDocumentos,
-                    'documentos_revisados' => $documentosSubidos
-                ]);
-            }
-        } catch (\Exception $e) {
-            log_message('error', 'Error al actualizar porcentaje de avance: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * Mostrar y gestionar documentos de una solicitud de beca
-     */
-    public function documentosBeca($solicitudId)
-    {
-        try {
-            // Verificar que la solicitud pertenece al estudiante logueado
-            $estudianteId = session('id');
-            $solicitud = $this->db->table('solicitudes_becas sb')
-                ->select('sb.*, b.nombre as beca_nombre, p.nombre as periodo_nombre')
-                ->join('becas b', 'b.id = sb.beca_id')
-                ->join('periodos_academicos p', 'p.id = sb.periodo_id')
-                ->where('sb.id', $solicitudId)
-                ->where('sb.estudiante_id', $estudianteId)
-                ->get()
-                ->getRowArray();
-
-            if (!$solicitud) {
-                return redirect()->to('estudiante/becas')->with('error', 'Solicitud no encontrada');
-            }
-
-            // Obtener la beca
-            $beca = $this->becaModel->find($solicitud['beca_id']);
-            if (!$beca) {
-                return redirect()->to('estudiante/becas')->with('error', 'Beca no encontrada');
-            }
-
-            // Obtener documentos de la solicitud
-            $documentos = $this->db->table('documentos_solicitud_becas dsb')
-                ->select('dsb.*, bdr.nombre_documento, bdr.descripcion, bdr.obligatorio')
-                ->join('becas_documentos_requisitos bdr', 'bdr.id = dsb.documento_requerido_id')
-                ->where('dsb.solicitud_beca_id', $solicitudId)
-                ->orderBy('dsb.orden_revision', 'ASC')
-                ->get()
-                ->getResultArray();
-
-            // Si no hay documentos, crear la estructura básica
-            if (empty($documentos)) {
-                // Obtener documentos requeridos de la beca
-                $documentosRequeridos = $this->db->table('becas_documentos_requisitos')
-                    ->where('beca_id', $solicitud['beca_id'])
-                    ->where('estado', 'Activo')
-                    ->orderBy('orden_verificacion', 'ASC')
-                    ->get()
-                    ->getResultArray();
-
-                // Crear registros de documentos para la solicitud
-                foreach ($documentosRequeridos as $doc) {
-                    $this->db->table('documentos_solicitud_becas')->insert([
-                        'solicitud_beca_id' => $solicitudId,
-                        'documento_requerido_id' => $doc['id'],
-                        'nombre_archivo' => '',
-                        'ruta_archivo' => '',
-                        'orden_revision' => $doc['orden_verificacion'],
-                        'estado' => 'Pendiente',
-                        'fecha_subida' => date('Y-m-d H:i:s')
-                    ]);
-                }
-
-                // Obtener los documentos recién creados
-                $documentos = $this->db->table('documentos_solicitud_becas dsb')
-                    ->select('dsb.*, bdr.nombre_documento, bdr.descripcion, bdr.obligatorio')
-                    ->join('becas_documentos_requisitos bdr', 'bdr.id = dsb.documento_requerido_id')
-                    ->where('dsb.solicitud_beca_id', $solicitudId)
-                    ->orderBy('dsb.orden_revision', 'ASC')
-                    ->get()
-                    ->getResultArray();
-            }
-
-            // Calcular progreso
-            $totalDocumentos = count($documentos);
-            $documentosSubidos = count(array_filter($documentos, fn($d) => $d['estado'] !== 'Pendiente'));
-            $documentosAprobados = count(array_filter($documentos, fn($d) => $d['estado'] === 'Aprobado'));
-            $porcentajeAvance = $totalDocumentos > 0 ? round(($documentosAprobados / $totalDocumentos) * 100, 1) : 0;
-
-            $data = [
-                'solicitud' => $solicitud,
-                'beca' => $beca,
-                'documentos' => $documentos,
-                'estadisticas' => [
-                    'total' => $totalDocumentos,
-                    'subidos' => $documentosSubidos,
-                    'aprobados' => $documentosAprobados,
-                    'porcentaje' => $porcentajeAvance
-                ]
-            ];
-
-            return view('estudiante/documentos_beca', $data);
-
-        } catch (\Exception $e) {
-            log_message('error', 'Error mostrando documentos de beca: ' . $e->getMessage());
-            return redirect()->to('estudiante/becas')->with('error', 'Error del sistema');
-        }
-    }
-
-    /**
-     * Subir documento para una solicitud de beca
-     */
-    public function subirDocumento()
-    {
-        try {
-            $estudianteId = session('id');
-            $solicitudId = $this->request->getPost('solicitud_id');
-            $documentoId = $this->request->getPost('documento_id');
-
-            // Verificar que la solicitud pertenece al estudiante
-            $solicitud = $this->db->table('solicitudes_becas')
-                ->select('solicitudes_becas.*, b.id as beca_id, p.id as periodo_id')
-                ->join('becas b', 'b.id = solicitudes_becas.beca_id')
-                ->join('periodos_academicos p', 'p.id = solicitudes_becas.periodo_id')
-                ->where('solicitudes_becas.id', $solicitudId)
-                ->where('solicitudes_becas.estudiante_id', $estudianteId)
-                ->get()
-                ->getRowArray();
-
-            if (!$solicitud) {
-                return $this->response->setJSON(['success' => false, 'message' => 'Solicitud no encontrada']);
-            }
-
-            // Verificar que el documento existe
-            $documento = $this->db->table('documentos_solicitud_becas')
-                ->where('id', $documentoId)
-                ->where('solicitud_beca_id', $solicitudId)
-                ->get()
-                ->getRowArray();
-
-            if (!$documento) {
-                return $this->response->setJSON(['success' => false, 'message' => 'Documento no encontrado']);
-            }
-
-            // Obtener el archivo
-            $archivo = $this->request->getFile('archivo');
-            if (!$archivo || !$archivo->isValid()) {
-                return $this->response->setJSON(['success' => false, 'message' => 'Archivo no válido']);
-            }
-
-            // Validar tipo de archivo (solo PDF)
-            if ($archivo->getClientMimeType() !== 'application/pdf') {
-                return $this->response->setJSON(['success' => false, 'message' => 'Solo se permiten archivos PDF']);
-            }
-
-            // Validar tamaño (máximo 2MB)
-            if ($archivo->getSize() > 2 * 1024 * 1024) {
-                return $this->response->setJSON(['success' => false, 'message' => 'El archivo no puede superar 2MB']);
-            }
-
-            // Generar nombre único para el archivo
-            $nombreArchivo = 'doc_' . $solicitudId . '_' . $documentoId . '_' . time() . '.pdf';
-            $rutaDestino = 'uploads/documentos_becas/' . $nombreArchivo;
-
-            // Crear directorio si no existe
-            $directorio = FCPATH . 'uploads/documentos_becas/';
-            if (!is_dir($directorio)) {
-                mkdir($directorio, 0755, true);
-            }
-
-            // Mover archivo
-            if (!$archivo->move($directorio, $nombreArchivo)) {
-                return $this->response->setJSON(['success' => false, 'message' => 'Error al guardar el archivo']);
-            }
-
-            // Subir a Google Drive si la integración está activa
-            $googleDriveId = null;
-            try {
-                $googleDriveId = GoogleDriveHelper::subirArchivo($rutaDestino, $archivo->getClientName(), $archivo->getClientMimeType());
-            } catch (\Exception $ex) {
-                log_message('error', 'Error al subir a Google Drive en EstudianteController::subirDocumento: ' . $ex->getMessage());
-            }
-
-            // Actualizar documento en la base de datos
-            $updateData = [
-                'nombre_archivo' => $archivo->getClientName(),
-                'ruta_archivo' => $rutaDestino,
-                'estado' => 'En Revision',
-                'fecha_subida' => date('Y-m-d H:i:s'),
-                'tama±o_archivo' => $archivo->getSize(),
-                'tipo_mime' => $archivo->getClientMimeType()
-            ];
-
-            if ($googleDriveId) {
-                $updateData['google_drive_id'] = $googleDriveId;
-            }
-
-            $this->db->table('documentos_solicitud_becas')
-                ->where('id', $documentoId)
-                ->update($updateData);
-
-            // Actualizar progreso de la solicitud
-            $this->actualizarProgresoSolicitud($solicitudId);
-
-            return $this->response->setJSON([
-                'success' => true,
-                'message' => 'Documento subido exitosamente' . ($googleDriveId ? ' y respaldado en la nube' : ''),
-                'archivo' => $archivo->getClientName(),
-                'google_drive_id' => $googleDriveId
-            ]);
-
-        } catch (\Exception $e) {
-            log_message('error', 'Error subiendo documento: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'message' => 'Error del sistema']);
-        }
-    }
-
-    /**
-     * Descargar documento
-     */
-    public function descargarDocumento($documentoId)
-    {
-        try {
-            $estudianteId = session('id');
-            
-            // Verificar que el documento pertenece a una solicitud del estudiante
-            $documento = $this->db->table('documentos_solicitud_becas dsb')
-                ->select('dsb.*, sb.estudiante_id')
-                ->join('solicitudes_becas sb', 'sb.id = dsb.solicitud_beca_id')
-                ->where('dsb.id', $documentoId)
-                ->where('sb.estudiante_id', $estudianteId)
-                ->get()
-                ->getRowArray();
-
-            if (!$documento) {
-                return redirect()->back()->with('error', 'Documento no encontrado');
-            }
-
-            $rutaArchivo = FCPATH . $documento['ruta_archivo'];
-            if (!file_exists($rutaArchivo)) {
-                return redirect()->back()->with('error', 'Archivo no encontrado');
-            }
-
-            return $this->response->download($rutaArchivo, $documento['nombre_archivo']);
-
-        } catch (\Exception $e) {
-            log_message('error', 'Error descargando documento: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Error del sistema');
-        }
-    }
-
-    /**
-     * Eliminar documento
-     */
-    public function eliminarDocumento()
-    {
-        try {
-            $estudianteId = session('id');
-            $documentoId = $this->request->getPost('documento_id');
-
-            // Verificar que el documento pertenece a una solicitud del estudiante
-            $documento = $this->db->table('documentos_solicitud_becas dsb')
-                ->select('dsb.*, sb.estudiante_id')
-                ->join('solicitudes_becas sb', 'sb.id = dsb.solicitud_beca_id')
-                ->where('dsb.id', $documentoId)
-                ->where('sb.estudiante_id', $estudianteId)
-                ->get()
-                ->getRowArray();
-
-            if (!$documento) {
-                return $this->response->setJSON(['success' => false, 'message' => 'Documento no encontrado']);
-            }
-
-            // Solo permitir eliminar si está en estado "En Revision" o "Pendiente"
-            if (!in_array($documento['estado'], ['En Revision', 'Pendiente'])) {
-                return $this->response->setJSON(['success' => false, 'message' => 'No se puede eliminar un documento ya revisado']);
-            }
-
-            // Eliminar archivo físico
-            $rutaArchivo = FCPATH . $documento['ruta_archivo'];
-            if (file_exists($rutaArchivo) && $documento['ruta_archivo'] !== '/temp/pendiente_subida.tmp') {
-                unlink($rutaArchivo);
-            }
-
-            // Actualizar documento en la base de datos
-            $this->db->table('documentos_solicitud_becas')
-                ->where('id', $documentoId)
-                ->update([
-                    'nombre_archivo' => 'pendiente_subida.tmp',
-                    'ruta_archivo' => '/temp/pendiente_subida.tmp',
-                    'estado' => 'Pendiente',
-                    'fecha_subida' => null,
-                    'tama±o_archivo' => null,
-                    'tipo_mime' => null
-                ]);
-
-            // Actualizar progreso de la solicitud
-            $this->actualizarProgresoSolicitud($documento['solicitud_beca_id']);
-
-            return $this->response->setJSON(['success' => true, 'message' => 'Documento eliminado exitosamente']);
-
-        } catch (\Exception $e) {
-            log_message('error', 'Error eliminando documento: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'message' => 'Error del sistema']);
-        }
-    }
-
-    /**
-     * Actualizar progreso de una solicitud de beca
-     */
-    private function actualizarProgresoSolicitud($solicitudId)
-    {
-        try {
-            // Contar documentos por estado
-            $estados = $this->db->table('documentos_solicitud_becas')
-                ->select('estado, COUNT(*) as total')
-                ->where('solicitud_beca_id', $solicitudId)
-                ->groupBy('estado')
-                ->get()
-                ->getResultArray();
-
-            $totalDocumentos = 0;
-            $documentosSubidos = 0;
-            $documentosAprobados = 0;
-
-            foreach ($estados as $estado) {
-                $totalDocumentos += $estado['total'];
-                if ($estado['estado'] !== 'Pendiente') {
-                    $documentosSubidos += $estado['total'];
-                }
-                if ($estado['estado'] === 'Aprobado') {
-                    $documentosAprobados += $estado['total'];
-                }
-            }
-
-            // Porcentaje basado en documentos subidos (no solo aprobados)
-            $porcentajeAvance = $totalDocumentos > 0 ? round(($documentosSubidos / $totalDocumentos) * 100, 1) : 0;
-
-            // Actualizar solicitud
-            $this->db->table('solicitudes_becas')
-                ->where('id', $solicitudId)
-                ->update([
-                    'documentos_revisados' => $documentosSubidos,
-                    'total_documentos' => $totalDocumentos,
-                    'porcentaje_avance' => $porcentajeAvance
-                ]);
-
-        } catch (\Exception $e) {
-            log_message('error', 'Error actualizando progreso de solicitud: ' . $e->getMessage());
         }
     }
 } 

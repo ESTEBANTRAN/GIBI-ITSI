@@ -1,0 +1,213 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - link "Logo Administrador de Bienestar Institucional" [ref=e6] [cursor=pointer]:
+            - /url: http://localhost/ITSI/public/index.php/admin-bienestar
+            - img "Logo" [ref=e7]
+            - generic [ref=e8]:
+              - text: Administrador de
+              - text: Bienestar Institucional
+          - text: 
+        - navigation [ref=e9]:
+          - region "scrollable content" [ref=e13]:
+            - list [ref=e15]:
+              - listitem [ref=e16]:  INICIO
+              - listitem [ref=e17]:
+                - link " Dashboard" [ref=e18] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/admin-bienestar
+                  - generic [ref=e20]: 
+                  - generic [ref=e21]: Dashboard
+              - listitem [ref=e22]:  GESTIÓN ESTUDIANTIL
+              - listitem [ref=e23]:
+                - link " Fichas Socioeconómicas" [ref=e24] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/admin-bienestar/fichas-socioeconomicas
+                  - generic [ref=e26]: 
+                  - generic [ref=e27]: Fichas Socioeconómicas
+              - listitem [ref=e28]:
+                - link " Solicitudes de Ayuda" [ref=e29] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-ayuda
+                  - generic [ref=e31]: 
+                  - generic [ref=e32]: Solicitudes de Ayuda
+              - listitem [ref=e33]:
+                - link " Información Estudiantil" [ref=e34] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/admin-bienestar/estudiantes
+                  - generic [ref=e36]: 
+                  - generic [ref=e37]: Información Estudiantil
+              - listitem [ref=e38]:  SOLICITUDES
+              - listitem [ref=e39]:
+                - link " Solicitudes de Becas" [ref=e40] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas
+                  - generic [ref=e42]: 
+                  - generic [ref=e43]: Solicitudes de Becas
+              - listitem [ref=e44]:  REPORTES Y ANALÍTICA
+              - listitem [ref=e45]:
+                - link " Reportes y Analítica" [ref=e46] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/admin-bienestar/reportes
+                  - generic [ref=e48]: 
+                  - generic [ref=e49]: Reportes y Analítica
+              - listitem [ref=e50]:  CONFIGURACIÓN
+              - listitem [ref=e51]:
+                - link " Gestión de Períodos Académicos" [ref=e52] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/admin-bienestar/gestion-periodos
+                  - generic [ref=e54]: 
+                  - generic [ref=e55]: Gestión de Períodos Académicos
+              - listitem [ref=e56]:
+                - link " Configurar Programas de Becas" [ref=e57] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/admin-bienestar/configuracion-becas
+                  - generic [ref=e59]: 
+                  - generic [ref=e60]: Configurar Programas de Becas
+    - generic [ref=e61]:
+      - banner [ref=e62]:
+        - navigation [ref=e63]:
+          - link:
+            - /url: http://localhost/ITSI/public/
+          - list: 
+          - list [ref=e65]:
+            - listitem [ref=e66]:
+              - generic [ref=e67]:
+                - generic [ref=e68]: 
+                - text: Bienvenido al sistema, admin
+            - listitem [ref=e69]:
+              - link "Foto de perfil" [ref=e70] [cursor=pointer]:
+                - /url: javascript:void(0)
+                - img "Foto de perfil" [ref=e71]
+              - text:   
+      - generic [ref=e72]:
+        - generic [ref=e75]:
+          - generic [ref=e76]:
+            - heading "Dashboard Administrativo" [level=4] [ref=e77]
+            - paragraph [ref=e78]: Panel de control y estadísticas del sistema de bienestar estudiantil
+          - button " Actualizar" [ref=e80] [cursor=pointer]:
+            - generic [ref=e81]: 
+            - text: Actualizar
+        - generic [ref=e82]:
+          - generic [ref=e86]:
+            - generic [ref=e87]:
+              - paragraph [ref=e88]: Total Fichas
+              - heading "16" [level=4] [ref=e89]
+            - generic [ref=e93]: 
+          - generic [ref=e97]:
+            - generic [ref=e98]:
+              - paragraph [ref=e99]: Total Becas
+              - heading "21" [level=4] [ref=e100]
+            - generic [ref=e104]: 
+          - generic [ref=e108]:
+            - generic [ref=e109]:
+              - paragraph [ref=e110]: Solicitudes
+              - heading "38" [level=4] [ref=e111]
+            - generic [ref=e115]: 
+          - generic [ref=e119]:
+            - generic [ref=e120]:
+              - paragraph [ref=e121]: Total Usuarios
+              - heading "54" [level=4] [ref=e122]
+            - generic [ref=e126]: 
+        - generic [ref=e127]:
+          - generic [ref=e130]:
+            - heading "Estado de Fichas" [level=5] [ref=e131]
+            - generic [ref=e132]:
+              - button "" [ref=e133] [cursor=pointer]:
+                - generic [ref=e134]: 
+              - text:  
+          - generic [ref=e140]:
+            - heading "Solicitudes por Estado" [level=5] [ref=e141]
+            - generic [ref=e142]:
+              - button "" [ref=e143] [cursor=pointer]:
+                - generic [ref=e144]: 
+              - text:  
+        - generic [ref=e148]:
+          - generic [ref=e151]:
+            - heading "Tendencias por Período" [level=5] [ref=e152]
+            - generic [ref=e153]:
+              - button "" [ref=e154] [cursor=pointer]:
+                - generic [ref=e155]: 
+              - text:  
+          - generic [ref=e161]:
+            - heading "Distribución por Carrera" [level=5] [ref=e162]
+            - generic [ref=e163]:
+              - button "" [ref=e164] [cursor=pointer]:
+                - generic [ref=e165]: 
+              - text:  
+        - generic [ref=e169]:
+          - generic [ref=e171]:
+            - heading " Actividad Reciente" [level=5] [ref=e173]:
+              - generic [ref=e174]: 
+              - text: Actividad Reciente
+            - table [ref=e177]:
+              - rowgroup [ref=e178]:
+                - row "Acción Usuario Fecha Estado" [ref=e179]:
+                  - columnheader "Acción" [ref=e180]
+                  - columnheader "Usuario" [ref=e181]
+                  - columnheader "Fecha" [ref=e182]
+                  - columnheader "Estado" [ref=e183]
+              - rowgroup [ref=e184]:
+                - row "Desactivar beca María González 29/05/2026 10:06 info" [ref=e185]:
+                  - cell "Desactivar beca" [ref=e186]
+                  - cell "María González" [ref=e187]
+                  - cell "29/05/2026 10:06" [ref=e188]
+                  - cell "info" [ref=e189]:
+                    - generic [ref=e190]: info
+                - row "Crear beca María González 29/05/2026 10:06 success" [ref=e191]:
+                  - cell "Crear beca" [ref=e192]
+                  - cell "María González" [ref=e193]
+                  - cell "29/05/2026 10:06" [ref=e194]
+                  - cell "success" [ref=e195]:
+                    - generic [ref=e196]: success
+                - row "Toggle configuracion periodo María González 29/05/2026 10:03 info" [ref=e197]:
+                  - cell "Toggle configuracion periodo" [ref=e198]
+                  - cell "María González" [ref=e199]
+                  - cell "29/05/2026 10:03" [ref=e200]
+                  - cell "info" [ref=e201]:
+                    - generic [ref=e202]: info
+                - row "Toggle configuracion periodo María González 29/05/2026 10:03 info" [ref=e203]:
+                  - cell "Toggle configuracion periodo" [ref=e204]
+                  - cell "María González" [ref=e205]
+                  - cell "29/05/2026 10:03" [ref=e206]
+                  - cell "info" [ref=e207]:
+                    - generic [ref=e208]: info
+                - row "Responder solicitud ayuda María González 29/05/2026 09:54 info" [ref=e209]:
+                  - cell "Responder solicitud ayuda" [ref=e210]
+                  - cell "María González" [ref=e211]
+                  - cell "29/05/2026 09:54" [ref=e212]
+                  - cell "info" [ref=e213]:
+                    - generic [ref=e214]: info
+          - generic [ref=e216]:
+            - heading " Alertas y Notificaciones" [level=5] [ref=e218]:
+              - generic [ref=e219]: 
+              - text: Alertas y Notificaciones
+            - generic [ref=e221]:
+              - alert [ref=e222]:
+                - generic [ref=e223]: 
+                - text: 5 ficha(s) pendientes de revisión
+                - button [ref=e224] [cursor=pointer]
+              - alert [ref=e225]:
+                - generic [ref=e226]: 
+                - text: 10 solicitud(es) de ayuda requieren atención
+                - button [ref=e227] [cursor=pointer]
+        - generic [ref=e230]:
+          - heading " Acciones Rápidas" [level=5] [ref=e232]:
+            - generic [ref=e233]: 
+            - text: Acciones Rápidas
+          - generic [ref=e235]:
+            - link " Gestionar Fichas" [ref=e237] [cursor=pointer]:
+              - /url: http://localhost/ITSI/public/admin-bienestar/fichas-socioeconomicas
+              - generic [ref=e238]: 
+              - text: Gestionar Fichas
+            - link " Gestionar Becas" [ref=e240] [cursor=pointer]:
+              - /url: http://localhost/ITSI/public/admin-bienestar/becas
+              - generic [ref=e241]: 
+              - text: Gestionar Becas
+            - link " Ver Solicitudes" [ref=e243] [cursor=pointer]:
+              - /url: http://localhost/ITSI/public/admin-bienestar/solicitudes
+              - generic [ref=e244]: 
+              - text: Ver Solicitudes
+            - link " Generar Reportes" [ref=e246] [cursor=pointer]:
+              - /url: http://localhost/ITSI/public/admin-bienestar/reportes
+              - generic [ref=e247]: 
+              - text: Generar Reportes
+      - contentinfo [ref=e249]:
+        - generic [ref=e251]:
+          - img "ITSI Logo" [ref=e253]
+          - paragraph [ref=e255]: Tecnológico Ibarra. © 2024. All Rights Reserved
+  - img

@@ -87,21 +87,6 @@ class RolModel extends Model
     }
 
     /**
-     * Busca roles por nombre
-     */
-    public function buscarRoles($termino)
-    {
-        $builder = $this->db->table('roles');
-        $builder->select('roles.*, COUNT(usuarios.id) as usuarios_count');
-        $builder->join('usuarios', 'usuarios.rol_id = roles.id', 'left');
-        $builder->like('roles.nombre', $termino);
-        $builder->groupBy('roles.id');
-        $builder->orderBy('roles.id', 'ASC');
-        
-        return $builder->get()->getResultArray();
-    }
-
-    /**
      * Verifica si existe un rol con el mismo nombre
      */
     public function existeRolConNombre($nombre, $excluir_id = null)
@@ -122,5 +107,20 @@ class RolModel extends Model
     public function getRolesDisponibles()
     {
         return $this->orderBy('nombre', 'ASC')->findAll();
+    }
+
+    /**
+     * Busca roles por nombre (usado en gestión de roles del GlobalAdmin)
+     */
+    public function buscarRoles($termino)
+    {
+        $builder = $this->db->table('roles');
+        $builder->select('roles.*, COUNT(usuarios.id) as usuarios_count');
+        $builder->join('usuarios', 'usuarios.rol_id = roles.id', 'left');
+        $builder->like('roles.nombre', $termino);
+        $builder->groupBy('roles.id');
+        $builder->orderBy('roles.id', 'ASC');
+
+        return $builder->get()->getResultArray();
     }
 } 

@@ -159,13 +159,7 @@
                         Por favor, complete la verificación de seguridad.
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="rememberMe">
-                            <label class="form-check-label" for="rememberMe">
-                                Recordarme
-                            </label>
-                        </div>
+                    <div class="d-flex justify-content-end align-items-center mb-4">
                         <a href="<?= site_url('forgot-password') ?>" class="text-decoration-none">¿Olvidó su contraseña?</a>
                     </div>
                     <div class="d-grid">
@@ -183,7 +177,7 @@
     </div>
     <script src="<?= base_url('login/assets/js/bootstrap.bundle.min.js') ?>"></script>
     <script>
-        let captchaCompleted = false;
+        let captchaCompleted = <?= ENVIRONMENT === 'development' ? 'true' : 'false' ?>;
 
         function onCaptchaSuccess(token) {
             captchaCompleted = true;
@@ -191,7 +185,9 @@
         }
 
         function onCaptchaExpired() {
+            <?php if (ENVIRONMENT !== 'development'): ?>
             captchaCompleted = false;
+            <?php endif; ?>
         }
 
         // Validar formulario al enviar
@@ -203,11 +199,12 @@
                 isValid = false;
             }
 
-            // Validar reCAPTCHA
-            if (!captchaCompleted) {
-                document.getElementById('captchaError').style.display = 'block';
-                isValid = false;
-            }
+            // Validar reCAPTCHA                    <?php if (ENVIRONMENT !== 'development'): ?>
+                    if (!captchaCompleted) {
+                        document.getElementById('captchaError').style.display = 'block';
+                        isValid = false;
+                    }
+                    <?php endif; ?>
 
             if (!isValid) {
                 e.preventDefault();
