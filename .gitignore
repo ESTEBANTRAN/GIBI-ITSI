@@ -126,3 +126,8 @@ _modules/*
 /phpunit*.xml
 
 writable/backups/*.sql
+
+#-------------------------
+# Credentials / Secrets
+#-------------------------
+credenciales.txt

@@ -63,13 +63,13 @@
             <div class="card border-left-danger shadow h-100">
                 <div class="card-header py-3 bg-white d-flex align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-danger"><i class="fas fa-envelope mr-2"></i>Configuración de Correo (SMTP)</h6>
-                    <span class="text-xs text-muted">Cuenta bienestar.itsi.info@gmail.com</span>
+                    <span class="text-xs text-muted">Cuenta de correo institucional</span>
                 </div>
                 <div class="card-body">
                     <form id="formConfiguracionCorreo">
                         <div class="form-group">
                             <label for="gmail_correo" class="font-weight-bold">Correo SMTP Institucional</label>
-                            <input type="email" class="form-control border-left-danger" id="gmail_correo" name="gmail_correo" value="<?= esc($configuracion['gmail_correo'] ?? 'bienestar.itsi.info@gmail.com') ?>" required>
+                            <input type="email" class="form-control border-left-danger" id="gmail_correo" name="gmail_correo" value="<?= esc($configuracion['gmail_correo'] ?? '') ?>" placeholder="correo@institucion.edu.ec" required>
                             <small class="form-text text-muted">Todos los correos del sistema saldrán desde esta cuenta.</small>
                         </div>
                         <div class="form-group">
@@ -88,7 +88,7 @@
                             <div class="col-md-7">
                                 <div class="form-group">
                                     <label for="gmail_smtp_host" class="font-weight-bold">Host SMTP</label>
-                                    <input type="text" class="form-control" id="gmail_smtp_host" name="gmail_smtp_host" value="<?= esc($configuracion['gmail_smtp_host'] ?? 'smtp.gmail.com') ?>" required>
+                                    <input type="text" class="form-control" id="gmail_smtp_host" name="gmail_smtp_host" value="<?= esc($configuracion['gmail_smtp_host'] ?? '') ?>" placeholder="smtp.gmail.com" required>
                                 </div>
                             </div>
                             <div class="col-md-5">
@@ -152,7 +152,7 @@
                         </div>
                         <div class="form-group">
                             <label for="drive_refresh_token" class="font-weight-bold">Google OAuth 2.0 Refresh Token</label>
-                            <input type="text" class="form-control border-left-success" id="drive_refresh_token" name="drive_refresh_token" value="<?= esc($configuracion['drive_refresh_token'] ?? '') ?>" placeholder="Refresh Token para bienestar.itsi.info@gmail.com">
+                            <input type="text" class="form-control border-left-success" id="drive_refresh_token" name="drive_refresh_token" value="<?= esc($configuracion['drive_refresh_token'] ?? '') ?>" placeholder="Refresh Token para la cuenta de Google Drive">
                             <small class="form-text text-muted">Token persistente para la generación de sesiones de Google Drive sin caducidad.</small>
                         </div>
                         <div class="form-group">

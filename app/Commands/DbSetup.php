@@ -198,14 +198,14 @@ class DbSetup extends BaseCommand
             // SMTP Email
             [
                 'clave' => 'gmail_correo',
-                'valor' => 'bienestar.itsi.info@gmail.com',
-                'descripcion' => 'Correo institucional de Gmail para envío masivo de notificaciones',
+                'valor' => '',
+                'descripcion' => 'Correo institucional para envío masivo de notificaciones',
                 'tipo' => 'email',
                 'categoria' => 'correo'
             ],
             [
                 'clave' => 'gmail_clave',
-                'valor' => 'itsi1234bienestar',
+                'valor' => '',
                 'descripcion' => 'Clave de aplicación / Password SMTP del correo institucional',
                 'tipo' => 'password',
                 'categoria' => 'correo'
@@ -257,7 +257,7 @@ class DbSetup extends BaseCommand
             [
                 'clave' => 'drive_refresh_token',
                 'valor' => '',
-                'descripcion' => 'Google OAuth 2.0 Refresh Token obtenido para la cuenta bienestar.itsi.info@gmail.com',
+                'descripcion' => 'Google OAuth 2.0 Refresh Token para la cuenta de Google Drive',
                 'tipo' => 'text',
                 'categoria' => 'drive'
             ],
@@ -274,12 +274,16 @@ class DbSetup extends BaseCommand
             $existing = $db->table('configuracion_sistema')->where('clave', $config['clave'])->get()->getRowArray();
             
             if ($existing) {
-                // Actualizar sólo si el valor por defecto cambió o para agregar campos nuevos
-                $db->table('configuracion_sistema')->where('clave', $config['clave'])->update([
+                $updateData = [
                     'descripcion' => $config['descripcion'],
                     'tipo' => $config['tipo'],
                     'categoria' => $config['categoria']
-                ]);
+                ];
+                // Limpiar valor si la nueva configuracion usa un default vacio (seguridad)
+                if (empty($config['valor']) && !empty($existing['valor'])) {
+                    $updateData['valor'] = '';
+                }
+                $db->table('configuracion_sistema')->where('clave', $config['clave'])->update($updateData);
             } else {
                 $db->table('configuracion_sistema')->insert($config);
             }

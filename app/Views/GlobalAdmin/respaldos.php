@@ -694,7 +694,7 @@ function configurarDriveMirror() {
         html: `
             <div class="text-start">
                 <p>Los respaldos del sistema están configurados para hacer un "Mirror" (espejo) obligatorio hacia la nube.</p>
-                <p>Cada vez que se genere un respaldo local, se subirá automáticamente a la subcarpeta <strong>backups</strong> dentro del Google Drive configurado (<code>bienestar.itsi.info@gmail.com</code>).</p>
+                <p>Cada vez que se genere un respaldo local, se subirá automáticamente a la subcarpeta <strong>backups</strong> dentro del Google Drive institucional configurado.</p>
                 <p>Si la integración está apagada, solo se guardarán localmente.</p>
             </div>
         `,

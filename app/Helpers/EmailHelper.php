@@ -22,12 +22,12 @@ class EmailHelper
             $db = \Config\Database::connect();
             
             // Cargar configuración de la base de datos (con valores del archivo .env como fallback)
-            $smtpUser = self::getValorDb($db, 'gmail_correo', env('EMAIL_SMTP_USER', 'bienestar.itsi.info@gmail.com'));
+            $smtpUser = self::getValorDb($db, 'gmail_correo', env('EMAIL_SMTP_USER', ''));
             $smtpPass = self::getValorDb($db, 'gmail_clave', env('EMAIL_SMTP_PASS', ''));
-            $smtpHost = self::getValorDb($db, 'gmail_smtp_host', 'smtp.gmail.com');
-            $smtpPort = (int)self::getValorDb($db, 'gmail_smtp_port', '587');
-            $smtpCrypto = self::getValorDb($db, 'gmail_smtp_crypto', 'tls');
-            $fromName = self::getValorDb($db, 'nombre_institucion', 'Unidad de Bienestar - ITSI');
+            $smtpHost = self::getValorDb($db, 'gmail_smtp_host', env('EMAIL_SMTP_HOST', 'smtp.gmail.com'));
+            $smtpPort = (int)self::getValorDb($db, 'gmail_smtp_port', env('EMAIL_SMTP_PORT', '587'));
+            $smtpCrypto = self::getValorDb($db, 'gmail_smtp_crypto', env('EMAIL_SMTP_CRYPTO', 'tls'));
+            $fromName = self::getValorDb($db, 'nombre_institucion', env('EMAIL_FROM_NAME', 'Unidad de Bienestar - ITSI'));
             
             // Validar que tengamos los datos mínimos
             if (empty($smtpUser) || empty($smtpPass)) {
