@@ -1,0 +1,116 @@
+[     237ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost/ITSI/public/uploads/perfiles/user_40_1753940652.jpg:0
+[     259ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/global-admin/usuarios:0
+[     259ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/global-admin/usuarios:0
+[     259ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/global-admin/usuarios:0
+[     259ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/global-admin/usuarios:0
+[     273ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[   17263ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[   17962ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost/ITSI/public/uploads/perfiles/user_40_1753940652.jpg:0
+[   17987ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/global-admin/usuarios:0
+[   17987ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/global-admin/usuarios:0
+[   17987ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/global-admin/usuarios:0
+[   17987ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/global-admin/usuarios:0
+[   17998ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[   18705ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[   19425ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) @ http://localhost/ITSI/public/index.php/global-admin/configuracion:0
+[   19425ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) @ http://localhost/ITSI/public/index.php/global-admin/configuracion:0
+[   19439ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[   20274ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[   35281ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[   38531ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost/ITSI/public/uploads/perfiles/user_40_1753940652.jpg:0
+[   38562ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/global-admin/usuarios:0
+[   38562ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/global-admin/usuarios:0
+[   38562ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/global-admin/usuarios:0
+[   38562ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/global-admin/usuarios:0
+[   38572ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[   39802ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[   41004ms] [WARNING] jQuery.Deferred exception: Chart is not defined ReferenceError: Chart is not defined
+    at inicializarGrafico (http://localhost/ITSI/public/index.php/global-admin/logs:531:5)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/index.php/global-admin/logs:401:5)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755) undefined @ http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:1
+[   41009ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[   41009ms] ReferenceError: Chart is not defined
+    at inicializarGrafico (http://localhost/ITSI/public/index.php/global-admin/logs:531:5)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/index.php/global-admin/logs:401:5)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[   41115ms] TypeError: Cannot read properties of undefined (reading 'length')
+    at mostrarLogs (http://localhost/ITSI/public/index.php/global-admin/logs:435:14)
+    at Object.success (http://localhost/ITSI/public/index.php/global-admin/logs:419:17)
+    at c (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:27742)
+    at Object.fireWith [as resolveWith] (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:28487)
+    at l (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:78795)
+    at XMLHttpRequest.<anonymous> (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:81123)
+[   42267ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/login:0
+[   43817ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/login:0
+[  186777ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ https://localhost/ITSI/public/index.php/login:0
+[  198037ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/login:0
+[  199627ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/login:0
+[  293131ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/login:0
+[  294361ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/login:0
+[  312532ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/login:0
+[  313718ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/login:0
+[  322484ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/estudiante/cuenta:0
+[  322484ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/estudiante/cuenta:0
+[  322484ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/estudiante/cuenta:0

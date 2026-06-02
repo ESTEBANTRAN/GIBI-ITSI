@@ -2,17 +2,11 @@
 
 namespace App\Controllers;
 
-use CodeIgniter\Controller;
-use CodeIgniter\HTTP\CLIRequest;
-use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * @deprecated Usar PerfilController en su lugar. Este controlador se mantiene por compatibilidad.
- * ProfileController será eliminado en una versión futura.
- */
+/** @deprecated Usar PerfilController::cambiarFoto() en su lugar. */
 class ProfileController extends BaseController
 {
     protected $request;

@@ -512,9 +512,6 @@ $(document).ready(function() {
             }
         });
     };
-
-    console.log('Funciones cargadas correctamente');
-    console.log('crearBackup disponible:', typeof window.crearBackup);
 });
 </script>
 <?= $this->endSection() ?> 

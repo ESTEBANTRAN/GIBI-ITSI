@@ -42,13 +42,17 @@ class CreateBecasTables extends Migration
                 \"activo\" INTEGER NOT NULL DEFAULT 1,
                 \"activo_fichas\" INTEGER NOT NULL DEFAULT 1,
                 \"activo_becas\" INTEGER NOT NULL DEFAULT 1,
+                \"permite_fichas\" INTEGER NOT NULL DEFAULT 1,
+                \"permite_becas\" INTEGER NOT NULL DEFAULT 1,
                 \"vigente_estudiantes\" INTEGER NOT NULL DEFAULT 1,
                 \"limite_fichas\" INTEGER NULL DEFAULT NULL,
                 \"limite_becas\" INTEGER NULL DEFAULT NULL,
                 \"fichas_creadas\" INTEGER NOT NULL DEFAULT 0,
                 \"becas_asignadas\" INTEGER NOT NULL DEFAULT 0,
                 \"created_by\" INTEGER NULL,
+                \"creado_por\" INTEGER NULL,
                 \"updated_by\" INTEGER NULL,
+                \"fecha_creacion\" DATETIME NULL,
                 \"created_at\" DATETIME NULL,
                 \"updated_at\" DATETIME NULL
             )

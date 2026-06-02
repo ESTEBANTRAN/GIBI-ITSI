@@ -8,7 +8,7 @@
             </div>
             <div class="py-2 px-6 text-center">
                 <p class="mb-0 fs-4" style="color: #ffffff;">
-                    Tecnológico Ibarra. © 2024. All Rights Reserved
+                    Tecnológico Ibarra. © <?= date('Y') ?>. All Rights Reserved
                 </p>
             </div>
         </div>

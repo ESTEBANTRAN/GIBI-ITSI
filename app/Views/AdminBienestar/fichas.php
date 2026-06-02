@@ -517,13 +517,11 @@ function limpiarFiltros() {
 
 function aplicarFiltros() {
     // Lógica para aplicar filtros
-    console.log('Aplicando filtros...');
 }
 
 function aplicarFiltrosAvanzados() {
     // Lógica para aplicar filtros avanzados
     $('#filterModal').modal('hide');
-    console.log('Aplicando filtros avanzados...');
 }
 
 function exportarDatos() {

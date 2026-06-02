@@ -11,13 +11,13 @@ use CodeIgniter\Router\RouteCollection;
 // ============================================================================
 $routes->get('/', 'AuthController::index');
 $routes->get('/login', 'AuthController::index');
-$routes->post('auth/attemptLogin', 'AuthController::attemptLogin', ['filter' => 'ratelimit:10,900']);
+$routes->post('auth/attemptLogin', 'AuthController::attemptLogin', ['filter' => ['csrf', 'ratelimit:10,900']]);
 
 // Rutas para recuperación de contraseña
 $routes->get('forgot-password', 'AuthController::forgotPassword');
-$routes->post('auth/verifyIdentity', 'AuthController::verifyIdentity', ['filter' => 'ratelimit:5,900']);
+$routes->post('auth/verifyIdentity', 'AuthController::verifyIdentity', ['filter' => ['csrf', 'ratelimit:5,900']]);
 $routes->get('reset-password/(:alphanum)', 'AuthController::resetPasswordForm/$1');
-$routes->post('auth/resetPassword', 'AuthController::resetPassword', ['filter' => 'ratelimit:5,900']);
+$routes->post('auth/resetPassword', 'AuthController::resetPassword', ['filter' => ['csrf', 'ratelimit:5,900']]);
 
 // Logout
 $routes->get('auth/logout', 'AuthController::logout');
@@ -43,17 +43,17 @@ $routes->post('dashboard/actualizar', 'DashboardController::actualizarDashboard'
 
 // Perfil (genérico, redirige según rol)
 $routes->get('perfil/editar', 'PerfilController::editar', ['filter' => 'auth']);
-$routes->post('perfil/actualizar', 'PerfilController::actualizar', ['filter' => 'auth']);
-$routes->post('perfil/cambiarFoto', 'PerfilController::cambiarFoto', ['filter' => 'auth']);
+$routes->post('perfil/actualizar', 'PerfilController::actualizar', ['filter' => ['csrf', 'auth']]);
+$routes->post('perfil/cambiarFoto', 'PerfilController::cambiarFoto', ['filter' => ['csrf', 'auth']]);
 
 // Cambio de foto de perfil (legacy)
-$routes->post('profile/cambiar-foto', 'ProfileController::cambiarFotoPerfil', ['filter' => 'auth']);
+$routes->post('profile/cambiar-foto', 'PerfilController::cambiarFoto', ['filter' => ['csrf', 'auth']]);
 
 // Cuenta (genérico, redirige según rol)
 $routes->get('cuenta/configuracion', 'CuentaController::configuracion', ['filter' => 'auth']);
-$routes->post('cuenta/cambiarPassword', 'CuentaController::cambiarPassword', ['filter' => ['auth', 'ratelimit:5,900']]);
-$routes->post('cuenta/configuracionNotificaciones', 'CuentaController::configuracionNotificaciones', ['filter' => 'auth']);
-$routes->post('cuenta/eliminarCuenta', 'CuentaController::eliminarCuenta', ['filter' => ['auth', 'ratelimit:3,3600']]);
+$routes->post('cuenta/cambiarPassword', 'CuentaController::cambiarPassword', ['filter' => ['csrf', 'auth', 'ratelimit:5,900']]);
+$routes->post('cuenta/configuracionNotificaciones', 'CuentaController::configuracionNotificaciones', ['filter' => ['csrf', 'auth']]);
+$routes->post('cuenta/eliminarCuenta', 'CuentaController::eliminarCuenta', ['filter' => ['csrf', 'auth', 'ratelimit:3,3600']]);
 $routes->get('cuenta/exportarDatos', 'CuentaController::exportarDatos', ['filter' => 'auth']);
 
 // Rutas legacy para compatibilidad (Admin Bienestar)
@@ -82,11 +82,11 @@ $routes->post('verificar-codigo-pdf', 'AdminBienestarController::verificarCodigo
 $routes->group('admin-bienestar', ['filter' => ['auth', 'role:2']], function($routes) {
 
     // ─── Dashboard y Estadísticas ──────────────────────────────────────────
-    $routes->get('dashboard', 'AdminBienestarController::dashboard');
-    $routes->get('getEstadisticas', 'AdminBienestarController::getEstadisticas');
+    $routes->get('dashboard', 'Admin\DashboardController::dashboard');
+    $routes->get('getEstadisticas', 'Admin\DashboardController::getEstadisticas');
 
     // ─── Páginas principales ───────────────────────────────────────────────
-    $routes->get('fichas-socioeconomicas', 'AdminBienestarController::fichasSocioeconomicas');
+    $routes->get('fichas-socioeconomicas', 'Admin\FichasController::fichasSocioeconomicas');
     $routes->get('gestion-periodos', 'AdminBienestarController::gestionPeriodos');
     $routes->get('becas', 'AdminBienestarController::becas');
     $routes->get('estudiantes', 'AdminBienestarController::usuarios');
@@ -155,14 +155,14 @@ $routes->group('admin-bienestar', ['filter' => ['auth', 'role:2']], function($ro
     $routes->get('usuarios/exportar', 'AdminBienestarController::exportarUsuarios');
 
     // ─── Fichas Socioeconómicas ────────────────────────────────────────────
-    $routes->post('actualizar-estado-ficha', 'AdminBienestarController::actualizarEstadoFicha');
-    $routes->get('verFicha/(:num)', 'AdminBienestarController::verFicha/$1');
+    $routes->post('actualizar-estado-ficha', 'Admin\FichasController::actualizarEstadoFicha');
+    $routes->get('ver-ficha/(:num)', 'Admin\FichasController::verFicha/$1');
     $routes->post('aprobar-ficha/(:num)', 'AdminBienestarController::aprobarFicha/$1');
     $routes->post('rechazar-ficha/(:num)', 'AdminBienestarController::rechazarFicha/$1');
     $routes->get('exportar-ficha-pdf/(:num)', 'AdminBienestarController::exportarFichaPDF/$1');
     $routes->post('exportarDatos', 'AdminBienestarController::exportarDatos');
     $routes->post('generarReporte', 'AdminBienestarController::generarReporte');
-    $routes->get('ver-ficha/(:num)', 'AdminBienestarController::verFicha/$1');
+    $routes->get('verFicha/(:num)', 'AdminBienestarController::redirectToVerFicha/$1');
 
     // ─── Gestión de Estudiantes ────────────────────────────────────────────
     $routes->get('historial-estudiante/(:num)', 'AdminBienestarController::historialEstudiante/$1');
@@ -170,10 +170,10 @@ $routes->group('admin-bienestar', ['filter' => ['auth', 'role:2']], function($ro
 
     // ─── Perfil y Cuenta ───────────────────────────────────────────────────
     $routes->get('perfil', 'AdminBienestarController::perfil');
-    $routes->post('perfil/actualizar', 'AdminBienestarController::actualizarPerfil');
+    $routes->post('perfil/actualizar', 'AdminBienestarController::actualizarPerfil', ['filter' => ['csrf', 'auth']]);
 
     $routes->get('cuenta', 'AdminBienestarController::cuenta');
-    $routes->post('cuenta/cambiarPassword', 'AdminBienestarController::cambiarPassword', ['filter' => ['auth', 'ratelimit:5,900']]);
+    $routes->post('cuenta/cambiarPassword', 'AdminBienestarController::cambiarPassword', ['filter' => ['csrf', 'auth', 'ratelimit:5,900']]);
 
     $routes->get('cuenta/exportarDatos', 'AdminBienestarController::exportarDatos');
 
@@ -214,35 +214,35 @@ $routes->group('estudiante', ['filter' => ['auth', 'role:1']], function($routes)
 
     // Páginas principales
     $routes->get('', 'EstudianteController::index');
-    $routes->get('ficha-socioeconomica', 'EstudianteController::fichaSocioeconomica');
-    $routes->get('becas', 'EstudianteController::becas');
-    $routes->get('solicitudes-ayuda', 'EstudianteController::solicitudesAyuda');
-    $routes->get('documentos', 'EstudianteController::documentos');
-    $routes->get('perfil', 'EstudianteController::perfil');
-    $routes->get('cuenta', 'EstudianteController::cuenta');
+    $routes->get('ficha-socioeconomica', 'Estudiante\FichasController::fichaSocioeconomica');
+    $routes->get('becas', 'Estudiante\BecasController::becas');
+    $routes->get('solicitudes-ayuda', 'Estudiante\SolicitudesController::solicitudesAyuda');
+    $routes->get('documentos', 'Estudiante\DocumentosController::documentos');
+    $routes->get('perfil', 'Estudiante\PerfilController::perfil');
+    $routes->get('cuenta', 'Estudiante\PerfilController::cuenta');
 
     // Fichas
-    $routes->post('crear-ficha', 'EstudianteController::crearFicha');
-    $routes->post('enviar-ficha', 'EstudianteController::enviarFicha');
-    $routes->get('ver-ficha/(:num)', 'EstudianteController::verFicha/$1');
-    $routes->get('editar-ficha/(:num)', 'EstudianteController::editarFicha/$1');
-    $routes->post('actualizar-ficha', 'EstudianteController::actualizarFicha');
-    $routes->get('exportar-ficha-pdf/(:num)', 'EstudianteController::exportarFichaPDF/$1');
+    $routes->post('crear-ficha', 'Estudiante\FichasController::crearFicha');
+    $routes->post('enviar-ficha', 'Estudiante\FichasController::enviarFicha');
+    $routes->get('ver-ficha/(:num)', 'Estudiante\FichasController::verFicha/$1');
+    $routes->get('editar-ficha/(:num)', 'Estudiante\FichasController::editarFicha/$1');
+    $routes->post('actualizar-ficha', 'Estudiante\FichasController::actualizarFicha');
+    $routes->get('exportar-ficha-pdf/(:num)', 'Estudiante\FichasController::exportarFichaPDF/$1');
 
     // Becas - solicitudes
-    $routes->post('solicitar-beca', 'EstudianteController::solicitarBeca');
-    $routes->post('cancelar-solicitud-beca', 'EstudianteController::cancelarSolicitudBeca');
-    $routes->post('obtener-becas-disponibles', 'EstudianteController::obtenerBecasDisponibles');
+    $routes->post('solicitar-beca', 'Estudiante\BecasController::solicitarBeca');
+    $routes->post('cancelar-solicitud-beca', 'Estudiante\BecasController::cancelarSolicitudBeca');
+    $routes->post('obtener-becas-disponibles', 'Estudiante\BecasController::obtenerBecasDisponibles');
     $routes->post('verificar-elegibilidad-beca', 'DocumentoBecaController::verificarElegibilidadBeca');
-    $routes->get('estado-solicitud-beca/(:num)', 'EstudianteController::estadoSolicitudBeca/$1');
+    $routes->get('estado-solicitud-beca/(:num)', 'Estudiante\BecasController::estadoSolicitudBeca/$1');
     $routes->post('actualizar-documentos-beca', 'DocumentoBecaController::actualizarDocumentosBeca');
     $routes->get('descargar-documento-beca/(:num)', 'DocumentoBecaController::descargarDocumentoBeca/$1');
     $routes->get('documentos-beca/(:num)', 'DocumentoBecaController::documentosBeca/$1');
 
     // Solicitudes de ayuda
-    $routes->post('crear-solicitud-ayuda', 'EstudianteController::crearSolicitudAyuda');
-    $routes->post('editar-solicitud-ayuda', 'EstudianteController::editarSolicitudAyuda');
-    $routes->post('cancelar-solicitud-ayuda', 'EstudianteController::cancelarSolicitudAyuda');
+    $routes->post('crear-solicitud-ayuda', 'Estudiante\SolicitudesController::crearSolicitudAyuda');
+    $routes->post('editar-solicitud-ayuda', 'Estudiante\SolicitudesController::editarSolicitudAyuda');
+    $routes->post('cancelar-solicitud-ayuda', 'Estudiante\SolicitudesController::cancelarSolicitudAyuda');
 
     // Documentos
     $routes->post('subir-documento', 'DocumentoBecaController::subirDocumento');
@@ -250,25 +250,25 @@ $routes->group('estudiante', ['filter' => ['auth', 'role:1']], function($routes)
     $routes->post('eliminar-documento', 'DocumentoBecaController::eliminarDocumento');
 
     // Perfil y cuenta
-    $routes->post('actualizar-perfil', 'EstudianteController::actualizarPerfil');
-    $routes->post('cambiar-foto', 'EstudianteController::cambiarFoto');
-    $routes->post('cambiar-password', 'EstudianteController::cambiarPassword', ['filter' => ['auth', 'ratelimit:5,900']]);
-    $routes->post('configurar-notificaciones', 'EstudianteController::configurarNotificaciones');
-    $routes->get('exportar-datos', 'EstudianteController::exportarDatos');
-    $routes->post('eliminar-cuenta', 'EstudianteController::eliminarCuenta', ['filter' => ['auth', 'ratelimit:3,3600']]);
+    $routes->post('actualizar-perfil', 'Estudiante\PerfilController::actualizarPerfil', ['filter' => ['csrf', 'auth']]);
+    $routes->post('cambiar-foto', 'Estudiante\PerfilController::cambiarFoto', ['filter' => ['csrf', 'auth']]);
+    $routes->post('cambiar-password', 'Estudiante\PerfilController::cambiarPassword', ['filter' => ['csrf', 'auth', 'ratelimit:5,900']]);
+    $routes->post('configurar-notificaciones', 'Estudiante\PerfilController::configurarNotificaciones', ['filter' => ['csrf', 'auth']]);
+    $routes->get('exportar-datos', 'Estudiante\PerfilController::exportarDatos');
+    $routes->post('eliminar-cuenta', 'Estudiante\PerfilController::eliminarCuenta', ['filter' => ['csrf', 'auth', 'ratelimit:3,3600']]);
 
     // Información
-    $routes->get('informacion/servicios', 'EstudianteController::informacionServicios');
-    $routes->get('informacion/becas', 'EstudianteController::informacionBecas');
-    $routes->get('informacion/psicologia', 'EstudianteController::informacionPsicologia');
-    $routes->get('informacion/salud', 'EstudianteController::informacionSalud');
-    $routes->get('informacion/trabajo-social', 'EstudianteController::informacionTrabajoSocial');
-    $routes->get('informacion/orientacion-academica', 'EstudianteController::informacionOrientacionAcademica');
+    $routes->get('informacion/servicios', 'Estudiante\InformacionController::informacionServicios');
+    $routes->get('informacion/becas', 'Estudiante\BecasController::informacionBecas');
+    $routes->get('informacion/psicologia', 'Estudiante\InformacionController::informacionPsicologia');
+    $routes->get('informacion/salud', 'Estudiante\InformacionController::informacionSalud');
+    $routes->get('informacion/trabajo-social', 'Estudiante\InformacionController::informacionTrabajoSocial');
+    $routes->get('informacion/orientacion-academica', 'Estudiante\InformacionController::informacionOrientacionAcademica');
 
-    // Sistema mejorado de becas
+    // Sistema mejorado de becas (legacy / sin implementación activa)
     $routes->get('verificar-habilitacion-becas', 'EstudianteController::verificarHabilitacionBecas');
     $routes->get('solicitud-beca/(:num)', 'EstudianteController::detalleSolicitudBeca/$1');
-    $routes->get('detalleBeca/(:num)', 'EstudianteController::detalleBeca/$1');
+    $routes->get('detalleBeca/(:num)', 'Estudiante\BecasController::detalleBeca/$1');
     $routes->get('solicitudes-ayuda-mejorada', 'EstudianteController::solicitudesAyudaMejorada');
 });
 
@@ -279,72 +279,70 @@ $routes->group('estudiante', ['filter' => ['auth', 'role:1']], function($routes)
 // RUTAS GlobalAdmin (agrupadas con auth + role:4)
 // ============================================================================
 $routes->group('global-admin', ['filter' => ['auth', 'role:4']], function($routes) {
-    $routes->get('dashboard', 'GlobalAdmin\\GlobalAdminController::dashboard');
-    $routes->get('usuarios', 'GlobalAdmin\\GlobalAdminController::gestionUsuarios');
-    $routes->get('roles', 'GlobalAdmin\\GlobalAdminController::gestionRoles');
-    $routes->get('configuracion', 'GlobalAdmin\\GlobalAdminController::configuracionSistema');
-    $routes->get('respaldos', 'GlobalAdmin\\GlobalAdminController::respaldos');
-    $routes->get('logs', 'GlobalAdmin\\GlobalAdminController::logs');
-    $routes->get('estadisticas', 'GlobalAdmin\\GlobalAdminController::estadisticas');
 
-    // Perfil y cuenta del Super Administrador
+    // ─── Dashboard ─────────────────────────────────────────────────────────
+    $routes->get('dashboard', 'GlobalAdmin\\GlobalAdminController::dashboard');
+
+    // ─── Gestión de Usuarios ───────────────────────────────────────────────
+    $routes->get('usuarios', 'GlobalAdmin\\UsuariosController::gestionUsuarios');
+    $routes->post('crear-usuario', 'GlobalAdmin\\UsuariosController::crearUsuario', ['filter' => ['auth', 'ratelimit:5,900']]);
+    $routes->post('actualizar-usuario', 'GlobalAdmin\\UsuariosController::actualizarUsuario', ['filter' => ['auth', 'ratelimit:10,900']]);
+    $routes->post('eliminar-usuario', 'GlobalAdmin\\UsuariosController::eliminarUsuario', ['filter' => ['auth', 'ratelimit:5,3600']]);
+    $routes->get('obtener-usuario/(:num)', 'GlobalAdmin\\UsuariosController::obtenerUsuario/$1');
+    $routes->get('exportar-usuarios-pdf', 'GlobalAdmin\\UsuariosController::exportarUsuariosPDF');
+
+    // ─── Gestión de Roles ───────────────────────────────────────────────────
+    $routes->get('roles', 'GlobalAdmin\\RolesController::gestionRoles');
+    $routes->post('crear-rol', 'GlobalAdmin\\RolesController::crearRol', ['filter' => ['auth', 'ratelimit:5,900']]);
+    $routes->post('actualizar-rol', 'GlobalAdmin\\RolesController::actualizarRol', ['filter' => ['auth', 'ratelimit:5,900']]);
+    $routes->post('eliminar-rol', 'GlobalAdmin\\RolesController::eliminarRol', ['filter' => ['auth', 'ratelimit:5,3600']]);
+    $routes->get('obtener-rol/(:num)', 'GlobalAdmin\\RolesController::obtenerRol/$1');
+    $routes->get('permisos-rol/(:num)', 'GlobalAdmin\\RolesController::obtenerPermisosRol/$1');
+
+    // ─── Respaldos ─────────────────────────────────────────────────────────
+    $routes->get('respaldos', 'GlobalAdmin\\BackupsController::respaldos');
+    $routes->post('crear-backup', 'GlobalAdmin\\BackupsController::crearBackup');
+    $routes->post('restaurar-backup', 'GlobalAdmin\\BackupsController::restaurarBackup', ['filter' => ['auth', 'ratelimit:3,3600']]);
+    $routes->get('descargar-respaldo/(:num)', 'GlobalAdmin\\BackupsController::descargarRespaldo/$1');
+    $routes->post('crear-respaldo', 'GlobalAdmin\\BackupsController::crearRespaldo', ['filter' => ['auth', 'ratelimit:5,900']]);
+    $routes->post('restaurar-respaldo', 'GlobalAdmin\\BackupsController::restaurarRespaldo', ['filter' => ['auth', 'ratelimit:3,3600']]);
+    $routes->post('eliminar-respaldo', 'GlobalAdmin\\BackupsController::eliminarRespaldo', ['filter' => ['auth', 'ratelimit:5,3600']]);
+    $routes->post('limpiar-respaldos', 'GlobalAdmin\\BackupsController::limpiarRespaldos', ['filter' => ['auth', 'ratelimit:3,3600']]);
+    $routes->post('enviar-respaldo-email', 'GlobalAdmin\\BackupsController::enviarRespaldoPorEmail', ['filter' => ['auth', 'ratelimit:5,900']]);
+    $routes->post('guardar-configuracion-respaldos', 'GlobalAdmin\\BackupsController::guardarConfiguracionRespaldos');
+    $routes->get('obtener-respaldos', 'GlobalAdmin\\BackupsController::obtenerRespaldos');
+    $routes->get('estadisticas-respaldos', 'GlobalAdmin\\BackupsController::estadisticasRespaldos');
+
+    // ─── Logs ───────────────────────────────────────────────────────────────
+    $routes->get('logs', 'GlobalAdmin\\LogsController::logs');
+    $routes->get('obtener-logs', 'GlobalAdmin\\LogsController::obtenerLogs');
+    $routes->get('obtener-log/(:num)', 'GlobalAdmin\\LogsController::obtenerLog/$1');
+    $routes->post('eliminar-log', 'GlobalAdmin\\LogsController::eliminarLog', ['filter' => ['auth', 'ratelimit:10,900']]);
+    $routes->post('limpiar-logs', 'GlobalAdmin\\LogsController::limpiarLogs', ['filter' => ['auth', 'ratelimit:3,3600']]);
+    $routes->get('exportar-logs', 'GlobalAdmin\\LogsController::exportarLogs');
+    $routes->get('estadisticas-logs', 'GlobalAdmin\\LogsController::estadisticasLogs');
+
+    // ─── Estadísticas ───────────────────────────────────────────────────────
+    $routes->get('estadisticas', 'GlobalAdmin\\EstadisticasController::estadisticas');
+    $routes->get('obtener-estadisticas-globales', 'GlobalAdmin\\EstadisticasController::obtenerEstadisticasGlobales');
+    $routes->get('metricas-rendimiento', 'GlobalAdmin\\EstadisticasController::getMetricasRendimiento');
+
+    // ─── Perfil y Cuenta del Super Administrador ───────────────────────────
     $routes->get('perfil', 'GlobalAdmin\\GlobalAdminController::perfil');
-    $routes->post('perfil/actualizar', 'GlobalAdmin\\GlobalAdminController::actualizarPerfil');
-    $routes->post('perfil/cambiarFoto', 'GlobalAdmin\\GlobalAdminController::cambiarFotoPerfil');
+    $routes->post('perfil/actualizar', 'GlobalAdmin\\GlobalAdminController::actualizarPerfil', ['filter' => ['csrf', 'auth']]);
+    $routes->post('perfil/cambiarFoto', 'GlobalAdmin\\GlobalAdminController::cambiarFotoPerfil', ['filter' => ['csrf', 'auth']]);
     $routes->get('cuenta', 'GlobalAdmin\\GlobalAdminController::cuenta');
-    $routes->post('cuenta/cambiarPassword', 'GlobalAdmin\\GlobalAdminController::cambiarPassword', ['filter' => ['auth', 'ratelimit:5,900']]);
-    $routes->post('cuenta/configuracionNotificaciones', 'GlobalAdmin\\GlobalAdminController::configuracionNotificaciones');
-    $routes->post('cuenta/eliminarCuenta', 'GlobalAdmin\\GlobalAdminController::eliminarCuenta', ['filter' => ['auth', 'ratelimit:3,3600']]);
+    $routes->post('cuenta/cambiarPassword', 'GlobalAdmin\\GlobalAdminController::cambiarPassword', ['filter' => ['csrf', 'auth', 'ratelimit:5,900']]);
+    $routes->post('cuenta/configuracionNotificaciones', 'GlobalAdmin\\GlobalAdminController::configuracionNotificaciones', ['filter' => ['csrf', 'auth']]);
+    $routes->post('cuenta/eliminarCuenta', 'GlobalAdmin\\GlobalAdminController::eliminarCuenta', ['filter' => ['csrf', 'auth', 'ratelimit:3,3600']]);
     $routes->get('cuenta/exportarDatos', 'GlobalAdmin\\GlobalAdminController::exportarDatos');
 
-    // AJAX
-    $routes->post('crear-backup', 'GlobalAdmin\\GlobalAdminController::crearBackup');
-    $routes->post('restaurar-backup', 'GlobalAdmin\\GlobalAdminController::restaurarBackup', ['filter' => ['auth', 'ratelimit:3,3600']]);
+    // ─── Configuración del Sistema ──────────────────────────────────────────
+    $routes->get('configuracion', 'GlobalAdmin\\GlobalAdminController::configuracionSistema');
+    $routes->post('guardar-configuracion', 'GlobalAdmin\\GlobalAdminController::guardarConfiguracion', ['filter' => ['auth', 'ratelimit:10,900']]);
     $routes->post('actualizar-configuracion', 'GlobalAdmin\\GlobalAdminController::actualizarConfiguracion');
 
-    // Gestión de usuarios
-    $routes->post('crear-usuario', 'GlobalAdmin\\GlobalAdminController::crearUsuario', ['filter' => ['auth', 'ratelimit:5,900']]);
-    $routes->post('actualizar-usuario', 'GlobalAdmin\\GlobalAdminController::actualizarUsuario', ['filter' => ['auth', 'ratelimit:10,900']]);
-    $routes->post('eliminar-usuario', 'GlobalAdmin\\GlobalAdminController::eliminarUsuario', ['filter' => ['auth', 'ratelimit:5,3600']]);
-    $routes->get('obtener-usuario/(:num)', 'GlobalAdmin\\GlobalAdminController::obtenerUsuario/$1');
-    $routes->get('exportar-usuarios-pdf', 'GlobalAdmin\\GlobalAdminController::exportarUsuariosPDF');
-
-    // Métricas
-    $routes->get('metricas-rendimiento', 'GlobalAdmin\\GlobalAdminController::getMetricasRendimiento');
-
-    // Gestión de roles
-    $routes->post('crear-rol', 'GlobalAdmin\\GlobalAdminController::crearRol', ['filter' => ['auth', 'ratelimit:5,900']]);
-    $routes->post('actualizar-rol', 'GlobalAdmin\\GlobalAdminController::actualizarRol', ['filter' => ['auth', 'ratelimit:5,900']]);
-    $routes->post('eliminar-rol', 'GlobalAdmin\\GlobalAdminController::eliminarRol', ['filter' => ['auth', 'ratelimit:5,3600']]);
-    $routes->get('obtener-rol/(:num)', 'GlobalAdmin\\GlobalAdminController::obtenerRol/$1');
-    $routes->get('permisos-rol/(:num)', 'GlobalAdmin\\GlobalAdminController::obtenerPermisosRol/$1');
-
-    // Respaldos (consolidado — se mantienen rutas en español)
-    $routes->get('descargar-respaldo/(:num)', 'GlobalAdmin\\GlobalAdminController::descargarRespaldo/$1');
-    $routes->post('crear-respaldo', 'GlobalAdmin\\GlobalAdminController::crearRespaldo', ['filter' => ['auth', 'ratelimit:5,900']]);
-    $routes->post('restaurar-respaldo', 'GlobalAdmin\\GlobalAdminController::restaurarRespaldo', ['filter' => ['auth', 'ratelimit:3,3600']]);
-    $routes->post('eliminar-respaldo', 'GlobalAdmin\\GlobalAdminController::eliminarRespaldo', ['filter' => ['auth', 'ratelimit:5,3600']]);
-    $routes->post('limpiar-respaldos', 'GlobalAdmin\\GlobalAdminController::limpiarRespaldos', ['filter' => ['auth', 'ratelimit:3,3600']]);
-    $routes->post('enviar-respaldo-email', 'GlobalAdmin\\GlobalAdminController::enviarRespaldoPorEmail', ['filter' => ['auth', 'ratelimit:5,900']]);
-    $routes->post('guardar-configuracion-respaldos', 'GlobalAdmin\\GlobalAdminController::guardarConfiguracionRespaldos');
-    $routes->get('obtener-respaldos', 'GlobalAdmin\\GlobalAdminController::obtenerRespaldos');
-    $routes->get('estadisticas-respaldos', 'GlobalAdmin\\GlobalAdminController::estadisticasRespaldos');
-
-    // Logs
-    $routes->get('obtener-logs', 'GlobalAdmin\\GlobalAdminController::obtenerLogs');
-    $routes->get('obtener-log/(:num)', 'GlobalAdmin\\GlobalAdminController::obtenerLog/$1');
-    $routes->post('eliminar-log', 'GlobalAdmin\\GlobalAdminController::eliminarLog', ['filter' => ['auth', 'ratelimit:10,900']]);
-    $routes->post('limpiar-logs', 'GlobalAdmin\\GlobalAdminController::limpiarLogs', ['filter' => ['auth', 'ratelimit:3,3600']]);
-    $routes->get('exportar-logs', 'GlobalAdmin\\GlobalAdminController::exportarLogs');
-    $routes->get('estadisticas-logs', 'GlobalAdmin\\GlobalAdminController::estadisticasLogs');
-
-    // Estadísticas
-    $routes->get('obtener-estadisticas-globales', 'GlobalAdmin\\GlobalAdminController::obtenerEstadisticasGlobales');
-
-    // Vistas de perfiles
+    // ─── Vistas de perfiles ─────────────────────────────────────────────────
     $routes->get('vista-estudiante', 'GlobalAdmin\\GlobalAdminController::vistaEstudiante');
     $routes->get('vista-admin-bienestar', 'GlobalAdmin\\GlobalAdminController::vistaAdminBienestar');
-
-    // Configuración del Sistema
-    $routes->post('guardar-configuracion', 'GlobalAdmin\\GlobalAdminController::guardarConfiguracion', ['filter' => ['auth', 'ratelimit:10,900']]);
 });

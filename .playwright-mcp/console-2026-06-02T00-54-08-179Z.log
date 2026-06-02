@@ -1,0 +1,233 @@
+[     224ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/login:0
+[   44171ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost/ITSI/public/index.php/auth/attemptLogin:0
+[   44259ms] [LOG] [#text, li, #text, li, #text, li, #text, li, #text, li, #text, li, #text] @ http://localhost/ITSI/public/index.php/auth/attemptLogin:18
+[   44260ms] [LOG] JSHandle@node @ http://localhost/ITSI/public/index.php/auth/attemptLogin:54
+[   44260ms] [LOG] JSHandle@node @ http://localhost/ITSI/public/index.php/auth/attemptLogin:54
+[   44260ms] [LOG] JSHandle@node @ http://localhost/ITSI/public/index.php/auth/attemptLogin:54
+[   44260ms] [LOG] JSHandle@node @ http://localhost/ITSI/public/index.php/auth/attemptLogin:54
+[   44260ms] [LOG] JSHandle@node @ http://localhost/ITSI/public/index.php/auth/attemptLogin:54
+[   95156ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/login:0
+[   97619ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[  116826ms] [ERROR] Failed to load resource: the server responded with a status of 403 (Forbidden) @ http://localhost/ITSI/public/uploads/perfiles/default.jpg:0
+[  116829ms] [ERROR] Failed to load resource: the server responded with a status of 403 (Forbidden) @ http://localhost/ITSI/public/uploads/perfiles/user_40_1753940652.jpg:0
+[  116890ms] [ERROR] Failed to load resource: the server responded with a status of 403 (Forbidden) @ http://localhost/ITSI/public/uploads/perfiles/default.jpg:0
+[  116944ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/global-admin/usuarios:0
+[  116944ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/global-admin/usuarios:0
+[  116944ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/global-admin/usuarios:0
+[  116944ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/global-admin/usuarios:0
+[  116957ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[  118746ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[  120503ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) @ http://localhost/ITSI/public/index.php/global-admin/configuracion:0
+[  120503ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) @ http://localhost/ITSI/public/index.php/global-admin/configuracion:0
+[  120512ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[  122277ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[  122550ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost/ITSI/public/index.php/global-admin/obtener-lista-respaldos?_=1780361770415:0
+[  122551ms] [ERROR] Error de conexión al cargar respaldos @ http://localhost/ITSI/public/index.php/global-admin/respaldos:436
+[  123989ms] [WARNING] jQuery.Deferred exception: Chart is not defined ReferenceError: Chart is not defined
+    at inicializarGrafico (http://localhost/ITSI/public/index.php/global-admin/logs:531:5)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/index.php/global-admin/logs:401:5)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755) undefined @ http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:1
+[  123994ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[  123995ms] ReferenceError: Chart is not defined
+    at inicializarGrafico (http://localhost/ITSI/public/index.php/global-admin/logs:531:5)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/index.php/global-admin/logs:401:5)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[  124106ms] TypeError: Cannot read properties of undefined (reading 'length')
+    at mostrarLogs (http://localhost/ITSI/public/index.php/global-admin/logs:435:14)
+    at Object.success (http://localhost/ITSI/public/index.php/global-admin/logs:419:17)
+    at c (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:27742)
+    at Object.fireWith [as resolveWith] (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:28487)
+    at l (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:78795)
+    at XMLHttpRequest.<anonymous> (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:81123)
+[  125709ms] [WARNING] jQuery.Deferred exception: window.chartActividad.destroy is not a function TypeError: window.chartActividad.destroy is not a function
+    at actualizarGraficos (http://localhost/ITSI/public/index.php/global-admin/estadisticas:547:31)
+    at inicializarGraficos (http://localhost/ITSI/public/index.php/global-admin/estadisticas:759:5)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/index.php/global-admin/estadisticas:503:5)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755) undefined @ http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:1
+[  125716ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[  125716ms] TypeError: window.chartActividad.destroy is not a function
+    at actualizarGraficos (http://localhost/ITSI/public/index.php/global-admin/estadisticas:547:31)
+    at inicializarGraficos (http://localhost/ITSI/public/index.php/global-admin/estadisticas:759:5)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/index.php/global-admin/estadisticas:503:5)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[  125848ms] TypeError: window.chartActividad.destroy is not a function
+    at actualizarGraficos (http://localhost/ITSI/public/index.php/global-admin/estadisticas:547:31)
+    at Object.success (http://localhost/ITSI/public/index.php/global-admin/estadisticas:520:17)
+    at c (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:27742)
+    at Object.fireWith [as resolveWith] (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:28487)
+    at l (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:78795)
+    at XMLHttpRequest.<anonymous> (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:81123)
+[  125960ms] TypeError: window.chartActividad.destroy is not a function
+    at actualizarGraficos (http://localhost/ITSI/public/index.php/global-admin/estadisticas:547:31)
+    at Object.success (http://localhost/ITSI/public/index.php/global-admin/estadisticas:520:17)
+    at c (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:27742)
+    at Object.fireWith [as resolveWith] (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:28487)
+    at l (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:78795)
+    at XMLHttpRequest.<anonymous> (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:81123)
+[  126067ms] TypeError: window.chartActividad.destroy is not a function
+    at actualizarGraficos (http://localhost/ITSI/public/index.php/global-admin/estadisticas:547:31)
+    at Object.success (http://localhost/ITSI/public/index.php/global-admin/estadisticas:520:17)
+    at c (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:27742)
+    at Object.fireWith [as resolveWith] (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:28487)
+    at l (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:78795)
+    at XMLHttpRequest.<anonymous> (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:81123)
+[  126190ms] TypeError: window.chartActividad.destroy is not a function
+    at actualizarGraficos (http://localhost/ITSI/public/index.php/global-admin/estadisticas:547:31)
+    at Object.success (http://localhost/ITSI/public/index.php/global-admin/estadisticas:520:17)
+    at c (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:27742)
+    at Object.fireWith [as resolveWith] (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:28487)
+    at l (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:78795)
+    at XMLHttpRequest.<anonymous> (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:81123)
+[  126298ms] TypeError: window.chartActividad.destroy is not a function
+    at actualizarGraficos (http://localhost/ITSI/public/index.php/global-admin/estadisticas:547:31)
+    at Object.success (http://localhost/ITSI/public/index.php/global-admin/estadisticas:520:17)
+    at c (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:27742)
+    at Object.fireWith [as resolveWith] (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:28487)
+    at l (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:78795)
+    at XMLHttpRequest.<anonymous> (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:81123)
+[  126406ms] TypeError: window.chartActividad.destroy is not a function
+    at actualizarGraficos (http://localhost/ITSI/public/index.php/global-admin/estadisticas:547:31)
+    at Object.success (http://localhost/ITSI/public/index.php/global-admin/estadisticas:520:17)
+    at c (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:27742)
+    at Object.fireWith [as resolveWith] (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:28487)
+    at l (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:78795)
+    at XMLHttpRequest.<anonymous> (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:81123)
+[  126515ms] TypeError: window.chartActividad.destroy is not a function
+    at actualizarGraficos (http://localhost/ITSI/public/index.php/global-admin/estadisticas:547:31)
+    at Object.success (http://localhost/ITSI/public/index.php/global-admin/estadisticas:520:17)
+    at c (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:27742)
+    at Object.fireWith [as resolveWith] (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:28487)
+    at l (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:78795)
+    at XMLHttpRequest.<anonymous> (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:81123)
+[  126619ms] TypeError: window.chartActividad.destroy is not a function
+    at actualizarGraficos (http://localhost/ITSI/public/index.php/global-admin/estadisticas:547:31)
+    at Object.success (http://localhost/ITSI/public/index.php/global-admin/estadisticas:520:17)
+    at c (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:27742)
+    at Object.fireWith [as resolveWith] (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:28487)
+    at l (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:78795)
+    at XMLHttpRequest.<anonymous> (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:81123)
+[  126718ms] TypeError: window.chartActividad.destroy is not a function
+    at actualizarGraficos (http://localhost/ITSI/public/index.php/global-admin/estadisticas:547:31)
+    at Object.success (http://localhost/ITSI/public/index.php/global-admin/estadisticas:520:17)
+    at c (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:27742)
+    at Object.fireWith [as resolveWith] (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:28487)
+    at l (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:78795)
+    at XMLHttpRequest.<anonymous> (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:81123)
+[  126816ms] TypeError: window.chartActividad.destroy is not a function
+    at actualizarGraficos (http://localhost/ITSI/public/index.php/global-admin/estadisticas:547:31)
+    at Object.success (http://localhost/ITSI/public/index.php/global-admin/estadisticas:520:17)
+    at c (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:27742)
+    at Object.fireWith [as resolveWith] (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:28487)
+    at l (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:78795)
+    at XMLHttpRequest.<anonymous> (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:81123)
+[  126923ms] TypeError: window.chartActividad.destroy is not a function
+    at actualizarGraficos (http://localhost/ITSI/public/index.php/global-admin/estadisticas:547:31)
+    at Object.success (http://localhost/ITSI/public/index.php/global-admin/estadisticas:520:17)
+    at c (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:27742)
+    at Object.fireWith [as resolveWith] (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:28487)
+    at l (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:78795)
+    at XMLHttpRequest.<anonymous> (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:81123)
+[  127021ms] TypeError: window.chartActividad.destroy is not a function
+    at actualizarGraficos (http://localhost/ITSI/public/index.php/global-admin/estadisticas:547:31)
+    at Object.success (http://localhost/ITSI/public/index.php/global-admin/estadisticas:520:17)
+    at c (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:27742)
+    at Object.fireWith [as resolveWith] (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:28487)
+    at l (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:78795)
+    at XMLHttpRequest.<anonymous> (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:81123)
+[  127145ms] TypeError: window.chartActividad.destroy is not a function
+    at actualizarGraficos (http://localhost/ITSI/public/index.php/global-admin/estadisticas:547:31)
+    at Object.success (http://localhost/ITSI/public/index.php/global-admin/estadisticas:520:17)
+    at c (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:27742)
+    at Object.fireWith [as resolveWith] (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:28487)
+    at l (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:78795)
+    at XMLHttpRequest.<anonymous> (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:81123)
+[  127255ms] TypeError: window.chartActividad.destroy is not a function
+    at actualizarGraficos (http://localhost/ITSI/public/index.php/global-admin/estadisticas:547:31)
+    at Object.success (http://localhost/ITSI/public/index.php/global-admin/estadisticas:520:17)
+    at c (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:27742)
+    at Object.fireWith [as resolveWith] (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:28487)
+    at l (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:78795)
+    at XMLHttpRequest.<anonymous> (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:81123)
+[  127376ms] TypeError: window.chartActividad.destroy is not a function
+    at actualizarGraficos (http://localhost/ITSI/public/index.php/global-admin/estadisticas:547:31)
+    at Object.success (http://localhost/ITSI/public/index.php/global-admin/estadisticas:520:17)
+    at c (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:27742)
+    at Object.fireWith [as resolveWith] (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:28487)
+    at l (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:78795)
+    at XMLHttpRequest.<anonymous> (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:81123)
+[  127578ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[  129406ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[  140471ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost/ITSI/public/index.php/logout:0
+[  141858ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)
+[  179258ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost/ITSI/public/index.php/logout:0
+[  181588ms] Error: Element not found
+    at http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:36352
+    at new Promise (<anonymous>)
+    at t.value (http://localhost/ITSI/public/sistema/assets/libs/apexcharts/dist/apexcharts.min.js:14:21675)
+    at HTMLDocument.<anonymous> (http://localhost/ITSI/public/sistema/assets/js/dashboard.js:79:9)
+    at e (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29453)
+    at t (http://localhost/ITSI/public/sistema/assets/libs/jquery/dist/jquery.min.js:2:29755)

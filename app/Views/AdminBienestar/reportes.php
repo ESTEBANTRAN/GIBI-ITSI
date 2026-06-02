@@ -493,8 +493,6 @@ function actualizarReportes() {
     const periodo = $('#periodoAcademico').val();
     
     // Lógica para actualizar reportes con los filtros
-    console.log('Actualizando reportes con filtros:', { fechaInicio, fechaFin, periodo });
-    
     // Simular actualización
     alert('Reportes actualizados exitosamente');
 }
@@ -516,7 +514,6 @@ function exportarDatos() {
 function aplicarFiltrosAvanzados() {
     // Lógica para aplicar filtros avanzados
     $('#filtrosModal').modal('hide');
-    console.log('Aplicando filtros avanzados...');
     alert('Filtros aplicados exitosamente');
 }
 

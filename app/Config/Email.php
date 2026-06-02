@@ -33,12 +33,12 @@ class Email extends BaseConfig
     /**
      * SMTP Username
      */
-    public string $SMTPUser = 'tu-email@gmail.com';
+    public string $SMTPUser = ''; // Configurar en .env: email.SMTPUser
 
     /**
      * SMTP Password
      */
-    public string $SMTPPass = 'tu-contraseña-de-aplicación';
+    public string $SMTPPass = ''; // Configurar en .env: email.SMTPPass
 
     /**
      * SMTP Port

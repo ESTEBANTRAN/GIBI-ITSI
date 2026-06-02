@@ -1,0 +1,715 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - link "Logo Estudiante Bienestar Estudiantil" [ref=e6] [cursor=pointer]:
+            - /url: http://localhost/ITSI/public/index.php/estudiante
+            - img "Logo" [ref=e7]
+            - generic [ref=e8]:
+              - text: Estudiante Bienestar
+              - text: Estudiantil
+          - text: 
+        - navigation [ref=e9]:
+          - region "scrollable content" [ref=e13]:
+            - list [ref=e15]:
+              - listitem [ref=e16]:  INICIO
+              - listitem [ref=e17]:
+                - link " Dashboard" [ref=e18] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante
+                  - generic [ref=e20]: 
+                  - generic [ref=e21]: Dashboard
+              - listitem [ref=e22]:  FORMULARIOS
+              - listitem [ref=e23]:
+                - link " Ficha Socioeconómica" [ref=e24] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante/ficha-socioeconomica
+                  - generic [ref=e26]: 
+                  - generic [ref=e27]: Ficha Socioeconómica
+              - listitem [ref=e28]:
+                - link " Mis Documentos" [ref=e29] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante/documentos
+                  - generic [ref=e31]: 
+                  - generic [ref=e32]: Mis Documentos
+              - listitem [ref=e33]:  BECAS
+              - listitem [ref=e34]:
+                - link " Solicitudes de Becas" [ref=e35] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante/becas
+                  - generic [ref=e37]: 
+                  - generic [ref=e38]: Solicitudes de Becas
+              - listitem [ref=e39]:  SOLICITUDES
+              - listitem [ref=e40]:
+                - link " Solicitudes de Ayuda" [ref=e41] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante/solicitudes-ayuda
+                  - generic [ref=e43]: 
+                  - generic [ref=e44]: Solicitudes de Ayuda
+              - listitem [ref=e45]:  INFORMACIÓN
+              - listitem [ref=e46]:
+                - link " Servicios de Bienestar" [ref=e47] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/servicios
+                  - generic [ref=e49]: 
+                  - generic [ref=e50]: Servicios de Bienestar
+              - listitem [ref=e51]:
+                - link " Información de Becas" [ref=e52] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/becas
+                  - generic [ref=e54]: 
+                  - generic [ref=e55]: Información de Becas
+              - listitem [ref=e56]:
+                - link " Apoyo Psicológico" [ref=e57] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/psicologia
+                  - generic [ref=e59]: 
+                  - generic [ref=e60]: Apoyo Psicológico
+              - listitem [ref=e61]:
+                - link " Servicios de Salud" [ref=e62] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/salud
+                  - generic [ref=e64]: 
+                  - generic [ref=e65]: Servicios de Salud
+              - listitem [ref=e66]:
+                - link " Trabajo Social" [ref=e67] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/trabajo-social
+                  - generic [ref=e69]: 
+                  - generic [ref=e70]: Trabajo Social
+              - listitem [ref=e71]:
+                - link " Orientación Académica" [ref=e72] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/orientacion-academica
+                  - generic [ref=e74]: 
+                  - generic [ref=e75]: Orientación Académica
+    - generic [ref=e76]:
+      - banner [ref=e77]:
+        - navigation [ref=e78]:
+          - link:
+            - /url: http://localhost/ITSI/public/
+          - list: 
+          - list [ref=e80]:
+            - listitem [ref=e81]:
+              - generic [ref=e82]:
+                - generic [ref=e83]: 
+                - text: Bienvenido al sistema, estudiantedos
+            - listitem [ref=e84]:
+              - link "Foto de perfil" [ref=e85] [cursor=pointer]:
+                - /url: javascript:void(0)
+                - img "Foto de perfil" [ref=e86]
+              - text:   
+      - generic [ref=e87]:
+        - generic [ref=e90]:
+          - generic [ref=e91]:
+            - heading "Ficha Socioeconómica" [level=4] [ref=e92]
+            - paragraph [ref=e93]: Gestiona tu información socioeconómica
+          - button " Nueva Ficha" [ref=e95] [cursor=pointer]:
+            - generic [ref=e96]: 
+            - text: Nueva Ficha
+        - generic [ref=e99]:
+          - heading " Mis Fichas Socioeconómicas" [level=5] [ref=e101]:
+            - generic [ref=e102]: 
+            - text: Mis Fichas Socioeconómicas
+          - table [ref=e105]:
+            - rowgroup [ref=e106]:
+              - row "Período Estado Fecha de Creación Fecha de Envío Observaciones Acciones" [ref=e107]:
+                - columnheader "Período" [ref=e108]
+                - columnheader "Estado" [ref=e109]
+                - columnheader "Fecha de Creación" [ref=e110]
+                - columnheader "Fecha de Envío" [ref=e111]
+                - columnheader "Observaciones" [ref=e112]
+                - columnheader "Acciones" [ref=e113]
+            - rowgroup [ref=e114]:
+              - row "PERIODO 2025 Borrador 31/05/2026 14:25 No enviada Sin observaciones" [ref=e115]:
+                - cell "PERIODO 2025" [ref=e116]:
+                  - strong [ref=e117]: PERIODO 2025
+                - cell "Borrador" [ref=e118]:
+                  - generic [ref=e119]: Borrador
+                - cell "31/05/2026 14:25" [ref=e120]
+                - cell "No enviada" [ref=e121]
+                - cell "Sin observaciones" [ref=e122]
+                - cell [ref=e123]:
+                  - group [ref=e124]:
+                    - button "" [ref=e125] [cursor=pointer]:
+                      - generic [ref=e126]: 
+                    - button "" [ref=e127] [cursor=pointer]:
+                      - generic [ref=e128]: 
+                    - button "" [ref=e129] [cursor=pointer]:
+                      - generic [ref=e130]: 
+                    - button "" [ref=e131] [cursor=pointer]:
+                      - generic [ref=e132]: 
+        - dialog [active] [ref=e141]:
+          - generic [ref=e142]:
+            - generic [ref=e143]:
+              - heading "Nueva Ficha Socioeconómica" [level=5] [ref=e144]
+              - button [ref=e145] [cursor=pointer]
+            - generic [ref=e147]:
+              - generic [ref=e149]:
+                - generic [ref=e150]: Período Académico *
+                - combobox "Período Académico *" [ref=e151]:
+                  - option "Seleccionar período" [selected]
+                  - option "2024-1"
+                  - option "2024-2"
+                  - option "PERIODO 2026"
+                  - option "PERIODO 2025"
+                  - option "2024-1"
+                  - option "2024-2"
+                  - option "2024-122132131"
+                  - option "2024-2"
+              - generic [ref=e152]:
+                - heading "1. INFORMACIÓN PERSONAL DEL/LA ESTUDIANTE" [level=6] [ref=e154]
+                - generic [ref=e155]:
+                  - generic [ref=e156]:
+                    - generic [ref=e157]:
+                      - generic [ref=e158]: Apellidos y Nombres Completos *
+                      - textbox "Apellidos y Nombres Completos *" [ref=e159]: estudiantedos estudiante
+                    - generic [ref=e160]:
+                      - generic [ref=e161]: Nacionalidad *
+                      - textbox "Nacionalidad *" [ref=e162]: Ecuatoriana
+                    - generic [ref=e163]:
+                      - generic [ref=e164]: No. Cédula de Identidad *
+                      - textbox "No. Cédula de Identidad *" [ref=e165]: "8485"
+                  - generic [ref=e166]:
+                    - generic [ref=e167]:
+                      - generic [ref=e168]: Lugar y Fecha de Nacimiento *
+                      - textbox "Lugar y Fecha de Nacimiento *" [ref=e169]
+                    - generic [ref=e170]:
+                      - generic [ref=e171]: Edad *
+                      - spinbutton "Edad *" [ref=e172]
+                    - generic [ref=e173]:
+                      - generic [ref=e174]: Estado Civil *
+                      - generic [ref=e175]:
+                        - generic [ref=e176]:
+                          - radio "Soltero/a" [ref=e177]
+                          - generic [ref=e178]: Soltero/a
+                        - generic [ref=e179]:
+                          - radio "Casado/a" [ref=e180]
+                          - generic [ref=e181]: Casado/a
+                        - generic [ref=e182]:
+                          - radio "Divorciado/a" [ref=e183]
+                          - generic [ref=e184]: Divorciado/a
+                        - generic [ref=e185]:
+                          - radio "Viudo/a" [ref=e186]
+                          - generic [ref=e187]: Viudo/a
+                        - generic [ref=e188]:
+                          - radio "U. Libre" [ref=e189]
+                          - generic [ref=e190]: U. Libre
+                  - generic [ref=e191]:
+                    - generic [ref=e192]:
+                      - generic [ref=e193]: Ciudad *
+                      - textbox "Ciudad *" [ref=e194]
+                    - generic [ref=e195]:
+                      - generic [ref=e196]: Barrio *
+                      - textbox "Barrio *" [ref=e197]
+                    - generic [ref=e198]:
+                      - generic [ref=e199]: Calle Principal *
+                      - textbox "Calle Principal *" [ref=e200]
+                    - generic [ref=e201]:
+                      - generic [ref=e202]: Calle Secundaria
+                      - textbox "Calle Secundaria" [ref=e203]
+                  - generic [ref=e204]:
+                    - generic [ref=e205]:
+                      - generic [ref=e206]: Etnia *
+                      - generic [ref=e207]:
+                        - generic [ref=e208]:
+                          - radio "Blanco" [ref=e209]
+                          - generic [ref=e210]: Blanco
+                        - generic [ref=e211]:
+                          - radio "Mestizo" [ref=e212]
+                          - generic [ref=e213]: Mestizo
+                        - generic [ref=e214]:
+                          - radio "Afro" [ref=e215]
+                          - generic [ref=e216]: Afro
+                        - generic [ref=e217]:
+                          - radio "Mulato" [ref=e218]
+                          - generic [ref=e219]: Mulato
+                        - generic [ref=e220]:
+                          - radio "Indígena" [ref=e221]
+                          - generic [ref=e222]: Indígena
+                        - generic [ref=e223]:
+                          - radio "Montubio" [ref=e224]
+                          - generic [ref=e225]: Montubio
+                    - generic [ref=e226]:
+                      - generic [ref=e227]: ¿Trabaja? *
+                      - generic [ref=e228]:
+                        - generic [ref=e229]:
+                          - radio "SI" [ref=e230]
+                          - generic [ref=e231]: SI
+                        - generic [ref=e232]:
+                          - radio "NO" [ref=e233]
+                          - generic [ref=e234]: "NO"
+                  - generic [ref=e235]:
+                    - generic [ref=e236]:
+                      - generic [ref=e237]: Teléfono Domicilio
+                      - textbox "Teléfono Domicilio" [ref=e238]
+                    - generic [ref=e239]:
+                      - generic [ref=e240]: Teléfono Trabajo
+                      - textbox "Teléfono Trabajo" [ref=e241]
+                    - generic [ref=e242]:
+                      - generic [ref=e243]: Celular *
+                      - textbox "Celular *" [ref=e244]: "12312233"
+                    - generic [ref=e245]:
+                      - generic [ref=e246]: E-mail *
+                      - textbox "E-mail *" [ref=e247]: estudiante@gmail.com
+                  - generic [ref=e248]:
+                    - generic [ref=e249]:
+                      - generic [ref=e250]: Vive con *
+                      - generic [ref=e251]:
+                        - generic [ref=e252]:
+                          - radio "Solo Papa" [ref=e253]
+                          - generic [ref=e254]: Solo Papa
+                        - generic [ref=e255]:
+                          - radio "Solo Mama" [ref=e256]
+                          - generic [ref=e257]: Solo Mama
+                        - generic [ref=e258]:
+                          - radio "Ambos Padres" [ref=e259]
+                          - generic [ref=e260]: Ambos Padres
+                        - generic [ref=e261]:
+                          - radio "Hermanos" [ref=e262]
+                          - generic [ref=e263]: Hermanos
+                        - generic [ref=e264]:
+                          - radio "Abuelos" [ref=e265]
+                          - generic [ref=e266]: Abuelos
+                        - generic [ref=e267]:
+                          - radio "Amigos" [ref=e268]
+                          - generic [ref=e269]: Amigos
+                        - generic [ref=e270]:
+                          - radio "Otros Familiares" [ref=e271]
+                          - generic [ref=e272]: Otros Familiares
+                    - generic [ref=e273]:
+                      - generic [ref=e274]: ¿Sus padres están separados? *
+                      - generic [ref=e275]:
+                        - generic [ref=e276]:
+                          - radio "SI" [ref=e277]
+                          - generic [ref=e278]: SI
+                        - generic [ref=e279]:
+                          - radio "NO" [ref=e280]
+                          - generic [ref=e281]: "NO"
+              - generic [ref=e282]:
+                - heading "2. DATOS ACADÉMICOS" [level=6] [ref=e284]
+                - generic [ref=e285]:
+                  - generic [ref=e286]:
+                    - generic [ref=e287]:
+                      - generic [ref=e288]: Colegio en que se graduó *
+                      - textbox "Colegio en que se graduó *" [ref=e289]
+                    - generic [ref=e290]:
+                      - generic [ref=e291]: Ciudad *
+                      - textbox "Ciudad *" [ref=e292]
+                    - generic [ref=e293]:
+                      - generic [ref=e294]: Provincia *
+                      - textbox "Provincia *" [ref=e295]
+                  - generic [ref=e296]:
+                    - generic [ref=e297]:
+                      - generic [ref=e298]: El colegio es *
+                      - generic [ref=e299]:
+                        - generic [ref=e300]:
+                          - radio "Fiscal" [ref=e301]
+                          - generic [ref=e302]: Fiscal
+                        - generic [ref=e303]:
+                          - radio "Fiscomisional" [ref=e304]
+                          - generic [ref=e305]: Fiscomisional
+                        - generic [ref=e306]:
+                          - radio "Particular" [ref=e307]
+                          - generic [ref=e308]: Particular
+                        - generic [ref=e309]:
+                          - radio "Municipal" [ref=e310]
+                          - generic [ref=e311]: Municipal
+                    - generic [ref=e312]:
+                      - generic [ref=e313]: Año de Grado *
+                      - spinbutton "Año de Grado *" [ref=e314]
+                    - generic [ref=e315]:
+                      - generic [ref=e316]: Carrera *
+                      - textbox "Carrera *" [ref=e317]: inventado
+                  - generic [ref=e318]:
+                    - generic [ref=e319]:
+                      - generic [ref=e320]: Nivel al que ingresa *
+                      - textbox "Nivel al que ingresa *" [ref=e321]
+                    - generic [ref=e322]:
+                      - generic [ref=e323]: Modalidad *
+                      - textbox "Modalidad *" [ref=e324]
+                    - generic [ref=e325]:
+                      - generic [ref=e326]: ¿Estudia otra carrera? *
+                      - generic [ref=e327]:
+                        - generic [ref=e328]:
+                          - radio "SI" [ref=e329]
+                          - generic [ref=e330]: SI
+                        - generic [ref=e331]:
+                          - radio "NO" [ref=e332]
+                          - generic [ref=e333]: "NO"
+                  - generic [ref=e334]:
+                    - generic [ref=e335]:
+                      - generic [ref=e336]: El pago de valores en el ITSI lo realiza *
+                      - generic [ref=e337]:
+                        - generic [ref=e338]:
+                          - radio "Al Contado" [ref=e339]
+                          - generic [ref=e340]: Al Contado
+                        - generic [ref=e341]:
+                          - radio "Crédito IECE" [ref=e342]
+                          - generic [ref=e343]: Crédito IECE
+                        - generic [ref=e344]:
+                          - radio "Tarjeta de Crédito" [ref=e345]
+                          - generic [ref=e346]: Tarjeta de Crédito
+                        - generic [ref=e347]:
+                          - radio "Préstamo Bancario" [ref=e348]
+                          - generic [ref=e349]: Préstamo Bancario
+                        - generic [ref=e350]:
+                          - radio "Beca" [ref=e351]
+                          - generic [ref=e352]: Beca
+                        - generic [ref=e353]:
+                          - radio "Otros" [ref=e354]
+                          - generic [ref=e355]: Otros
+                    - generic [ref=e356]:
+                      - generic [ref=e357]: Especificar (si es otros)
+                      - textbox "Especificar (si es otros)" [ref=e358]
+                  - generic [ref=e359]:
+                    - generic [ref=e360]:
+                      - generic [ref=e361]: ¿Toma inglés en el ITSI? *
+                      - generic [ref=e362]:
+                        - generic [ref=e363]:
+                          - radio "SI" [ref=e364]
+                          - generic [ref=e365]: SI
+                        - generic [ref=e366]:
+                          - radio "NO" [ref=e367]
+                          - generic [ref=e368]: "NO"
+                    - generic [ref=e369]:
+                      - generic [ref=e370]: Modalidad
+                      - textbox "Modalidad" [ref=e371]
+                    - generic [ref=e372]:
+                      - generic [ref=e373]: Nivel que cursa
+                      - textbox "Nivel que cursa" [ref=e374]
+              - generic [ref=e375]:
+                - heading "3. DATOS DE QUIEN DEPENDE EL ESTUDIANTE" [level=6] [ref=e377]
+                - generic [ref=e378]:
+                  - generic [ref=e379]:
+                    - generic [ref=e380]:
+                      - generic [ref=e381]: Apellidos y Nombres Completos *
+                      - textbox "Apellidos y Nombres Completos *" [ref=e382]
+                    - generic [ref=e383]:
+                      - generic [ref=e384]: No. Cédula de Identidad *
+                      - textbox "No. Cédula de Identidad *" [ref=e385]
+                    - generic [ref=e386]:
+                      - generic [ref=e387]: Parentesco con el estudiante *
+                      - textbox "Parentesco con el estudiante *" [ref=e388]
+                  - generic [ref=e389]:
+                    - generic [ref=e390]:
+                      - generic [ref=e391]: Ciudad *
+                      - textbox "Ciudad *" [ref=e392]
+                    - generic [ref=e393]:
+                      - generic [ref=e394]: Barrio *
+                      - textbox "Barrio *" [ref=e395]
+                    - generic [ref=e396]:
+                      - generic [ref=e397]: Parroquia
+                      - textbox "Parroquia" [ref=e398]
+                    - generic [ref=e399]:
+                      - generic [ref=e400]: Calle Principal *
+                      - textbox "Calle Principal *" [ref=e401]
+                  - generic [ref=e402]:
+                    - generic [ref=e403]:
+                      - generic [ref=e404]: Calle Secundaria
+                      - textbox "Calle Secundaria" [ref=e405]
+                    - generic [ref=e406]:
+                      - generic [ref=e407]: Profesión *
+                      - textbox "Profesión *" [ref=e408]
+                    - generic [ref=e409]:
+                      - generic [ref=e410]: ¿Trabaja? *
+                      - generic [ref=e411]:
+                        - generic [ref=e412]:
+                          - radio "SI" [ref=e413]
+                          - generic [ref=e414]: SI
+                        - generic [ref=e415]:
+                          - radio "NO" [ref=e416]
+                          - generic [ref=e417]: "NO"
+                  - generic [ref=e418]:
+                    - generic [ref=e419]:
+                      - generic [ref=e420]: Teléfono Domicilio
+                      - textbox "Teléfono Domicilio" [ref=e421]
+                    - generic [ref=e422]:
+                      - generic [ref=e423]: Teléfono Trabajo
+                      - textbox "Teléfono Trabajo" [ref=e424]
+                    - generic [ref=e425]:
+                      - generic [ref=e426]: Celular
+                      - textbox "Celular" [ref=e427]
+                    - generic [ref=e428]:
+                      - generic [ref=e429]: E-mail
+                      - textbox "E-mail" [ref=e430]
+                  - generic [ref=e431]:
+                    - generic [ref=e432]:
+                      - generic [ref=e433]: Lugar de trabajo (si tiene negocio propio)
+                      - textbox "Lugar de trabajo (si tiene negocio propio)" [ref=e434]
+                    - generic [ref=e435]:
+                      - generic [ref=e436]: Actividad a que se dedica
+                      - textbox "Actividad a que se dedica" [ref=e437]
+                    - generic [ref=e438]:
+                      - generic [ref=e439]: Ingreso estimado mensual
+                      - spinbutton "Ingreso estimado mensual" [ref=e440]
+              - generic [ref=e441]:
+                - heading "4. DATOS DEL GRUPO FAMILIAR" [level=6] [ref=e443]
+                - generic [ref=e444]:
+                  - table [ref=e446]:
+                    - rowgroup [ref=e447]:
+                      - row "No. Nombre y apellido Parentesco con el/la estudiante Edad Estado civil Ocupación/actividad Institución donde estudia/trabaja Ingresos (solo si trabajan) Observaciones Acciones" [ref=e448]:
+                        - columnheader "No." [ref=e449]
+                        - columnheader "Nombre y apellido" [ref=e450]
+                        - columnheader "Parentesco con el/la estudiante" [ref=e451]
+                        - columnheader "Edad" [ref=e452]
+                        - columnheader "Estado civil" [ref=e453]
+                        - columnheader "Ocupación/actividad" [ref=e454]
+                        - columnheader "Institución donde estudia/trabaja" [ref=e455]
+                        - columnheader "Ingresos (solo si trabajan)" [ref=e456]
+                        - columnheader "Observaciones" [ref=e457]
+                        - columnheader "Acciones" [ref=e458]
+                    - rowgroup
+                  - button " Agregar Familiar" [ref=e459] [cursor=pointer]:
+                    - generic [ref=e460]: 
+                    - text: Agregar Familiar
+              - generic [ref=e461]:
+                - heading "5. INGRESOS Y EGRESOS FAMILIARES" [level=6] [ref=e463]
+                - generic [ref=e465]:
+                  - generic [ref=e466]:
+                    - generic [ref=e467]: Total Ingresos Familiares *
+                    - generic [ref=e468]:
+                      - generic [ref=e469]: $
+                      - spinbutton "Total Ingresos Familiares *" [ref=e470]
+                  - generic [ref=e471]:
+                    - generic [ref=e472]: Total Gastos Familiares por Mes *
+                    - generic [ref=e473]:
+                      - generic [ref=e474]: $
+                      - spinbutton "Total Gastos Familiares por Mes *" [ref=e475]
+                  - generic [ref=e476]:
+                    - generic [ref=e477]: Diferencia entre Ingresos y Egresos *
+                    - generic [ref=e478]:
+                      - generic [ref=e479]: $
+                      - spinbutton "Diferencia entre Ingresos y Egresos *" [ref=e480]
+              - generic [ref=e481]:
+                - heading "6. DATOS DE LA VIVIENDA" [level=6] [ref=e483]
+                - generic [ref=e484]:
+                  - generic [ref=e485]:
+                    - generic [ref=e486]:
+                      - generic [ref=e487]: El/la estudiante vive en casa *
+                      - generic [ref=e488]:
+                        - generic [ref=e489]:
+                          - radio "Propia" [ref=e490]
+                          - generic [ref=e491]: Propia
+                        - generic [ref=e492]:
+                          - radio "Arrendada" [ref=e493]
+                          - generic [ref=e494]: Arrendada
+                        - generic [ref=e495]:
+                          - radio "Cedida" [ref=e496]
+                          - generic [ref=e497]: Cedida
+                        - generic [ref=e498]:
+                          - radio "Compartida" [ref=e499]
+                          - generic [ref=e500]: Compartida
+                    - generic [ref=e501]:
+                      - generic [ref=e502]: Costo del arriendo mensual (si es arrendada)
+                      - generic [ref=e503]:
+                        - generic [ref=e504]: $
+                        - spinbutton "Costo del arriendo mensual (si es arrendada)" [ref=e505]
+                  - generic [ref=e506]:
+                    - generic [ref=e507]:
+                      - generic [ref=e508]: Especificar quién cede o con quiénes comparte
+                      - textbox "Especificar quién cede o con quiénes comparte" [ref=e509]
+                    - generic [ref=e510]:
+                      - generic [ref=e511]: Tipo de vivienda *
+                      - generic [ref=e512]:
+                        - generic [ref=e513]:
+                          - radio "Casa" [ref=e514]
+                          - generic [ref=e515]: Casa
+                        - generic [ref=e516]:
+                          - radio "Departamento" [ref=e517]
+                          - generic [ref=e518]: Departamento
+                        - generic [ref=e519]:
+                          - radio "Cuarto" [ref=e520]
+                          - generic [ref=e521]: Cuarto
+                        - generic [ref=e522]:
+                          - radio "Otro" [ref=e523]
+                          - generic [ref=e524]: Otro
+                  - generic [ref=e525]:
+                    - generic [ref=e526]:
+                      - generic [ref=e527]: Especificar tipo de vivienda
+                      - textbox "Especificar tipo de vivienda" [ref=e528]
+                    - generic [ref=e529]:
+                      - generic [ref=e530]: Tipo de construcción *
+                      - generic [ref=e531]:
+                        - generic [ref=e532]:
+                          - radio "Hormigón" [ref=e533]
+                          - generic [ref=e534]: Hormigón
+                        - generic [ref=e535]:
+                          - radio "Ladrillo" [ref=e536]
+                          - generic [ref=e537]: Ladrillo
+                        - generic [ref=e538]:
+                          - radio "Madera" [ref=e539]
+                          - generic [ref=e540]: Madera
+                        - generic [ref=e541]:
+                          - radio "Adobe" [ref=e542]
+                          - generic [ref=e543]: Adobe
+                        - generic [ref=e544]:
+                          - radio "Bloque" [ref=e545]
+                          - generic [ref=e546]: Bloque
+                        - generic [ref=e547]:
+                          - radio "Mixta" [ref=e548]
+                          - generic [ref=e549]: Mixta
+                  - generic [ref=e551]:
+                    - generic [ref=e552]: Cuenta con servicios básicos como *
+                    - generic [ref=e553]:
+                      - generic [ref=e554]:
+                        - checkbox "Agua Potable" [ref=e555]
+                        - generic [ref=e556]: Agua Potable
+                      - generic [ref=e557]:
+                        - checkbox "Alcantarillado" [ref=e558]
+                        - generic [ref=e559]: Alcantarillado
+                      - generic [ref=e560]:
+                        - checkbox "Luz Eléctrica" [ref=e561]
+                        - generic [ref=e562]: Luz Eléctrica
+                      - generic [ref=e563]:
+                        - checkbox "Teléfono" [ref=e564]
+                        - generic [ref=e565]: Teléfono
+                      - generic [ref=e566]:
+                        - checkbox "Internet" [ref=e567]
+                        - generic [ref=e568]: Internet
+                      - generic [ref=e569]:
+                        - checkbox "TV Cable" [ref=e570]
+                        - generic [ref=e571]: TV Cable
+              - generic [ref=e572]:
+                - heading "7. OTROS DATOS ECONÓMICOS FAMILIARES" [level=6] [ref=e574]
+                - generic [ref=e575]:
+                  - generic [ref=e576]:
+                    - generic [ref=e577]:
+                      - generic [ref=e578]: ¿La familia dispone de vehículo propio? *
+                      - generic [ref=e579]:
+                        - generic [ref=e580]:
+                          - radio "SI" [ref=e581]
+                          - generic [ref=e582]: SI
+                        - generic [ref=e583]:
+                          - radio "NO" [ref=e584]
+                          - generic [ref=e585]: "NO"
+                    - generic [ref=e586]:
+                      - generic [ref=e587]: Marca y año del vehículo
+                      - textbox "Marca y año del vehículo" [ref=e588]
+                  - generic [ref=e589]:
+                    - generic [ref=e590]:
+                      - generic [ref=e591]: El vehículo es de uso *
+                      - generic [ref=e592]:
+                        - generic [ref=e593]:
+                          - radio "Familiar" [ref=e594]
+                          - generic [ref=e595]: Familiar
+                        - generic [ref=e596]:
+                          - radio "Herramienta de Trabajo" [ref=e597]
+                          - generic [ref=e598]: Herramienta de Trabajo
+                    - generic [ref=e599]:
+                      - generic [ref=e600]: Especificar su uso
+                      - textbox "Especificar su uso" [ref=e601]
+                  - generic [ref=e602]:
+                    - generic [ref=e603]:
+                      - generic [ref=e604]: ¿La familia posee otras propiedades como terrenos, casas? *
+                      - generic [ref=e605]:
+                        - generic [ref=e606]:
+                          - radio "SI" [ref=e607]
+                          - generic [ref=e608]: SI
+                        - generic [ref=e609]:
+                          - radio "NO" [ref=e610]
+                          - generic [ref=e611]: "NO"
+                    - generic [ref=e612]:
+                      - generic [ref=e613]: Especificar propiedades y uso
+                      - textbox "Especificar propiedades y uso" [ref=e614]
+                  - generic [ref=e615]:
+                    - generic [ref=e616]:
+                      - generic [ref=e617]: La familia posee cuentas de *
+                      - generic [ref=e618]:
+                        - generic [ref=e619]:
+                          - checkbox "Ahorro" [ref=e620]
+                          - generic [ref=e621]: Ahorro
+                        - generic [ref=e622]:
+                          - checkbox "Corriente" [ref=e623]
+                          - generic [ref=e624]: Corriente
+                        - generic [ref=e625]:
+                          - checkbox "Tarjetas de Crédito" [ref=e626]
+                          - generic [ref=e627]: Tarjetas de Crédito
+                    - generic [ref=e628]:
+                      - generic [ref=e629]: ¿La familia registra préstamos? *
+                      - generic [ref=e630]:
+                        - generic [ref=e631]:
+                          - radio "SI" [ref=e632]
+                          - generic [ref=e633]: SI
+                        - generic [ref=e634]:
+                          - radio "NO" [ref=e635]
+                          - generic [ref=e636]: "NO"
+              - generic [ref=e637]:
+                - heading "8. ANTECEDENTES DE SALUD EN LA FAMILIA" [level=6] [ref=e639]
+                - generic [ref=e640]:
+                  - generic [ref=e641]:
+                    - generic [ref=e642]:
+                      - generic [ref=e643]: ¿El/la estudiante o un miembro de su familia sufre alguna enfermedad grave? *
+                      - generic [ref=e644]:
+                        - generic [ref=e645]:
+                          - radio "SI" [ref=e646]
+                          - generic [ref=e647]: SI
+                        - generic [ref=e648]:
+                          - radio "NO" [ref=e649]
+                          - generic [ref=e650]: "NO"
+                    - generic [ref=e651]:
+                      - generic [ref=e652]: Especificar quién y de qué tipo
+                      - textbox "Especificar quién y de qué tipo" [ref=e653]
+                  - generic [ref=e654]:
+                    - generic [ref=e655]:
+                      - generic [ref=e656]: ¿El/la estudiante o un miembro de su familia sufre alguna discapacidad? *
+                      - generic [ref=e657]:
+                        - generic [ref=e658]:
+                          - radio "SI" [ref=e659]
+                          - generic [ref=e660]: SI
+                        - generic [ref=e661]:
+                          - radio "NO" [ref=e662]
+                          - generic [ref=e663]: "NO"
+                    - generic [ref=e664]:
+                      - generic [ref=e665]: Especificar quién y la discapacidad
+                      - textbox "Especificar quién y la discapacidad" [ref=e666]
+                  - generic [ref=e667]:
+                    - generic [ref=e668]:
+                      - generic [ref=e669]: ¿Posee carnet del CONADIS? *
+                      - generic [ref=e670]:
+                        - generic [ref=e671]:
+                          - radio "SI" [ref=e672]
+                          - generic [ref=e673]: SI
+                        - generic [ref=e674]:
+                          - radio "NO" [ref=e675]
+                          - generic [ref=e676]: "NO"
+                    - generic [ref=e677]:
+                      - generic [ref=e678]: Porcentaje de discapacidad
+                      - spinbutton "Porcentaje de discapacidad" [ref=e679]
+              - generic [ref=e680]:
+                - heading "9. OTROS ANTECEDENTES FAMILIARES" [level=6] [ref=e682]
+                - generic [ref=e684]:
+                  - generic [ref=e685]:
+                    - generic [ref=e686]: ¿El/la estudiante tiene algún familiar cercano emigrante? *
+                    - generic [ref=e687]:
+                      - generic [ref=e688]:
+                        - radio "SI" [ref=e689]
+                        - generic [ref=e690]: SI
+                      - generic [ref=e691]:
+                        - radio "NO" [ref=e692]
+                        - generic [ref=e693]: "NO"
+                  - generic [ref=e694]:
+                    - generic [ref=e695]: Si es positivo, señale quién/quienes
+                    - generic [ref=e696]:
+                      - generic [ref=e697]:
+                        - checkbox "Padre" [ref=e698]
+                        - generic [ref=e699]: Padre
+                      - generic [ref=e700]:
+                        - checkbox "Madre" [ref=e701]
+                        - generic [ref=e702]: Madre
+                      - generic [ref=e703]:
+                        - checkbox "Ambos Padres" [ref=e704]
+                        - generic [ref=e705]: Ambos Padres
+                      - generic [ref=e706]:
+                        - checkbox "Hermanos" [ref=e707]
+                        - generic [ref=e708]: Hermanos
+                      - generic [ref=e709]:
+                        - checkbox "Otros" [ref=e710]
+                        - generic [ref=e711]: Otros
+              - generic [ref=e712]:
+                - heading "10. ESPACIO PARA EL/LA ESTUDIANTE" [level=6] [ref=e714]
+                - generic [ref=e717]:
+                  - generic [ref=e718]: Comentarios o situaciones adicionales
+                  - textbox "Comentarios o situaciones adicionales" [ref=e719]:
+                    - /placeholder: Escribe aquí cualquier comentario o situación que no se haya considerado en la ficha...
+              - generic [ref=e720]:
+                - button "Cancelar" [ref=e721] [cursor=pointer]
+                - button " Guardar Ficha" [ref=e722] [cursor=pointer]:
+                  - generic [ref=e723]: 
+                  - text: Guardar Ficha
+        - text:  
+      - contentinfo [ref=e134]:
+        - generic [ref=e136]:
+          - img "ITSI Logo" [ref=e138]
+          - paragraph [ref=e140]: Tecnológico Ibarra. © 2024. All Rights Reserved
+  - img [ref=e726] [cursor=pointer]

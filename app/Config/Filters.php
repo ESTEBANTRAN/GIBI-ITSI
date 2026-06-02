@@ -75,7 +75,6 @@ class Filters extends BaseFilters
      */
     public array $globals = [
         'before' => [
-            // 'csrf',         // ✅ DESHABILITADO TEMPORALMENTE PARA PRUEBAS
             'xssfilter',    // Protección XSS en todas las peticiones
             // 'invalidchars',
         ],

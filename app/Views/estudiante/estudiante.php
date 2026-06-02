@@ -269,7 +269,7 @@
                         </ol>
                     </nav>
                     <h4 class="mb-1"><i class="bi bi-hand-wave me-2"></i>Bienvenido/a, <?= session('nombre') ?> <?= session('apellido') ?></h4>
-                    <p class="mb-0">Panel de control del estudiante — Gestiona tus actividades académicas y de bienestar</p>
+                    <p class="mb-0">Panel de control del estudiante — Gestiona tus fichas socioeconómicas, becas o solicitudes de ayuda.</p>
                 </div>
                 <div class="col-md-4 text-md-end mt-3 mt-md-0">
                     <span class="badge bg-white text-primary px-3 py-2 rounded-pill shadow-sm">

@@ -24,6 +24,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Cambiar Contraseña</h5>
                         <form id="formPassword">
+                            <?= csrf_field() ?>
                             <div class="mb-3">
                                 <label for="password_actual" class="form-label">Contraseña Actual</label>
                                 <input type="password" class="form-control" id="password_actual" name="password_actual" required>

@@ -1,0 +1,820 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - link "Logo Super Administrador" [ref=e6] [cursor=pointer]:
+            - /url: http://localhost/ITSI/public/index.php/global-admin/dashboard
+            - img "Logo" [ref=e7]
+            - text: Super Administrador
+          - text: 
+        - navigation [ref=e8]:
+          - region "scrollable content" [ref=e12]:
+            - list [ref=e14]:
+              - listitem [ref=e15]:  PANEL PRINCIPAL
+              - listitem [ref=e16]:
+                - link " Dashboard Global" [ref=e17] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/global-admin/dashboard
+                  - generic [ref=e19]: 
+                  - generic [ref=e20]: Dashboard Global
+              - listitem [ref=e21]:  GESTIÓN DE USUARIOS
+              - listitem [ref=e22]:
+                - link " Gestión de Usuarios" [ref=e23] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/global-admin/usuarios
+                  - generic [ref=e25]: 
+                  - generic [ref=e26]: Gestión de Usuarios
+              - listitem [ref=e27]:
+                - link " Gestión de Roles" [ref=e28] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/global-admin/roles
+                  - generic [ref=e30]: 
+                  - generic [ref=e31]: Gestión de Roles
+              - listitem [ref=e32]:  ADMINISTRACIÓN DEL SISTEMA
+              - listitem [ref=e33]:
+                - link " Configuración del Sistema" [ref=e34] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/global-admin/configuracion
+                  - generic [ref=e36]: 
+                  - generic [ref=e37]: Configuración del Sistema
+              - listitem [ref=e38]:
+                - link " Gestión de Respaldos" [ref=e39] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/global-admin/respaldos
+                  - generic [ref=e41]: 
+                  - generic [ref=e42]: Gestión de Respaldos
+              - listitem [ref=e43]:
+                - link " Logs del Sistema" [ref=e44] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/global-admin/logs
+                  - generic [ref=e46]: 
+                  - generic [ref=e47]: Logs del Sistema
+              - listitem [ref=e48]:  ESTADÍSTICAS Y MONITOREO
+              - listitem [ref=e49]:
+                - link " Estadísticas Globales" [ref=e50] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/global-admin/estadisticas
+                  - generic [ref=e52]: 
+                  - generic [ref=e53]: Estadísticas Globales
+              - listitem [ref=e54]:  ACCESO RÁPIDO
+              - listitem [ref=e55]:
+                - link " Admin Bienestar" [ref=e56] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/admin-bienestar
+                  - generic [ref=e58]: 
+                  - generic [ref=e59]: Admin Bienestar
+              - listitem [ref=e60]:
+                - link " Vista Estudiante" [ref=e61] [cursor=pointer]:
+                  - /url: http://localhost/ITSI/public/index.php/estudiante
+                  - generic [ref=e63]: 
+                  - generic [ref=e64]: Vista Estudiante
+    - generic [ref=e65]:
+      - banner [ref=e66]:
+        - navigation [ref=e67]:
+          - link:
+            - /url: http://localhost/ITSI/public/
+          - list: 
+          - list [ref=e69]:
+            - listitem [ref=e70]:
+              - generic [ref=e71]:
+                - generic [ref=e72]: 
+                - text: Bienvenido al sistema, superadmin
+            - listitem [ref=e73]:
+              - link "Foto de perfil" [ref=e74] [cursor=pointer]:
+                - /url: javascript:void(0)
+                - img "Foto de perfil" [ref=e75]
+              - text:   
+      - generic [ref=e76]:
+        - generic [ref=e79]:
+          - generic [ref=e80]:
+            - heading "Gestión de Usuarios" [level=4] [ref=e81]
+            - paragraph [ref=e82]: Administra usuarios, roles y permisos del sistema
+          - button " Nuevo Usuario" [ref=e84] [cursor=pointer]:
+            - generic [ref=e85]: 
+            - text: Nuevo Usuario
+        - generic [ref=e88]:
+          - generic [ref=e89]: Mostrando 1 a 30 de 48 usuarios
+          - generic [ref=e90]: Página 1 de 2
+        - generic [ref=e91]:
+          - generic [ref=e95]:
+            - generic [ref=e96]:
+              - heading "Total Usuarios" [level=6] [ref=e97]
+              - heading "48" [level=3] [ref=e98]
+            - generic [ref=e100]: 
+          - generic [ref=e104]:
+            - generic [ref=e105]:
+              - heading "Usuarios Activos" [level=6] [ref=e106]
+              - heading "48" [level=3] [ref=e107]
+            - generic [ref=e109]: 
+          - generic [ref=e113]:
+            - generic [ref=e114]:
+              - heading "Estudiantes" [level=6] [ref=e115]
+              - heading "30" [level=3] [ref=e116]
+            - generic [ref=e118]: 
+          - generic [ref=e122]:
+            - generic [ref=e123]:
+              - heading "Administradores" [level=6] [ref=e124]
+              - heading "0" [level=3] [ref=e125]
+            - generic [ref=e127]: 
+        - generic [ref=e130]:
+          - generic [ref=e131]:
+            - heading " Lista de Usuarios" [level=5] [ref=e132]:
+              - generic [ref=e133]: 
+              - text: Lista de Usuarios
+            - generic [ref=e134]:
+              - generic [ref=e136]:
+                - textbox "Buscar usuarios..." [ref=e137]
+                - button "" [ref=e138] [cursor=pointer]:
+                  - generic [ref=e139]: 
+              - button " Exportar PDF" [ref=e140] [cursor=pointer]:
+                - generic [ref=e141]: 
+                - text: Exportar PDF
+          - table [ref=e144]:
+            - rowgroup [ref=e145]:
+              - row "ID Foto Nombre Email Cédula Rol Estado Fecha Registro Acciones" [ref=e146]:
+                - columnheader "ID" [ref=e147]
+                - columnheader "Foto" [ref=e148]
+                - columnheader "Nombre" [ref=e149]
+                - columnheader "Email" [ref=e150]
+                - columnheader "Cédula" [ref=e151]
+                - columnheader "Rol" [ref=e152]
+                - columnheader "Estado" [ref=e153]
+                - columnheader "Fecha Registro" [ref=e154]
+                - columnheader "Acciones" [ref=e155]
+            - rowgroup [ref=e156]:
+              - row "63 Foto Luis Martinez N/A luis.martinez2@estudiante.test 1234567801 Estudiante Activo 20/08/2025" [ref=e157]:
+                - cell "63" [ref=e158]
+                - cell "Foto" [ref=e159]:
+                  - img "Foto" [ref=e160]
+                - cell "Luis Martinez N/A" [ref=e161]:
+                  - generic [ref=e162]: Luis Martinez
+                  - text: N/A
+                - cell "luis.martinez2@estudiante.test" [ref=e163]
+                - cell "1234567801" [ref=e164]
+                - cell "Estudiante" [ref=e165]:
+                  - generic [ref=e166]: Estudiante
+                - cell "Activo" [ref=e167]:
+                  - generic [ref=e168]: Activo
+                - cell "20/08/2025" [ref=e169]
+                - cell [ref=e170]:
+                  - group [ref=e171]:
+                    - button "" [ref=e172] [cursor=pointer]:
+                      - generic [ref=e173]: 
+                    - button "" [ref=e174] [cursor=pointer]:
+                      - generic [ref=e175]: 
+                    - button "" [ref=e176] [cursor=pointer]:
+                      - generic [ref=e177]: 
+              - row "64 Foto Maria Lopez N/A maria.lopez2@estudiante.test 1234567802 Estudiante Activo 20/08/2025" [ref=e178]:
+                - cell "64" [ref=e179]
+                - cell "Foto" [ref=e180]:
+                  - img "Foto" [ref=e181]
+                - cell "Maria Lopez N/A" [ref=e182]:
+                  - generic [ref=e183]: Maria Lopez
+                  - text: N/A
+                - cell "maria.lopez2@estudiante.test" [ref=e184]
+                - cell "1234567802" [ref=e185]
+                - cell "Estudiante" [ref=e186]:
+                  - generic [ref=e187]: Estudiante
+                - cell "Activo" [ref=e188]:
+                  - generic [ref=e189]: Activo
+                - cell "20/08/2025" [ref=e190]
+                - cell [ref=e191]:
+                  - group [ref=e192]:
+                    - button "" [ref=e193] [cursor=pointer]:
+                      - generic [ref=e194]: 
+                    - button "" [ref=e195] [cursor=pointer]:
+                      - generic [ref=e196]: 
+                    - button "" [ref=e197] [cursor=pointer]:
+                      - generic [ref=e198]: 
+              - row "65 Foto Pedro Sanchez N/A pedro.sanchez2@estudiante.test 1234567803 Estudiante Activo 20/08/2025" [ref=e199]:
+                - cell "65" [ref=e200]
+                - cell "Foto" [ref=e201]:
+                  - img "Foto" [ref=e202]
+                - cell "Pedro Sanchez N/A" [ref=e203]:
+                  - generic [ref=e204]: Pedro Sanchez
+                  - text: N/A
+                - cell "pedro.sanchez2@estudiante.test" [ref=e205]
+                - cell "1234567803" [ref=e206]
+                - cell "Estudiante" [ref=e207]:
+                  - generic [ref=e208]: Estudiante
+                - cell "Activo" [ref=e209]:
+                  - generic [ref=e210]: Activo
+                - cell "20/08/2025" [ref=e211]
+                - cell [ref=e212]:
+                  - group [ref=e213]:
+                    - button "" [ref=e214] [cursor=pointer]:
+                      - generic [ref=e215]: 
+                    - button "" [ref=e216] [cursor=pointer]:
+                      - generic [ref=e217]: 
+                    - button "" [ref=e218] [cursor=pointer]:
+                      - generic [ref=e219]: 
+              - row "56 Foto Luis MartÝnez N/A luis.martinez@estudiante.test 1234567891 Estudiante Activo 20/08/2025" [ref=e220]:
+                - cell "56" [ref=e221]
+                - cell "Foto" [ref=e222]:
+                  - img "Foto" [ref=e223]
+                - cell "Luis MartÝnez N/A" [ref=e224]:
+                  - generic [ref=e225]: Luis MartÝnez
+                  - text: N/A
+                - cell "luis.martinez@estudiante.test" [ref=e226]
+                - cell "1234567891" [ref=e227]
+                - cell "Estudiante" [ref=e228]:
+                  - generic [ref=e229]: Estudiante
+                - cell "Activo" [ref=e230]:
+                  - generic [ref=e231]: Activo
+                - cell "20/08/2025" [ref=e232]
+                - cell [ref=e233]:
+                  - group [ref=e234]:
+                    - button "" [ref=e235] [cursor=pointer]:
+                      - generic [ref=e236]: 
+                    - button "" [ref=e237] [cursor=pointer]:
+                      - generic [ref=e238]: 
+                    - button "" [ref=e239] [cursor=pointer]:
+                      - generic [ref=e240]: 
+              - row "55 Foto Ana GarcÝa N/A ana.garcia@estudiante.test 1234567890 Estudiante Activo 20/08/2025" [ref=e241]:
+                - cell "55" [ref=e242]
+                - cell "Foto" [ref=e243]:
+                  - img "Foto" [ref=e244]
+                - cell "Ana GarcÝa N/A" [ref=e245]:
+                  - generic [ref=e246]: Ana GarcÝa
+                  - text: N/A
+                - cell "ana.garcia@estudiante.test" [ref=e247]
+                - cell "1234567890" [ref=e248]
+                - cell "Estudiante" [ref=e249]:
+                  - generic [ref=e250]: Estudiante
+                - cell "Activo" [ref=e251]:
+                  - generic [ref=e252]: Activo
+                - cell "20/08/2025" [ref=e253]
+                - cell [ref=e254]:
+                  - group [ref=e255]:
+                    - button "" [ref=e256] [cursor=pointer]:
+                      - generic [ref=e257]: 
+                    - button "" [ref=e258] [cursor=pointer]:
+                      - generic [ref=e259]: 
+                    - button "" [ref=e260] [cursor=pointer]:
+                      - generic [ref=e261]: 
+              - row "46 Foto María García Desarrollo de Software maria.garcia@estudiante.itsi.edu.ec 1005183401 Estudiante Activo 31/07/2025" [ref=e262]:
+                - cell "46" [ref=e263]
+                - cell "Foto" [ref=e264]:
+                  - img "Foto" [ref=e265]
+                - cell "María García Desarrollo de Software" [ref=e266]:
+                  - generic [ref=e267]: María García
+                  - text: Desarrollo de Software
+                - cell "maria.garcia@estudiante.itsi.edu.ec" [ref=e268]
+                - cell "1005183401" [ref=e269]
+                - cell "Estudiante" [ref=e270]:
+                  - generic [ref=e271]: Estudiante
+                - cell "Activo" [ref=e272]:
+                  - generic [ref=e273]: Activo
+                - cell "31/07/2025" [ref=e274]
+                - cell [ref=e275]:
+                  - group [ref=e276]:
+                    - button "" [ref=e277] [cursor=pointer]:
+                      - generic [ref=e278]: 
+                    - button "" [ref=e279] [cursor=pointer]:
+                      - generic [ref=e280]: 
+                    - button "" [ref=e281] [cursor=pointer]:
+                      - generic [ref=e282]: 
+              - row "47 Foto Luis Rodríguez Administración luis.rodriguez@estudiante.itsi.edu.ec 1005183402 Estudiante Activo 31/07/2025" [ref=e283]:
+                - cell "47" [ref=e284]
+                - cell "Foto" [ref=e285]:
+                  - img "Foto" [ref=e286]
+                - cell "Luis Rodríguez Administración" [ref=e287]:
+                  - generic [ref=e288]: Luis Rodríguez
+                  - text: Administración
+                - cell "luis.rodriguez@estudiante.itsi.edu.ec" [ref=e289]
+                - cell "1005183402" [ref=e290]
+                - cell "Estudiante" [ref=e291]:
+                  - generic [ref=e292]: Estudiante
+                - cell "Activo" [ref=e293]:
+                  - generic [ref=e294]: Activo
+                - cell "31/07/2025" [ref=e295]
+                - cell [ref=e296]:
+                  - group [ref=e297]:
+                    - button "" [ref=e298] [cursor=pointer]:
+                      - generic [ref=e299]: 
+                    - button "" [ref=e300] [cursor=pointer]:
+                      - generic [ref=e301]: 
+                    - button "" [ref=e302] [cursor=pointer]:
+                      - generic [ref=e303]: 
+              - row "48 Foto Ana Martínez Marketing Digital ana.martinez@estudiante.itsi.edu.ec 1005183403 Estudiante Activo 31/07/2025" [ref=e304]:
+                - cell "48" [ref=e305]
+                - cell "Foto" [ref=e306]:
+                  - img "Foto" [ref=e307]
+                - cell "Ana Martínez Marketing Digital" [ref=e308]:
+                  - generic [ref=e309]: Ana Martínez
+                  - text: Marketing Digital
+                - cell "ana.martinez@estudiante.itsi.edu.ec" [ref=e310]
+                - cell "1005183403" [ref=e311]
+                - cell "Estudiante" [ref=e312]:
+                  - generic [ref=e313]: Estudiante
+                - cell "Activo" [ref=e314]:
+                  - generic [ref=e315]: Activo
+                - cell "31/07/2025" [ref=e316]
+                - cell [ref=e317]:
+                  - group [ref=e318]:
+                    - button "" [ref=e319] [cursor=pointer]:
+                      - generic [ref=e320]: 
+                    - button "" [ref=e321] [cursor=pointer]:
+                      - generic [ref=e322]: 
+                    - button "" [ref=e323] [cursor=pointer]:
+                      - generic [ref=e324]: 
+              - row "39 Foto estebansito lolaso desarrollo eareqwr@gmail.com 01023123 Estudiante Activo 30/07/2025" [ref=e325]:
+                - cell "39" [ref=e326]
+                - cell "Foto" [ref=e327]:
+                  - img "Foto" [ref=e328]
+                - cell "estebansito lolaso desarrollo" [ref=e329]:
+                  - generic [ref=e330]: estebansito lolaso
+                  - text: desarrollo
+                - cell "eareqwr@gmail.com" [ref=e331]
+                - cell "01023123" [ref=e332]
+                - cell "Estudiante" [ref=e333]:
+                  - generic [ref=e334]: Estudiante
+                - cell "Activo" [ref=e335]:
+                  - generic [ref=e336]: Activo
+                - cell "30/07/2025" [ref=e337]
+                - cell [ref=e338]:
+                  - group [ref=e339]:
+                    - button "" [ref=e340] [cursor=pointer]:
+                      - generic [ref=e341]: 
+                    - button "" [ref=e342] [cursor=pointer]:
+                      - generic [ref=e343]: 
+                    - button "" [ref=e344] [cursor=pointer]:
+                      - generic [ref=e345]: 
+              - row "40 Foto estudiante estudiante dsada estudiante@testmail.com 0003 Estudiante Activo 29/07/2025" [ref=e346]:
+                - cell "40" [ref=e347]
+                - cell "Foto" [ref=e348]:
+                  - img "Foto" [ref=e349]
+                - cell "estudiante estudiante dsada" [ref=e350]:
+                  - generic [ref=e351]: estudiante estudiante
+                  - text: dsada
+                - cell "estudiante@testmail.com" [ref=e352]
+                - cell "0003" [ref=e353]
+                - cell "Estudiante" [ref=e354]:
+                  - generic [ref=e355]: Estudiante
+                - cell "Activo" [ref=e356]:
+                  - generic [ref=e357]: Activo
+                - cell "29/07/2025" [ref=e358]
+                - cell [ref=e359]:
+                  - group [ref=e360]:
+                    - button "" [ref=e361] [cursor=pointer]:
+                      - generic [ref=e362]: 
+                    - button "" [ref=e363] [cursor=pointer]:
+                      - generic [ref=e364]: 
+                    - button "" [ref=e365] [cursor=pointer]:
+                      - generic [ref=e366]: 
+              - row "10 Foto estudiantetres estudiante Carrera Inventada estudiante3@example.com 10001 Estudiante Activo 29/07/2025" [ref=e367]:
+                - cell "10" [ref=e368]
+                - cell "Foto" [ref=e369]:
+                  - img "Foto" [ref=e370]
+                - cell "estudiantetres estudiante Carrera Inventada" [ref=e371]:
+                  - generic [ref=e372]: estudiantetres estudiante
+                  - text: Carrera Inventada
+                - cell "estudiante3@example.com" [ref=e373]
+                - cell "10001" [ref=e374]
+                - cell "Estudiante" [ref=e375]:
+                  - generic [ref=e376]: Estudiante
+                - cell "Activo" [ref=e377]:
+                  - generic [ref=e378]: Activo
+                - cell "29/07/2025" [ref=e379]
+                - cell [ref=e380]:
+                  - group [ref=e381]:
+                    - button "" [ref=e382] [cursor=pointer]:
+                      - generic [ref=e383]: 
+                    - button "" [ref=e384] [cursor=pointer]:
+                      - generic [ref=e385]: 
+                    - button "" [ref=e386] [cursor=pointer]:
+                      - generic [ref=e387]: 
+              - row "11 Foto estudiantedocuatro estudiante Carrera Inventada estudiante4@example.com 10002 Estudiante Activo 29/07/2025" [ref=e388]:
+                - cell "11" [ref=e389]
+                - cell "Foto" [ref=e390]:
+                  - img "Foto" [ref=e391]
+                - cell "estudiantedocuatro estudiante Carrera Inventada" [ref=e392]:
+                  - generic [ref=e393]: estudiantedocuatro estudiante
+                  - text: Carrera Inventada
+                - cell "estudiante4@example.com" [ref=e394]
+                - cell "10002" [ref=e395]
+                - cell "Estudiante" [ref=e396]:
+                  - generic [ref=e397]: Estudiante
+                - cell "Activo" [ref=e398]:
+                  - generic [ref=e399]: Activo
+                - cell "29/07/2025" [ref=e400]
+                - cell [ref=e401]:
+                  - group [ref=e402]:
+                    - button "" [ref=e403] [cursor=pointer]:
+                      - generic [ref=e404]: 
+                    - button "" [ref=e405] [cursor=pointer]:
+                      - generic [ref=e406]: 
+                    - button "" [ref=e407] [cursor=pointer]:
+                      - generic [ref=e408]: 
+              - row "12 Foto estudiantedocinco estudiante Carrera Inventada estudiante5@example.com 10003 Estudiante Activo 29/07/2025" [ref=e409]:
+                - cell "12" [ref=e410]
+                - cell "Foto" [ref=e411]:
+                  - img "Foto" [ref=e412]
+                - cell "estudiantedocinco estudiante Carrera Inventada" [ref=e413]:
+                  - generic [ref=e414]: estudiantedocinco estudiante
+                  - text: Carrera Inventada
+                - cell "estudiante5@example.com" [ref=e415]
+                - cell "10003" [ref=e416]
+                - cell "Estudiante" [ref=e417]:
+                  - generic [ref=e418]: Estudiante
+                - cell "Activo" [ref=e419]:
+                  - generic [ref=e420]: Activo
+                - cell "29/07/2025" [ref=e421]
+                - cell [ref=e422]:
+                  - group [ref=e423]:
+                    - button "" [ref=e424] [cursor=pointer]:
+                      - generic [ref=e425]: 
+                    - button "" [ref=e426] [cursor=pointer]:
+                      - generic [ref=e427]: 
+                    - button "" [ref=e428] [cursor=pointer]:
+                      - generic [ref=e429]: 
+              - row "13 Foto estudianteseis estudiante Carrera Inventada estudiante6@example.com 10004 Estudiante Activo 29/07/2025" [ref=e430]:
+                - cell "13" [ref=e431]
+                - cell "Foto" [ref=e432]:
+                  - img "Foto" [ref=e433]
+                - cell "estudianteseis estudiante Carrera Inventada" [ref=e434]:
+                  - generic [ref=e435]: estudianteseis estudiante
+                  - text: Carrera Inventada
+                - cell "estudiante6@example.com" [ref=e436]
+                - cell "10004" [ref=e437]
+                - cell "Estudiante" [ref=e438]:
+                  - generic [ref=e439]: Estudiante
+                - cell "Activo" [ref=e440]:
+                  - generic [ref=e441]: Activo
+                - cell "29/07/2025" [ref=e442]
+                - cell [ref=e443]:
+                  - group [ref=e444]:
+                    - button "" [ref=e445] [cursor=pointer]:
+                      - generic [ref=e446]: 
+                    - button "" [ref=e447] [cursor=pointer]:
+                      - generic [ref=e448]: 
+                    - button "" [ref=e449] [cursor=pointer]:
+                      - generic [ref=e450]: 
+              - row "14 Foto estudiantesiete estudiante Carrera Inventada estudiante7@example.com 10005 Estudiante Activo 29/07/2025" [ref=e451]:
+                - cell "14" [ref=e452]
+                - cell "Foto" [ref=e453]:
+                  - img "Foto" [ref=e454]
+                - cell "estudiantesiete estudiante Carrera Inventada" [ref=e455]:
+                  - generic [ref=e456]: estudiantesiete estudiante
+                  - text: Carrera Inventada
+                - cell "estudiante7@example.com" [ref=e457]
+                - cell "10005" [ref=e458]
+                - cell "Estudiante" [ref=e459]:
+                  - generic [ref=e460]: Estudiante
+                - cell "Activo" [ref=e461]:
+                  - generic [ref=e462]: Activo
+                - cell "29/07/2025" [ref=e463]
+                - cell [ref=e464]:
+                  - group [ref=e465]:
+                    - button "" [ref=e466] [cursor=pointer]:
+                      - generic [ref=e467]: 
+                    - button "" [ref=e468] [cursor=pointer]:
+                      - generic [ref=e469]: 
+                    - button "" [ref=e470] [cursor=pointer]:
+                      - generic [ref=e471]: 
+              - row "15 Foto estudianteocho estudiante Carrera Inventada estudiante8@example.com 10006 Estudiante Activo 29/07/2025" [ref=e472]:
+                - cell "15" [ref=e473]
+                - cell "Foto" [ref=e474]:
+                  - img "Foto" [ref=e475]
+                - cell "estudianteocho estudiante Carrera Inventada" [ref=e476]:
+                  - generic [ref=e477]: estudianteocho estudiante
+                  - text: Carrera Inventada
+                - cell "estudiante8@example.com" [ref=e478]
+                - cell "10006" [ref=e479]
+                - cell "Estudiante" [ref=e480]:
+                  - generic [ref=e481]: Estudiante
+                - cell "Activo" [ref=e482]:
+                  - generic [ref=e483]: Activo
+                - cell "29/07/2025" [ref=e484]
+                - cell [ref=e485]:
+                  - group [ref=e486]:
+                    - button "" [ref=e487] [cursor=pointer]:
+                      - generic [ref=e488]: 
+                    - button "" [ref=e489] [cursor=pointer]:
+                      - generic [ref=e490]: 
+                    - button "" [ref=e491] [cursor=pointer]:
+                      - generic [ref=e492]: 
+              - row "16 Foto estudiantenueve estudiante Carrera Inventada estudiante9@example.com 10007 Estudiante Activo 29/07/2025" [ref=e493]:
+                - cell "16" [ref=e494]
+                - cell "Foto" [ref=e495]:
+                  - img "Foto" [ref=e496]
+                - cell "estudiantenueve estudiante Carrera Inventada" [ref=e497]:
+                  - generic [ref=e498]: estudiantenueve estudiante
+                  - text: Carrera Inventada
+                - cell "estudiante9@example.com" [ref=e499]
+                - cell "10007" [ref=e500]
+                - cell "Estudiante" [ref=e501]:
+                  - generic [ref=e502]: Estudiante
+                - cell "Activo" [ref=e503]:
+                  - generic [ref=e504]: Activo
+                - cell "29/07/2025" [ref=e505]
+                - cell [ref=e506]:
+                  - group [ref=e507]:
+                    - button "" [ref=e508] [cursor=pointer]:
+                      - generic [ref=e509]: 
+                    - button "" [ref=e510] [cursor=pointer]:
+                      - generic [ref=e511]: 
+                    - button "" [ref=e512] [cursor=pointer]:
+                      - generic [ref=e513]: 
+              - row "17 Foto estudiantediez estudiante Carrera Inventada estudiante10@example.com 10008 Estudiante Activo 29/07/2025" [ref=e514]:
+                - cell "17" [ref=e515]
+                - cell "Foto" [ref=e516]:
+                  - img "Foto" [ref=e517]
+                - cell "estudiantediez estudiante Carrera Inventada" [ref=e518]:
+                  - generic [ref=e519]: estudiantediez estudiante
+                  - text: Carrera Inventada
+                - cell "estudiante10@example.com" [ref=e520]
+                - cell "10008" [ref=e521]
+                - cell "Estudiante" [ref=e522]:
+                  - generic [ref=e523]: Estudiante
+                - cell "Activo" [ref=e524]:
+                  - generic [ref=e525]: Activo
+                - cell "29/07/2025" [ref=e526]
+                - cell [ref=e527]:
+                  - group [ref=e528]:
+                    - button "" [ref=e529] [cursor=pointer]:
+                      - generic [ref=e530]: 
+                    - button "" [ref=e531] [cursor=pointer]:
+                      - generic [ref=e532]: 
+                    - button "" [ref=e533] [cursor=pointer]:
+                      - generic [ref=e534]: 
+              - row "18 Foto estudianteonce estudiante Carrera Inventada estudiante11@example.com 10009 Estudiante Activo 29/07/2025" [ref=e535]:
+                - cell "18" [ref=e536]
+                - cell "Foto" [ref=e537]:
+                  - img "Foto" [ref=e538]
+                - cell "estudianteonce estudiante Carrera Inventada" [ref=e539]:
+                  - generic [ref=e540]: estudianteonce estudiante
+                  - text: Carrera Inventada
+                - cell "estudiante11@example.com" [ref=e541]
+                - cell "10009" [ref=e542]
+                - cell "Estudiante" [ref=e543]:
+                  - generic [ref=e544]: Estudiante
+                - cell "Activo" [ref=e545]:
+                  - generic [ref=e546]: Activo
+                - cell "29/07/2025" [ref=e547]
+                - cell [ref=e548]:
+                  - group [ref=e549]:
+                    - button "" [ref=e550] [cursor=pointer]:
+                      - generic [ref=e551]: 
+                    - button "" [ref=e552] [cursor=pointer]:
+                      - generic [ref=e553]: 
+                    - button "" [ref=e554] [cursor=pointer]:
+                      - generic [ref=e555]: 
+              - row "19 Foto estudiantedoce estudiante Carrera Inventada estudiante12@example.com 10010 Estudiante Activo 29/07/2025" [ref=e556]:
+                - cell "19" [ref=e557]
+                - cell "Foto" [ref=e558]:
+                  - img "Foto" [ref=e559]
+                - cell "estudiantedoce estudiante Carrera Inventada" [ref=e560]:
+                  - generic [ref=e561]: estudiantedoce estudiante
+                  - text: Carrera Inventada
+                - cell "estudiante12@example.com" [ref=e562]
+                - cell "10010" [ref=e563]
+                - cell "Estudiante" [ref=e564]:
+                  - generic [ref=e565]: Estudiante
+                - cell "Activo" [ref=e566]:
+                  - generic [ref=e567]: Activo
+                - cell "29/07/2025" [ref=e568]
+                - cell [ref=e569]:
+                  - group [ref=e570]:
+                    - button "" [ref=e571] [cursor=pointer]:
+                      - generic [ref=e572]: 
+                    - button "" [ref=e573] [cursor=pointer]:
+                      - generic [ref=e574]: 
+                    - button "" [ref=e575] [cursor=pointer]:
+                      - generic [ref=e576]: 
+              - row "20 Foto estudiantetrece estudiante Carrera Inventada estudiante13@example.com 10011 Estudiante Activo 29/07/2025" [ref=e577]:
+                - cell "20" [ref=e578]
+                - cell "Foto" [ref=e579]:
+                  - img "Foto" [ref=e580]
+                - cell "estudiantetrece estudiante Carrera Inventada" [ref=e581]:
+                  - generic [ref=e582]: estudiantetrece estudiante
+                  - text: Carrera Inventada
+                - cell "estudiante13@example.com" [ref=e583]
+                - cell "10011" [ref=e584]
+                - cell "Estudiante" [ref=e585]:
+                  - generic [ref=e586]: Estudiante
+                - cell "Activo" [ref=e587]:
+                  - generic [ref=e588]: Activo
+                - cell "29/07/2025" [ref=e589]
+                - cell [ref=e590]:
+                  - group [ref=e591]:
+                    - button "" [ref=e592] [cursor=pointer]:
+                      - generic [ref=e593]: 
+                    - button "" [ref=e594] [cursor=pointer]:
+                      - generic [ref=e595]: 
+                    - button "" [ref=e596] [cursor=pointer]:
+                      - generic [ref=e597]: 
+              - row "21 Foto estudiantecatorce estudiante Carrera Inventada estudiante14@example.com 10012 Estudiante Activo 29/07/2025" [ref=e598]:
+                - cell "21" [ref=e599]
+                - cell "Foto" [ref=e600]:
+                  - img "Foto" [ref=e601]
+                - cell "estudiantecatorce estudiante Carrera Inventada" [ref=e602]:
+                  - generic [ref=e603]: estudiantecatorce estudiante
+                  - text: Carrera Inventada
+                - cell "estudiante14@example.com" [ref=e604]
+                - cell "10012" [ref=e605]
+                - cell "Estudiante" [ref=e606]:
+                  - generic [ref=e607]: Estudiante
+                - cell "Activo" [ref=e608]:
+                  - generic [ref=e609]: Activo
+                - cell "29/07/2025" [ref=e610]
+                - cell [ref=e611]:
+                  - group [ref=e612]:
+                    - button "" [ref=e613] [cursor=pointer]:
+                      - generic [ref=e614]: 
+                    - button "" [ref=e615] [cursor=pointer]:
+                      - generic [ref=e616]: 
+                    - button "" [ref=e617] [cursor=pointer]:
+                      - generic [ref=e618]: 
+              - row "22 Foto estudiantequince estudiante Carrera Inventada estudiante15@example.com 10013 Estudiante Activo 29/07/2025" [ref=e619]:
+                - cell "22" [ref=e620]
+                - cell "Foto" [ref=e621]:
+                  - img "Foto" [ref=e622]
+                - cell "estudiantequince estudiante Carrera Inventada" [ref=e623]:
+                  - generic [ref=e624]: estudiantequince estudiante
+                  - text: Carrera Inventada
+                - cell "estudiante15@example.com" [ref=e625]
+                - cell "10013" [ref=e626]
+                - cell "Estudiante" [ref=e627]:
+                  - generic [ref=e628]: Estudiante
+                - cell "Activo" [ref=e629]:
+                  - generic [ref=e630]: Activo
+                - cell "29/07/2025" [ref=e631]
+                - cell [ref=e632]:
+                  - group [ref=e633]:
+                    - button "" [ref=e634] [cursor=pointer]:
+                      - generic [ref=e635]: 
+                    - button "" [ref=e636] [cursor=pointer]:
+                      - generic [ref=e637]: 
+                    - button "" [ref=e638] [cursor=pointer]:
+                      - generic [ref=e639]: 
+              - row "23 Foto estudiantedieciseis estudiante Carrera Inventada estudiante16@example.com 10014 Estudiante Activo 29/07/2025" [ref=e640]:
+                - cell "23" [ref=e641]
+                - cell "Foto" [ref=e642]:
+                  - img "Foto" [ref=e643]
+                - cell "estudiantedieciseis estudiante Carrera Inventada" [ref=e644]:
+                  - generic [ref=e645]: estudiantedieciseis estudiante
+                  - text: Carrera Inventada
+                - cell "estudiante16@example.com" [ref=e646]
+                - cell "10014" [ref=e647]
+                - cell "Estudiante" [ref=e648]:
+                  - generic [ref=e649]: Estudiante
+                - cell "Activo" [ref=e650]:
+                  - generic [ref=e651]: Activo
+                - cell "29/07/2025" [ref=e652]
+                - cell [ref=e653]:
+                  - group [ref=e654]:
+                    - button "" [ref=e655] [cursor=pointer]:
+                      - generic [ref=e656]: 
+                    - button "" [ref=e657] [cursor=pointer]:
+                      - generic [ref=e658]: 
+                    - button "" [ref=e659] [cursor=pointer]:
+                      - generic [ref=e660]: 
+              - row "24 Foto estudiantediecisiete estudiante Carrera Inventada estudiante17@example.com 10015 Estudiante Activo 29/07/2025" [ref=e661]:
+                - cell "24" [ref=e662]
+                - cell "Foto" [ref=e663]:
+                  - img "Foto" [ref=e664]
+                - cell "estudiantediecisiete estudiante Carrera Inventada" [ref=e665]:
+                  - generic [ref=e666]: estudiantediecisiete estudiante
+                  - text: Carrera Inventada
+                - cell "estudiante17@example.com" [ref=e667]
+                - cell "10015" [ref=e668]
+                - cell "Estudiante" [ref=e669]:
+                  - generic [ref=e670]: Estudiante
+                - cell "Activo" [ref=e671]:
+                  - generic [ref=e672]: Activo
+                - cell "29/07/2025" [ref=e673]
+                - cell [ref=e674]:
+                  - group [ref=e675]:
+                    - button "" [ref=e676] [cursor=pointer]:
+                      - generic [ref=e677]: 
+                    - button "" [ref=e678] [cursor=pointer]:
+                      - generic [ref=e679]: 
+                    - button "" [ref=e680] [cursor=pointer]:
+                      - generic [ref=e681]: 
+              - row "25 Foto estudiantedieciocho estudiante Carrera Inventada estudiante18@example.com 10016 Estudiante Activo 29/07/2025" [ref=e682]:
+                - cell "25" [ref=e683]
+                - cell "Foto" [ref=e684]:
+                  - img "Foto" [ref=e685]
+                - cell "estudiantedieciocho estudiante Carrera Inventada" [ref=e686]:
+                  - generic [ref=e687]: estudiantedieciocho estudiante
+                  - text: Carrera Inventada
+                - cell "estudiante18@example.com" [ref=e688]
+                - cell "10016" [ref=e689]
+                - cell "Estudiante" [ref=e690]:
+                  - generic [ref=e691]: Estudiante
+                - cell "Activo" [ref=e692]:
+                  - generic [ref=e693]: Activo
+                - cell "29/07/2025" [ref=e694]
+                - cell [ref=e695]:
+                  - group [ref=e696]:
+                    - button "" [ref=e697] [cursor=pointer]:
+                      - generic [ref=e698]: 
+                    - button "" [ref=e699] [cursor=pointer]:
+                      - generic [ref=e700]: 
+                    - button "" [ref=e701] [cursor=pointer]:
+                      - generic [ref=e702]: 
+              - row "26 Foto estudiantediecinueve estudiante Carrera Inventada estudiante19@example.com 10017 Estudiante Activo 29/07/2025" [ref=e703]:
+                - cell "26" [ref=e704]
+                - cell "Foto" [ref=e705]:
+                  - img "Foto" [ref=e706]
+                - cell "estudiantediecinueve estudiante Carrera Inventada" [ref=e707]:
+                  - generic [ref=e708]: estudiantediecinueve estudiante
+                  - text: Carrera Inventada
+                - cell "estudiante19@example.com" [ref=e709]
+                - cell "10017" [ref=e710]
+                - cell "Estudiante" [ref=e711]:
+                  - generic [ref=e712]: Estudiante
+                - cell "Activo" [ref=e713]:
+                  - generic [ref=e714]: Activo
+                - cell "29/07/2025" [ref=e715]
+                - cell [ref=e716]:
+                  - group [ref=e717]:
+                    - button "" [ref=e718] [cursor=pointer]:
+                      - generic [ref=e719]: 
+                    - button "" [ref=e720] [cursor=pointer]:
+                      - generic [ref=e721]: 
+                    - button "" [ref=e722] [cursor=pointer]:
+                      - generic [ref=e723]: 
+              - row "27 Foto estudianteveinte estudiante Carrera Inventada estudiante20@example.com 10018 Estudiante Activo 29/07/2025" [ref=e724]:
+                - cell "27" [ref=e725]
+                - cell "Foto" [ref=e726]:
+                  - img "Foto" [ref=e727]
+                - cell "estudianteveinte estudiante Carrera Inventada" [ref=e728]:
+                  - generic [ref=e729]: estudianteveinte estudiante
+                  - text: Carrera Inventada
+                - cell "estudiante20@example.com" [ref=e730]
+                - cell "10018" [ref=e731]
+                - cell "Estudiante" [ref=e732]:
+                  - generic [ref=e733]: Estudiante
+                - cell "Activo" [ref=e734]:
+                  - generic [ref=e735]: Activo
+                - cell "29/07/2025" [ref=e736]
+                - cell [ref=e737]:
+                  - group [ref=e738]:
+                    - button "" [ref=e739] [cursor=pointer]:
+                      - generic [ref=e740]: 
+                    - button "" [ref=e741] [cursor=pointer]:
+                      - generic [ref=e742]: 
+                    - button "" [ref=e743] [cursor=pointer]:
+                      - generic [ref=e744]: 
+              - row "28 Foto estudianteveintiuno estudiante Carrera Inventada estudiante21@example.com 10019 Estudiante Activo 29/07/2025" [ref=e745]:
+                - cell "28" [ref=e746]
+                - cell "Foto" [ref=e747]:
+                  - img "Foto" [ref=e748]
+                - cell "estudianteveintiuno estudiante Carrera Inventada" [ref=e749]:
+                  - generic [ref=e750]: estudianteveintiuno estudiante
+                  - text: Carrera Inventada
+                - cell "estudiante21@example.com" [ref=e751]
+                - cell "10019" [ref=e752]
+                - cell "Estudiante" [ref=e753]:
+                  - generic [ref=e754]: Estudiante
+                - cell "Activo" [ref=e755]:
+                  - generic [ref=e756]: Activo
+                - cell "29/07/2025" [ref=e757]
+                - cell [ref=e758]:
+                  - group [ref=e759]:
+                    - button "" [ref=e760] [cursor=pointer]:
+                      - generic [ref=e761]: 
+                    - button "" [ref=e762] [cursor=pointer]:
+                      - generic [ref=e763]: 
+                    - button "" [ref=e764] [cursor=pointer]:
+                      - generic [ref=e765]: 
+              - row "29 Foto estudianteveintidos estudiante Carrera Inventada estudiante22@example.com 10020 Estudiante Activo 29/07/2025" [ref=e766]:
+                - cell "29" [ref=e767]
+                - cell "Foto" [ref=e768]:
+                  - img "Foto" [ref=e769]
+                - cell "estudianteveintidos estudiante Carrera Inventada" [ref=e770]:
+                  - generic [ref=e771]: estudianteveintidos estudiante
+                  - text: Carrera Inventada
+                - cell "estudiante22@example.com" [ref=e772]
+                - cell "10020" [ref=e773]
+                - cell "Estudiante" [ref=e774]:
+                  - generic [ref=e775]: Estudiante
+                - cell "Activo" [ref=e776]:
+                  - generic [ref=e777]: Activo
+                - cell "29/07/2025" [ref=e778]
+                - cell [ref=e779]:
+                  - group [ref=e780]:
+                    - button "" [ref=e781] [cursor=pointer]:
+                      - generic [ref=e782]: 
+                    - button "" [ref=e783] [cursor=pointer]:
+                      - generic [ref=e784]: 
+                    - button "" [ref=e785] [cursor=pointer]:
+                      - generic [ref=e786]: 
+        - navigation "Navegación de páginas" [ref=e789]:
+          - list [ref=e790]:
+            - listitem [ref=e791]:
+              - generic:
+                - generic: 
+                - text: Anterior
+            - listitem [ref=e792]:
+              - link "1" [ref=e793] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/global-admin/usuarios?page=1
+            - listitem [ref=e794]:
+              - link "2" [ref=e795] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/global-admin/usuarios?page=2
+            - listitem [ref=e796]:
+              - link "Siguiente " [ref=e797] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/global-admin/usuarios?page=2
+                - text: Siguiente
+                - generic [ref=e798]: 
+        - text:    
+      - contentinfo [ref=e800]:
+        - generic [ref=e802]:
+          - img "ITSI Logo" [ref=e804]
+          - paragraph [ref=e806]: Tecnológico Ibarra. © 2024. All Rights Reserved
+  - img

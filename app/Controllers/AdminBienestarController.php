@@ -62,47 +62,25 @@ class AdminBienestarController extends BaseController
     // ========================================
 
     /**
-     * Dashboard principal del administrador
+     * @deprecated Usar Admin\DashboardController::dashboard()
+     * @see \App\Controllers\Admin\DashboardController
      */
     public function dashboard()
     {
-        if (!$this->verificarPermisos()) {
-            return redirect()->to('/login');
-        }
-
-        try {
-            $estadisticas = $this->adminService->getEstadisticasCompletas();
-            
-            return view('AdminBienestar/dashboard', [
-                'estadisticas' => $estadisticas,
-                'usuario' => $this->getUsuarioActual()
-            ]);
-        } catch (\Exception $e) {
-            log_message('error', 'Error en dashboard: ' . $e->getMessage());
-            return view('AdminBienestar/dashboard', [
-                'estadisticas' => [],
-                'usuario' => $this->getUsuarioActual(),
-                'error' => 'Error cargando estadísticas'
-            ]);
-        }
+        log_message('debug', 'AdminBienestarController::dashboard() llamado - deprecated');
+        $controller = new \App\Controllers\Admin\DashboardController();
+        return $controller->dashboard();
     }
 
     /**
-     * Obtener estadísticas en tiempo real via AJAX
+     * @deprecated Usar Admin\DashboardController::getEstadisticas()
+     * @see \App\Controllers\Admin\DashboardController
      */
     public function getEstadisticas()
     {
-        if (!$this->verificarPermisos()) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        try {
-            $estadisticas = $this->adminService->getEstadisticasCompletas();
-            return $this->response->setJSON(['success' => true, 'data' => $estadisticas]);
-        } catch (\Exception $e) {
-            log_message('error', 'Error obteniendo estadísticas: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error obteniendo estadísticas']);
-        }
+        log_message('debug', 'AdminBienestarController::getEstadisticas() llamado - deprecated');
+        $controller = new \App\Controllers\Admin\DashboardController();
+        return $controller->getEstadisticas();
     }
 
     // ========================================
@@ -110,214 +88,46 @@ class AdminBienestarController extends BaseController
     // ========================================
 
     /**
-     * Vista principal de fichas socioeconómicas
+     * @deprecated Usar Admin\FichasController::fichasSocioeconomicas()
+     * @see \App\Controllers\Admin\FichasController
      */
     public function fichasSocioeconomicas()
     {
-        if (!$this->verificarPermisos()) {
-            return redirect()->to('/login');
-        }
-
-        try {
-            // Configuración de paginación
-            $porPagina = 10;
-            $pagina = $this->request->getGet('page') ?? 1;
-            $offset = ($pagina - 1) * $porPagina;
-            
-            // Obtener parámetros de filtro
-            $filtros = [
-                'estado' => $this->request->getGet('estado'),
-                'periodo_id' => $this->request->getGet('periodo_id'),
-                'carrera_id' => $this->request->getGet('carrera_id'),
-                'busqueda' => $this->request->getGet('busqueda'),
-                'tipo_beca' => $this->request->getGet('tipo_beca'),
-                'fecha_desde' => $this->request->getGet('fecha_desde'),
-                'fecha_hasta' => $this->request->getGet('fecha_hasta'),
-                'per_page' => $porPagina,
-                'page' => $pagina
-            ];
-
-            // Si es la primera vez que se carga la página (no hay query params), 
-            // establecemos el periodo actual por defecto. Pero si se envía 'periodo_id'='',
-            // significa "Todos los periodos", por lo que lo respetamos.
-            $isFirstLoad = empty($this->request->getGet());
-            if ($isFirstLoad) {
-                $periodoActual = $this->periodoModel->getPeriodoActualReal();
-                if ($periodoActual) {
-                    $filtros['periodo_id'] = $periodoActual['id'];
-                }
-            }
-
-            // Construir consulta base
-            $db = \Config\Database::connect();
-            $builder = $db->table('v_fichas_admin f');
-            $builder->select('f.*');
-            
-            // Si hay filtro por carrera, unimos con usuarios
-            if (!empty($filtros['carrera_id'])) {
-                $builder->join('usuarios u', 'u.id = f.estudiante_id');
-                $builder->where('u.carrera_id', $filtros['carrera_id']);
-            }
-
-            // Filtro por estado
-            if (!empty($filtros['estado'])) {
-                $builder->where('f.estado', $filtros['estado']);
-            }
-
-            // Filtro por periodo
-            if (!empty($filtros['periodo_id'])) {
-                $builder->where('f.periodo_id', $filtros['periodo_id']);
-            }
-
-            // Filtro por búsqueda
-            if (!empty($filtros['busqueda'])) {
-                $busqueda = $filtros['busqueda'];
-                $builder->groupStart()
-                    ->like('f.estudiante_nombre', $busqueda)
-                    ->orLike('f.cedula', $busqueda)
-                    ->orLike('f.email', $busqueda)
-                    ->groupEnd();
-            }
-
-            // Clonar builder para contar total
-            $countBuilder = clone $builder;
-            $totalRegistros = $countBuilder->countAllResults(false);
-            $totalPaginas = ceil($totalRegistros / $porPagina);
-
-            // Obtener estadísticas globales basadas en los filtros
-            $statBuilder = clone $builder;
-            $statBuilder->select('f.estado, count(*) as count');
-            $statBuilder->groupBy('f.estado');
-            $statResults = $statBuilder->get()->getResultArray();
-            $statsMap = array_column($statResults, 'count', 'estado');
-            
-            $estadisticasReal = [
-                'total' => $totalRegistros,
-                'enviadas' => $statsMap['Enviada'] ?? 0,
-                'aprobadas' => $statsMap['Aprobada'] ?? 0,
-                'rechazadas' => $statsMap['Rechazada'] ?? 0,
-                'revisadas' => $statsMap['Revisada'] ?? 0
-            ];
-
-            // Obtener registros con paginación
-            $builder->limit($porPagina, $offset);
-            // Ordenar por fecha_envio DESC si es posible, o id DESC
-            $builder->orderBy('f.fecha_creacion', 'DESC');
-            $fichas = $builder->get()->getResultArray();
-
-            // Obtener datos para filtros
-            $periodos = $this->periodoModel->findAll();
-            $carreras = $this->db->table('carreras')->where('activa', 1)->get()->getResultArray();
-
-        return view('AdminBienestar/fichas_socioeconomicas', [
-                'fichas' => $fichas,
-            'periodos' => $periodos,
-            'carreras' => $carreras,
-                'estadisticasBecados' => $estadisticasReal,
-                'estadisticasEstudiantes' => [
-                    'total' => $totalRegistros,
-                    'enviadas' => $estadisticasReal['enviadas']
-                ],
-                'fichasBecados' => $fichas,
-                'fichasEstudiantes' => $fichas,
-                'filtros' => $filtros,
-                'usuario' => $this->getUsuarioActual(),
-                'paginacion' => [
-                    'pagina_actual' => $pagina,
-                    'total_paginas' => $totalPaginas,
-                    'por_pagina' => $porPagina,
-                    'total_registros' => $totalRegistros,
-                    'offset' => $offset
-                ]
-            ]);
-        } catch (\Exception $e) {
-            log_message('error', 'Error en fichas socioeconómicas: ' . $e->getMessage());
-            
-            // Obtener filtros con valores por defecto
-            $filtros = [
-                'estado' => $this->request->getGet('estado') ?? '',
-                'periodo_id' => $this->request->getGet('periodo_id') ?? '',
-                'carrera_id' => $this->request->getGet('carrera_id') ?? '',
-                'busqueda' => $this->request->getGet('busqueda') ?? '',
-                'tipo_beca' => $this->request->getGet('tipo_beca') ?? '',
-                'fecha_desde' => $this->request->getGet('fecha_desde') ?? '',
-                'fecha_hasta' => $this->request->getGet('fecha_hasta') ?? ''
-            ];
-            
-            return view('AdminBienestar/fichas_socioeconomicas', [
-                'fichas' => [],
-                'periodos' => [],
-                'carreras' => [],
-                'estadisticasBecados' => ['total' => 0, 'enviadas' => 0, 'aprobadas' => 0, 'rechazadas' => 0, 'revisadas' => 0],
-                'estadisticasEstudiantes' => ['total' => 0, 'enviadas' => 0],
-                'fichasBecados' => [],
-                'fichasEstudiantes' => [],
-                'filtros' => $filtros,
-                'usuario' => $this->getUsuarioActual(),
-                'error' => 'Error cargando fichas'
-            ]);
-        }
+        log_message('debug', 'AdminBienestarController::fichasSocioeconomicas() llamado - deprecated');
+        $controller = new \App\Controllers\Admin\FichasController();
+        return $controller->fichasSocioeconomicas();
     }
 
     /**
-     * Ver ficha específica
+     * Redirect de ruta legacy camelCase a kebab-case
+     * @deprecated Usar ver-ficha/{id}
+     */
+    public function redirectToVerFicha($id): \CodeIgniter\HTTP\RedirectResponse
+    {
+        log_message('debug', 'Ruta legacy verFicha/{id} usada - redirigiendo a ver-ficha/{id}');
+        return redirect()->to('admin-bienestar/ver-ficha/' . $id);
+    }
+
+    /**
+     * @deprecated Usar Admin\FichasController::verFicha()
+     * @see \App\Controllers\Admin\FichasController
      */
     public function verFicha($id)
     {
-        if (!$this->verificarPermisos()) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        try {
-            $ficha = $this->fichaModel->getFichaCompletaAdmin($id);
-
-            if (!$ficha) {
-                return $this->response->setJSON(['success' => false, 'error' => 'Ficha no encontrada']);
-            }
-
-            return $this->response->setJSON(['success' => true, 'data' => $ficha]);
-        } catch (\Exception $e) {
-            log_message('error', 'Error viendo ficha: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error obteniendo ficha']);
-        }
+        log_message('debug', 'AdminBienestarController::verFicha() llamado - deprecated');
+        $controller = new \App\Controllers\Admin\FichasController();
+        return $controller->verFicha($id);
     }
 
     /**
-     * Actualizar estado de ficha
+     * @deprecated Usar Admin\FichasController::actualizarEstadoFicha()
+     * @see \App\Controllers\Admin\FichasController
      */
     public function actualizarEstadoFicha()
     {
-        if (!$this->verificarPermisos()) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        try {
-            $fichaId = $this->request->getPost('ficha_id');
-            $nuevoEstado = $this->request->getPost('estado');
-            $observaciones = $this->request->getPost('observaciones');
-            $adminId = session('id');
-
-            if (!$fichaId || !$nuevoEstado) {
-                return $this->response->setJSON(['success' => false, 'error' => 'Datos incompletos']);
-            }
-
-            $resultado = $this->adminService->actualizarEstadoFicha($fichaId, $nuevoEstado, $observaciones, $adminId);
-
-            if ($resultado) {
-            return $this->response->setJSON([
-                'success' => true, 
-                    'message' => 'Estado actualizado correctamente'
-            ]);
-            } else {
-            return $this->response->setJSON([
-                'success' => false, 
-                    'error' => 'Error actualizando estado'
-                ]);
-            }
-        } catch (\Exception $e) {
-            log_message('error', 'Error actualizando estado: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error del sistema']);
-        }
+        log_message('debug', 'AdminBienestarController::actualizarEstadoFicha() llamado - deprecated');
+        $controller = new \App\Controllers\Admin\FichasController();
+        return $controller->actualizarEstadoFicha();
     }
 
     /**
@@ -1028,40 +838,61 @@ class AdminBienestarController extends BaseController
                 ->get()
                 ->getResultArray();
 
-            // Obtener estadísticas adicionales para cada estudiante
-            foreach ($estudiantes as &$estudiante) {
-                // Contar fichas socioeconómicas
-                $fichasCount = $this->db->table('fichas_socioeconomicas')
-                    ->where('estudiante_id', $estudiante['id'])
-                    ->countAllResults();
-                $estudiante['total_fichas'] = $fichasCount;
+            // Obtener estadísticas agregadas en 2 consultas (reemplaza N+1*4)
+            if (!empty($estudiantes)) {
+                $ids = array_column($estudiantes, 'id');
+                $idMap = array_flip($ids);
 
-                // Contar solicitudes de becas
-                $becasCount = $this->db->table('solicitudes_becas')
-                    ->where('estudiante_id', $estudiante['id'])
-                    ->countAllResults();
-                $estudiante['total_becas'] = $becasCount;
+                // 1. Contar fichas, becas y ayudas por estudiante en una sola consulta
+                $counts = $this->db->query("
+                    SELECT u.id,
+                        COUNT(DISTINCT fs.id) as total_fichas,
+                        COUNT(DISTINCT sb.id) as total_becas,
+                        COUNT(DISTINCT sa.id) as total_ayudas
+                    FROM usuarios u
+                    LEFT JOIN fichas_socioeconomicas fs ON fs.estudiante_id = u.id
+                    LEFT JOIN solicitudes_becas sb ON sb.estudiante_id = u.id
+                    LEFT JOIN solicitudes_ayuda sa ON sa.id_estudiante = u.id
+                    WHERE u.id IN (" . implode(',', $ids) . ")
+                    GROUP BY u.id
+                ")->getResultArray();
 
-                // Contar solicitudes de ayuda
-                $ayudasCount = $this->db->table('solicitudes_ayuda')
-                    ->where('id_estudiante', $estudiante['id'])
-                    ->countAllResults();
-                $estudiante['total_ayudas'] = $ayudasCount;
+                foreach ($counts as $row) {
+                    $idx = $idMap[$row['id']];
+                    $estudiantes[$idx]['total_fichas'] = (int)$row['total_fichas'];
+                    $estudiantes[$idx]['total_becas'] = (int)$row['total_becas'];
+                    $estudiantes[$idx]['total_ayudas'] = (int)$row['total_ayudas'];
+                }
 
-                // Obtener última actividad (con parámetros seguros)
-                $estId = (int)$estudiante['id'];
-                $ultimaActividad = $this->db->query("
-                    SELECT fecha_creacion as fecha_actividad, 'ficha' as tipo FROM fichas_socioeconomicas WHERE estudiante_id = ?
-                    UNION ALL
-                    SELECT fecha_solicitud as fecha_actividad, 'beca' as tipo FROM solicitudes_becas WHERE estudiante_id = ?
-                    UNION ALL
-                    SELECT fecha_solicitud as fecha_actividad, 'ayuda' as tipo FROM solicitudes_ayuda WHERE id_estudiante = ?
-                    ORDER BY fecha_actividad DESC
-                    LIMIT 1
-                ", [$estId, $estId, $estId])->getRow();
-                
-                $estudiante['ultima_actividad'] = $ultimaActividad ? $ultimaActividad->fecha_actividad : null;
-                $estudiante['tipo_ultima_actividad'] = $ultimaActividad ? $ultimaActividad->tipo : null;
+                // 2. Obtener última actividad de todos en una sola consulta
+                $actividades = $this->db->query("
+                    SELECT estudiante_id, fecha_actividad, tipo FROM (
+                        SELECT estudiante_id, fecha_creacion as fecha_actividad, 'ficha' as tipo FROM fichas_socioeconomicas WHERE estudiante_id IN (" . implode(',', $ids) . ")
+                        UNION ALL
+                        SELECT estudiante_id, fecha_solicitud as fecha_actividad, 'beca' as tipo FROM solicitudes_becas WHERE estudiante_id IN (" . implode(',', $ids) . ")
+                        UNION ALL
+                        SELECT id_estudiante, fecha_solicitud as fecha_actividad, 'ayuda' as tipo FROM solicitudes_ayuda WHERE id_estudiante IN (" . implode(',', $ids) . ")
+                    ) AS actividades
+                    ORDER BY estudiante_id, fecha_actividad DESC
+                ")->getResultArray();
+
+                $lastActivity = [];
+                foreach ($actividades as $a) {
+                    $eid = $a['estudiante_id'];
+                    if (!isset($lastActivity[$eid])) {
+                        $lastActivity[$eid] = $a;
+                    }
+                }
+
+                foreach ($estudiantes as &$est) {
+                    $est['total_fichas'] = $est['total_fichas'] ?? 0;
+                    $est['total_becas'] = $est['total_becas'] ?? 0;
+                    $est['total_ayudas'] = $est['total_ayudas'] ?? 0;
+                    $la = $lastActivity[$est['id']] ?? null;
+                    $est['ultima_actividad'] = $la ? $la['fecha_actividad'] : null;
+                    $est['tipo_ultima_actividad'] = $la ? $la['tipo'] : null;
+                }
+                unset($est);
             }
 
             $carreras = $this->db->table('carreras')->where('activa', 1)->get()->getResultArray();
@@ -2441,12 +2272,17 @@ class AdminBienestarController extends BaseController
     private function notificarEstudianteDocumento($estudianteId, $tipo, $mensaje)
     {
         try {
-            // Aquí se implementaría la lógica de notificación
-            // Por ahora solo se registra en el log
-            log_message('info', "Notificación para estudiante $estudianteId: $tipo - $mensaje");
+            $estudiante = $this->usuarioModel->find($estudianteId);
+            $subject = "Notificación: $tipo";
+            $body = "<p>Estimado/a {$estudiante['nombre']} {$estudiante['apellido']},</p><p>$mensaje</p>";
             
-            // TODO: Implementar sistema de notificaciones (email, SMS, etc.)
+            $enviado = \App\Helpers\EmailHelper::enviarCorreo($estudiante['email'], $subject, $body);
             
+            if ($enviado) {
+                log_message('info', "Notificación email enviada a estudiante $estudianteId: $tipo");
+            } else {
+                log_message('info', "Notificación (solo log) para estudiante $estudianteId: $tipo - $mensaje");
+            }
         } catch (\Exception $e) {
             log_message('error', 'Error notificando estudiante: ' . $e->getMessage());
         }
@@ -2458,12 +2294,17 @@ class AdminBienestarController extends BaseController
     private function notificarEstudianteBeca($estudianteId, $tipo, $mensaje)
     {
         try {
-            // Aquí se implementaría la lógica de notificación
-            // Por ahora solo se registra en el log
-            log_message('info', "Notificación para estudiante $estudianteId: $tipo - $mensaje");
+            $estudiante = $this->usuarioModel->find($estudianteId);
+            $subject = "Notificación de Beca: $tipo";
+            $body = "<p>Estimado/a {$estudiante['nombre']} {$estudiante['apellido']},</p><p>$mensaje</p>";
             
-            // TODO: Implementar sistema de notificaciones (email, SMS, etc.)
+            $enviado = \App\Helpers\EmailHelper::enviarCorreo($estudiante['email'], $subject, $body);
             
+            if ($enviado) {
+                log_message('info', "Notificación email enviada a estudiante $estudianteId: $tipo");
+            } else {
+                log_message('info', "Notificación (solo log) para estudiante $estudianteId: $tipo - $mensaje");
+            }
         } catch (\Exception $e) {
             log_message('error', 'Error notificando estudiante: ' . $e->getMessage());
         }
@@ -2631,7 +2472,7 @@ class AdminBienestarController extends BaseController
                 LEFT JOIN carreras c ON c.id = u.carrera_id
                 LEFT JOIN usuarios admin ON admin.id = sa.id_responsable
                 ORDER BY sa.fecha_solicitud DESC
-                LIMIT $porPagina OFFSET $offset
+                LIMIT " . (int)$porPagina . " OFFSET " . (int)$offset . "
             ";
             $solicitudes = $this->db->query($sqlSolicitudes)->getResultArray();
             
@@ -2973,7 +2814,7 @@ class AdminBienestarController extends BaseController
                     ->get()
                     ->getResultArray();
             } catch (\Exception $e) {
-                // La tabla puede no existir
+                log_message('error', 'Error obteniendo respuestas de solicitud #' . $id . ': ' . $e->getMessage());
             }
 
             return $this->response->setJSON([

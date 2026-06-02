@@ -50,6 +50,7 @@
                     </div>
                     <div class="card-body">
                         <form id="perfilForm">
+                            <?= csrf_field() ?>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
@@ -137,6 +138,8 @@ function cambiarFotoPerfil() {
     
     const formData = new FormData();
     formData.append('foto_perfil', file);
+    const csrfToken = document.querySelector('input[name="<?= csrf_token() ?>"]')?.value;
+    if (csrfToken) formData.append('<?= csrf_token() ?>', csrfToken);
     
     // Mostrar loading
     Swal.fire({

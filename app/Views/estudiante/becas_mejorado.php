@@ -519,8 +519,6 @@ function crearSolicitud() {
         observaciones: formData.get('observaciones')
     };
     
-    console.log('Enviando datos:', datos); // Debug
-    
     fetch('<?= base_url('estudiante/solicitar-beca') ?>', {
         method: 'POST',
         headers: {
@@ -562,8 +560,6 @@ function verDetalleSolicitud(solicitudId) {
 }
 
 function subirDocumentos(solicitudId) {
-    console.log('Función subirDocumentos llamada con ID:', solicitudId);
-    
     // Mostrar modal de confirmación personalizado
     mostrarModalConfirmacion(solicitudId);
 }
@@ -621,8 +617,6 @@ function mostrarModalConfirmacion(solicitudId) {
 
 function confirmarRedireccion(solicitudId) {
     const url = `<?= base_url('estudiante/documentos-beca') ?>/${solicitudId}`;
-    console.log('Redirigiendo a:', url);
-    
     // Cerrar el modal
     const modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmacionDocumentos'));
     modal.hide();
@@ -637,12 +631,10 @@ function confirmarRedireccion(solicitudId) {
 }
 
 function probarFuncion() {
-    console.log('Función de prueba ejecutada');
     alert('Función JavaScript funcionando correctamente');
     
     // Probar la función subirDocumentos con un ID de prueba
     const solicitudId = 1; // ID de prueba
-    console.log('Probando subirDocumentos con ID:', solicitudId);
     subirDocumentos(solicitudId);
 }
 

@@ -35,6 +35,7 @@
                 </div>
                 <div class="card-body">
                     <form action="<?= base_url('index.php/global-admin/cuenta/cambiarPassword') ?>" method="post">
+                        <?= csrf_field() ?>
                         <div class="mb-3">
                             <label class="form-label">Contraseña Actual *</label>
                             <input type="password" class="form-control" name="password_actual" required>
@@ -65,6 +66,7 @@
                 </div>
                 <div class="card-body">
                     <form action="<?= base_url('index.php/global-admin/cuenta/configuracionNotificaciones') ?>" method="post">
+                        <?= csrf_field() ?>
                         <div class="mb-3">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="notif_email" id="notif_email" checked>
@@ -165,6 +167,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <form action="<?= base_url('index.php/global-admin/cuenta/eliminarCuenta') ?>" method="post" style="display: inline;">
+                    <?= csrf_field() ?>
                     <button type="submit" class="btn btn-danger">
                         <i class="ti ti-trash me-2"></i>Eliminar Cuenta
                     </button>

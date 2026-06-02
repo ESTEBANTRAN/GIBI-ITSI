@@ -1,0 +1,7 @@
+[     127ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost/ITSI/public/index.php/estudiante/documentos:0
+[     153ms] [LOG] [#text, li, #text, li, #text, li, #text, li, #text, li, #text, li, #text] @ http://localhost/ITSI/public/index.php/estudiante/documentos:18
+[     154ms] [LOG] JSHandle@node @ http://localhost/ITSI/public/index.php/estudiante/documentos:54
+[     154ms] [LOG] JSHandle@node @ http://localhost/ITSI/public/index.php/estudiante/documentos:54
+[     154ms] [LOG] JSHandle@node @ http://localhost/ITSI/public/index.php/estudiante/documentos:54
+[     154ms] [LOG] JSHandle@node @ http://localhost/ITSI/public/index.php/estudiante/documentos:54
+[     154ms] [LOG] JSHandle@node @ http://localhost/ITSI/public/index.php/estudiante/documentos:54

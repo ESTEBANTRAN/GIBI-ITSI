@@ -435,7 +435,6 @@ function actualizarActividad(actividadData) {
         }).join('');
     } else {
         // En caso de usar el getActividadReciente() antiguo, no hace nada o muestra vacío
-        console.log('Actividad reciente actualizada desde servidor');
     }
 }
 

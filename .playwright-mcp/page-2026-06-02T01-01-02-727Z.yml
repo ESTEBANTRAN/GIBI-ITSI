@@ -1,0 +1,599 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]: "Displayed at 20:01:02pm — PHP: 8.2.12 — CodeIgniter: 4.6.1 -- Environment: development"
+    - generic [ref=e4]:
+      - 'heading "CodeIgniter\\Database\\Exceptions\\DatabaseException #1054" [level=1] [ref=e5]'
+      - paragraph [ref=e6]: Unknown column 'dsb.tamaño_archivo' in 'field list'
+  - generic [ref=e7]:
+    - paragraph [ref=e8]: SYSTEMPATH\Database\BaseConnection.php at line 692
+    - code [ref=e11]:
+      - generic [ref=e12]:
+        - text: "685 }"
+        - generic [ref=e13]:
+          - text: "686 }"
+          - generic [ref=e14]:
+            - text: "687"
+            - generic [ref=e15]: "688"
+            - generic [ref=e16]:
+              - text: // Let others do something with this query.
+              - generic [ref=e17]: "689"
+              - text: Events::trigger('DBQuery', $query
+              - generic [ref=e18]:
+                - text: );
+                - generic [ref=e19]:
+                  - text: "690"
+                  - generic [ref=e20]: 691 if (
+                  - text: $exception instanceof DatabaseException
+                  - generic [ref=e21]:
+                    - text: ") {"
+                    - generic [ref=e22]: 692 throw new DatabaseException(
+                  - generic [ref=e23]:
+                    - generic [ref=e24]: "693"
+                    - text: $exception->getMessage
+                    - generic [ref=e25]:
+                      - text: (),
+                      - generic [ref=e26]: "694"
+                      - text: $exception->getCode
+                      - generic [ref=e27]:
+                        - text: (),
+                        - generic [ref=e28]: "695"
+                        - text: $exception
+                        - generic [ref=e29]:
+                          - text: ","
+                          - generic [ref=e30]:
+                            - text: 696 );
+                            - generic [ref=e31]:
+                              - text: "697 }"
+                              - generic [ref=e32]:
+                                - text: "698"
+                                - generic [ref=e33]: 699 return
+                                - text: false;
+  - generic [ref=e34]:
+    - generic [ref=e35]:
+      - text: "Caused by: CodeIgniter\\Database\\Exceptions\\DatabaseException #1054 Unknown column 'dsb.tamaño_archivo' in 'field list'"
+      - link "search →" [ref=e36] [cursor=pointer]:
+        - /url: https://www.duckduckgo.com/?q=CodeIgniter%5CDatabase%5CExceptions%5CDatabaseException+Unknown+column++in+
+      - text: SYSTEMPATH\Database\MySQLi\Connection.php:332
+    - generic [ref=e37]:
+      - text: "Caused by: mysqli_sql_exception #1054 Unknown column 'dsb.tamaño_archivo' in 'field list'"
+      - link "search →" [ref=e38] [cursor=pointer]:
+        - /url: https://www.duckduckgo.com/?q=mysqli_sql_exception+Unknown+column++in+
+      - text: SYSTEMPATH\Database\MySQLi\Connection.php:327
+  - generic [ref=e39]:
+    - list [ref=e40]:
+      - listitem [ref=e41]:
+        - link "Backtrace" [ref=e42] [cursor=pointer]:
+          - /url: "#backtrace"
+      - listitem [ref=e43]:
+        - link "Server" [ref=e44] [cursor=pointer]:
+          - /url: "#server"
+      - listitem [ref=e45]:
+        - link "Request" [ref=e46] [cursor=pointer]:
+          - /url: "#request"
+      - listitem [ref=e47]:
+        - link "Response" [ref=e48] [cursor=pointer]:
+          - /url: "#response"
+      - listitem [ref=e49]:
+        - link "Files" [ref=e50] [cursor=pointer]:
+          - /url: "#files"
+      - listitem [ref=e51]:
+        - link "Memory" [ref=e52] [cursor=pointer]:
+          - /url: "#memory"
+    - list [ref=e55]:
+      - listitem [ref=e56]:
+        - paragraph [ref=e57]:
+          - text: "SYSTEMPATH\\Database\\MySQLi\\Connection.php : 327 — mysqli->query ("
+          - link "arguments" [ref=e58] [cursor=pointer]:
+            - /url: "#"
+          - text: )
+        - paragraph
+        - code [ref=e61]:
+          - generic [ref=e62]: "320"
+          - text: $this->connID->next_result
+          - generic [ref=e63]:
+            - text: ();
+            - generic [ref=e64]: 321 if (
+            - text: $res = $this->connID->store_result
+            - generic [ref=e65]:
+              - text: "()) {"
+              - generic [ref=e66]: "322"
+              - text: $res->free
+              - generic [ref=e67]:
+                - text: ();
+                - generic [ref=e68]:
+                  - text: "323 }"
+                  - generic [ref=e69]:
+                    - text: "324 }"
+                    - generic [ref=e70]:
+                      - text: "325"
+                      - generic [ref=e71]:
+                        - text: "326 try {"
+                        - generic [ref=e72]: 327 return $this->connID->query($this->prepQuery($sql), $this->resultMode);
+                      - generic [ref=e73]:
+                        - generic [ref=e74]: "328 } catch ("
+                        - text: mysqli_sql_exception $e
+                        - generic [ref=e75]:
+                          - text: ") {"
+                          - generic [ref=e76]: "329"
+                          - text: log_message('error', (string) $e
+                          - generic [ref=e77]:
+                            - text: );
+                            - generic [ref=e78]:
+                              - text: "330"
+                              - generic [ref=e79]: 331 if (
+                              - text: $this->DBDebug
+                              - generic [ref=e80]:
+                                - text: ") {"
+                                - generic [ref=e81]: 332 throw new
+                                - text: DatabaseException($e->getMessage(), $e->getCode(), $e
+                                - generic [ref=e82]:
+                                  - text: );
+                                  - generic [ref=e83]:
+                                    - text: "333 }"
+                                    - generic [ref=e84]: "334 }"
+      - listitem [ref=e85]:
+        - paragraph [ref=e86]:
+          - text: "SYSTEMPATH\\Database\\BaseConnection.php : 738 — CodeIgniter\\Database\\MySQLi\\Connection->execute ("
+          - link "arguments" [ref=e87] [cursor=pointer]:
+            - /url: "#"
+          - text: )
+        - paragraph
+        - code [ref=e90]:
+          - generic [ref=e91]:
+            - text: 731 */
+            - generic [ref=e92]: "732"
+            - text: public function simpleQuery(string $sql
+            - generic [ref=e93]:
+              - text: )
+              - generic [ref=e94]:
+                - text: "733 {"
+                - generic [ref=e95]: 734 if (empty(
+                - text: $this->connID
+                - generic [ref=e96]:
+                  - text: ")) {"
+                  - generic [ref=e97]: "735"
+                  - text: $this->initialize
+                  - generic [ref=e98]:
+                    - text: ();
+                    - generic [ref=e99]:
+                      - text: "736 }"
+                      - generic [ref=e100]:
+                        - text: "737"
+                        - generic [ref=e101]: 738 return $this->execute($sql);
+                      - generic [ref=e103]:
+                        - text: "739 }"
+                        - generic [ref=e104]:
+                          - text: "740"
+                          - generic [ref=e105]: "741"
+                          - generic [ref=e106]:
+                            - text: /**
+                            - generic [ref=e107]:
+                              - text: 742 * Disable Transactions
+                              - generic [ref=e108]:
+                                - text: 743 *
+                                - generic [ref=e109]:
+                                  - text: 744 * This permits transactions to be disabled at run-time.
+                                  - generic [ref=e110]: 745 *
+      - listitem [ref=e111]:
+        - paragraph [ref=e112]:
+          - text: "SYSTEMPATH\\Database\\BaseConnection.php : 652 — CodeIgniter\\Database\\BaseConnection->simpleQuery ("
+          - link "arguments" [ref=e113] [cursor=pointer]:
+            - /url: "#"
+          - text: )
+        - paragraph
+        - code [ref=e116]:
+          - generic [ref=e117]:
+            - text: "645"
+            - generic [ref=e118]: 646 return
+            - text: $query
+            - generic [ref=e119]:
+              - text: ;
+              - generic [ref=e120]:
+                - text: "647 }"
+                - generic [ref=e121]:
+                  - text: "648"
+                  - generic [ref=e122]: "649"
+                  - generic [ref=e123]:
+                    - text: // Run the query for real
+                    - generic [ref=e124]: "650"
+                    - generic [ref=e125]:
+                      - text: "try {"
+                      - generic [ref=e126]: "651"
+                      - text: $exception = null
+                      - generic [ref=e127]:
+                        - text: ;
+                        - generic [ref=e128]: 652 $this->resultID = $this->simpleQuery($query->getQuery());
+                      - generic [ref=e129]:
+                        - generic [ref=e130]: "653 } catch ("
+                        - text: DatabaseException $exception
+                        - generic [ref=e131]:
+                          - text: ") {"
+                          - generic [ref=e132]: "654"
+                          - text: $this->resultID = false
+                          - generic [ref=e133]:
+                            - text: ;
+                            - generic [ref=e134]:
+                              - text: "655 }"
+                              - generic [ref=e135]:
+                                - text: "656"
+                                - generic [ref=e136]: 657 if (
+                                - text: $this->resultID === false
+                                - generic [ref=e137]:
+                                  - text: ") {"
+                                  - generic [ref=e138]: "658"
+                                  - text: $query->setDuration($startTime, $startTime
+                                  - generic [ref=e139]:
+                                    - text: );
+                                    - generic [ref=e140]: "659"
+      - listitem [ref=e141]:
+        - paragraph [ref=e142]:
+          - text: "SYSTEMPATH\\Database\\BaseBuilder.php : 1649 — CodeIgniter\\Database\\BaseConnection->query ("
+          - link "arguments" [ref=e143] [cursor=pointer]:
+            - /url: "#"
+          - text: )
+        - paragraph
+        - code [ref=e146]:
+          - generic [ref=e147]:
+            - text: "1642"
+            - generic [ref=e148]: 1643 if (
+            - text: $limit !== null
+            - generic [ref=e149]:
+              - text: ") {"
+              - generic [ref=e150]: "1644"
+              - text: $this->limit($limit, $offset
+              - generic [ref=e151]:
+                - text: );
+                - generic [ref=e152]:
+                  - text: "1645 }"
+                  - generic [ref=e153]:
+                    - text: "1646"
+                    - generic [ref=e154]: "1647"
+                    - text: $result = $this->
+                    - generic [ref=e155]:
+                      - text: testMode
+                      - generic [ref=e156]: "1648"
+                      - text: "? $this->getCompiledSelect($reset"
+                      - generic [ref=e157]:
+                        - text: )
+                        - generic [ref=e158]: "1649 : $this->db->query($this->compileSelect(), $this->binds, false);"
+                      - generic [ref=e160]:
+                        - text: "1650"
+                        - generic [ref=e161]: 1651 if (
+                        - text: $reset
+                        - generic [ref=e162]:
+                          - text: ") {"
+                          - generic [ref=e163]: "1652"
+                          - text: $this->resetSelect
+                          - generic [ref=e164]:
+                            - text: ();
+                            - generic [ref=e165]:
+                              - text: "1653"
+                              - generic [ref=e166]: "1654"
+                              - generic [ref=e167]:
+                                - text: // Clear our binds so we don't eat up memory
+                                - generic [ref=e168]: "1655"
+                                - text: $this->binds
+                                - generic [ref=e169]:
+                                  - text: = [];
+                                  - generic [ref=e170]: "1656 }"
+      - listitem [ref=e171]:
+        - paragraph [ref=e172]: "APPPATH\\Controllers\\Estudiante\\DocumentosController.php : 39 — CodeIgniter\\Database\\BaseBuilder->get ()"
+        - code [ref=e175]:
+          - generic [ref=e176]: 32 ->
+          - text: join('solicitudes_becas sb', 'sb.id = dsb.solicitud_beca_id'
+          - generic [ref=e177]:
+            - text: )
+            - generic [ref=e178]: 33 ->
+            - text: join('becas b', 'b.id = sb.beca_id'
+            - generic [ref=e179]:
+              - text: )
+              - generic [ref=e180]: 34 ->
+              - text: join('periodos_academicos p', 'p.id = sb.periodo_id'
+              - generic [ref=e181]:
+                - text: )
+                - generic [ref=e182]: 35 ->
+                - text: where('sb.estudiante_id', session('id'
+                - generic [ref=e183]:
+                  - text: ))
+                  - generic [ref=e184]: 36 ->
+                  - text: where('dsb.ruta_archivo IS NOT NULL'
+                  - generic [ref=e185]:
+                    - text: )
+                    - generic [ref=e186]: 37 ->
+                    - text: orderBy('sb.periodo_id', 'DESC'
+                    - generic [ref=e187]:
+                      - text: )
+                      - generic [ref=e188]: 38 ->
+                      - text: orderBy('dsb.orden_revision', 'ASC'
+                      - generic [ref=e189]:
+                        - text: )
+                        - generic [ref=e190]: 39 ->get()
+                      - generic [ref=e191]:
+                        - generic [ref=e192]: 40 ->
+                        - text: getResultArray
+                        - generic [ref=e193]:
+                          - text: ();
+                          - generic [ref=e194]:
+                            - text: "41"
+                            - generic [ref=e195]: "42"
+                            - text: $data
+                            - generic [ref=e196]:
+                              - text: = [
+                              - generic [ref=e197]: "43"
+                              - text: "'estudiante' => $this->usuarioModel->find(session('id'"
+                              - generic [ref=e198]:
+                                - text: )),
+                                - generic [ref=e199]: "44"
+                                - text: "'documentos' =>"
+                                - generic [ref=e200]:
+                                  - text: $documentos
+                                  - generic [ref=e201]: "45"
+                                  - generic [ref=e202]:
+                                    - text: "];"
+                                    - generic [ref=e203]: "46"
+      - listitem [ref=e204]:
+        - paragraph [ref=e205]: "SYSTEMPATH\\CodeIgniter.php : 933 — App\\Controllers\\Estudiante\\DocumentosController->documentos ()"
+        - code [ref=e208]:
+          - generic [ref=e209]: "926"
+          - generic [ref=e210]:
+            - text: // This is a Web request or PHP CLI request
+            - generic [ref=e211]: "927"
+            - text: $params = $this->router->params
+            - generic [ref=e212]:
+              - text: ();
+              - generic [ref=e213]:
+                - text: "928"
+                - generic [ref=e214]: "929"
+                - generic [ref=e215]:
+                  - text: // The controller method param types may not be string.
+                  - generic [ref=e216]:
+                    - text: "930 // So cannot set `declare(strict_types=1)` in this file."
+                    - generic [ref=e217]: "931"
+                    - text: $output = method_exists($class, '_remap'
+                    - generic [ref=e218]:
+                      - text: )
+                      - generic [ref=e219]: 932 ?
+                      - text: $class->_remap($this->method, ...$params
+                      - generic [ref=e220]:
+                        - text: )
+                        - generic [ref=e221]: "933 : $class->{$this->method}(...$params);"
+                      - generic [ref=e223]:
+                        - text: "934"
+                        - generic [ref=e224]: "935"
+                        - text: $this->benchmark->stop('controller'
+                        - generic [ref=e225]:
+                          - text: );
+                          - generic [ref=e226]:
+                            - text: "936"
+                            - generic [ref=e227]: 937 return
+                            - text: $output
+                            - generic [ref=e228]:
+                              - text: ;
+                              - generic [ref=e229]:
+                                - text: "938 }"
+                                - generic [ref=e230]:
+                                  - text: "939"
+                                  - generic [ref=e231]: "940"
+                                  - text: /**
+      - listitem [ref=e232]:
+        - paragraph [ref=e233]:
+          - text: "SYSTEMPATH\\CodeIgniter.php : 507 — CodeIgniter\\CodeIgniter->runController ("
+          - link "arguments" [ref=e234] [cursor=pointer]:
+            - /url: "#"
+          - text: )
+        - paragraph
+        - code [ref=e237]:
+          - generic [ref=e238]: 500 if (!
+          - text: method_exists($controller, '_remap') && ! is_callable([$controller, $this->method], false
+          - generic [ref=e239]:
+            - text: ")) {"
+            - generic [ref=e240]: 501 throw
+            - text: PageNotFoundException::forMethodNotFound($this->method
+            - generic [ref=e241]:
+              - text: );
+              - generic [ref=e242]:
+                - text: "502 }"
+                - generic [ref=e243]:
+                  - text: "503"
+                  - generic [ref=e244]: "504"
+                  - generic [ref=e245]:
+                    - text: // Is there a "post_controller_constructor" event?
+                    - generic [ref=e246]: "505"
+                    - text: Events::trigger('post_controller_constructor'
+                    - generic [ref=e247]:
+                      - text: );
+                      - generic [ref=e248]:
+                        - text: "506"
+                        - generic [ref=e249]: 507 $returned = $this->runController($controller);
+                      - generic [ref=e251]:
+                        - text: "508 } else {"
+                        - generic [ref=e252]: "509"
+                        - text: $this->benchmark->stop('controller_constructor'
+                        - generic [ref=e253]:
+                          - text: );
+                          - generic [ref=e254]: "510"
+                          - text: $this->benchmark->stop('controller'
+                          - generic [ref=e255]:
+                            - text: );
+                            - generic [ref=e256]:
+                              - text: "511 }"
+                              - generic [ref=e257]:
+                                - text: "512"
+                                - generic [ref=e258]: "513"
+                                - generic [ref=e259]:
+                                  - text: // If $returned is a string, then the controller output something,
+                                  - generic [ref=e260]: 514 // probably a view, instead of echoing it directly. Send it along
+      - listitem [ref=e261]:
+        - paragraph [ref=e262]:
+          - text: "SYSTEMPATH\\CodeIgniter.php : 354 — CodeIgniter\\CodeIgniter->handleRequest ("
+          - link "arguments" [ref=e263] [cursor=pointer]:
+            - /url: "#"
+          - text: )
+        - paragraph
+        - code [ref=e266]:
+          - generic [ref=e267]: "347"
+          - text: $possibleResponse = $this->runRequiredBeforeFilters($filters
+          - generic [ref=e268]:
+            - text: );
+            - generic [ref=e269]:
+              - text: "348"
+              - generic [ref=e270]: "349"
+              - generic [ref=e271]:
+                - text: // If a ResponseInterface instance is returned then send it back to the client and stop
+                - generic [ref=e272]: "350"
+                - text: if ($possibleResponse instanceof ResponseInterface
+                - generic [ref=e273]:
+                  - text: ") {"
+                  - generic [ref=e274]: "351"
+                  - text: $this->response = $possibleResponse
+                  - generic [ref=e275]:
+                    - text: ;
+                    - generic [ref=e276]:
+                      - text: "352 } else {"
+                      - generic [ref=e277]:
+                        - text: "353 try {"
+                        - generic [ref=e278]: 354 $this->response = $this->handleRequest($routes, config(Cache::class), $returnResponse);
+                      - generic [ref=e279]:
+                        - generic [ref=e280]: "355 } catch ("
+                        - text: ResponsableInterface $e
+                        - generic [ref=e281]:
+                          - text: ") {"
+                          - generic [ref=e282]: "356"
+                          - text: $this->outputBufferingEnd
+                          - generic [ref=e283]:
+                            - text: ();
+                            - generic [ref=e284]:
+                              - text: "357"
+                              - generic [ref=e285]: "358"
+                              - text: $this->response = $e->getResponse
+                              - generic [ref=e286]:
+                                - text: ();
+                                - generic [ref=e287]: "359 } catch ("
+                                - text: PageNotFoundException $e
+                                - generic [ref=e288]:
+                                  - text: ") {"
+                                  - generic [ref=e289]: "360"
+                                  - text: $this->response = $this->display404errors($e
+                                  - generic [ref=e290]:
+                                    - text: );
+                                    - generic [ref=e291]: "361 } catch ("
+                                    - text: "Throwable $e) {"
+      - listitem [ref=e292]:
+        - paragraph [ref=e293]: "SYSTEMPATH\\Boot.php : 334 — CodeIgniter\\CodeIgniter->run ()"
+        - code [ref=e296]:
+          - generic [ref=e297]:
+            - text: "327"
+            - generic [ref=e298]: "328"
+            - generic [ref=e299]:
+              - text: /**
+              - generic [ref=e300]:
+                - text: 329 * Now that everything is set up, it's time to actually fire
+                - generic [ref=e301]:
+                  - text: 330 * up the engines and make this app do its thang.
+                  - generic [ref=e302]:
+                    - text: 331 */
+                    - generic [ref=e303]: "332"
+                    - text: "protected static function runCodeIgniter(CodeIgniter $app):"
+                    - generic [ref=e304]:
+                      - text: void
+                      - generic [ref=e305]: "333"
+                      - generic [ref=e306]:
+                        - text: "{"
+                        - generic [ref=e307]: 334 $app->run();
+                      - generic [ref=e309]:
+                        - text: "335 }"
+                        - generic [ref=e310]:
+                          - text: "336"
+                          - generic [ref=e311]: 337 protected static function
+                          - text: "saveConfigCache(FactoriesCache $factoriesCache):"
+                          - generic [ref=e312]:
+                            - text: void
+                            - generic [ref=e313]: "338"
+                            - generic [ref=e314]:
+                              - text: "{"
+                              - generic [ref=e315]: "339"
+                              - text: $factoriesCache->save('config'
+                              - generic [ref=e316]:
+                                - text: );
+                                - generic [ref=e317]:
+                                  - text: "340 }"
+                                  - generic [ref=e318]: "341"
+      - listitem [ref=e319]:
+        - paragraph [ref=e320]:
+          - text: "SYSTEMPATH\\Boot.php : 67 — CodeIgniter\\Boot::runCodeIgniter ("
+          - link "arguments" [ref=e321] [cursor=pointer]:
+            - /url: "#"
+          - text: )
+        - paragraph
+        - code [ref=e324]:
+          - generic [ref=e325]: 60 if (
+          - text: $configCacheEnabled
+          - generic [ref=e326]:
+            - text: ") {"
+            - generic [ref=e327]: "61"
+            - text: $factoriesCache = static::loadConfigCache
+            - generic [ref=e328]:
+              - text: ();
+              - generic [ref=e329]:
+                - text: "62 }"
+                - generic [ref=e330]:
+                  - text: "63"
+                  - generic [ref=e331]: "64 static::"
+                  - text: autoloadHelpers
+                  - generic [ref=e332]:
+                    - text: ();
+                    - generic [ref=e333]:
+                      - text: "65"
+                      - generic [ref=e334]: "66"
+                      - text: $app = static::initializeCodeIgniter
+                      - generic [ref=e335]:
+                        - text: ();
+                        - generic [ref=e336]: 67 static::runCodeIgniter($app);
+                      - generic [ref=e338]:
+                        - text: "68"
+                        - generic [ref=e339]: 69 if (
+                        - text: $configCacheEnabled
+                        - generic [ref=e340]:
+                          - text: ") {"
+                          - generic [ref=e341]: "70 static::"
+                          - text: saveConfigCache($factoriesCache
+                          - generic [ref=e342]:
+                            - text: );
+                            - generic [ref=e343]:
+                              - text: "71 }"
+                              - generic [ref=e344]:
+                                - text: "72"
+                                - generic [ref=e345]: "73"
+                                - generic [ref=e346]:
+                                  - text: // Exits the application, setting the exit code for CLI-based
+                                  - generic [ref=e347]: 74 // applications that might be watching.
+      - listitem [ref=e348]:
+        - paragraph [ref=e349]:
+          - text: "FCPATH\\index.php : 59 — CodeIgniter\\Boot::bootWeb ("
+          - link "arguments" [ref=e350] [cursor=pointer]:
+            - /url: "#"
+          - text: )
+        - paragraph
+        - code [ref=e353]:
+          - generic [ref=e354]: "52"
+          - generic [ref=e355]:
+            - text: // ^^^ Change this line if you move your application folder
+            - generic [ref=e356]:
+              - text: "53"
+              - generic [ref=e357]: "54"
+              - text: $paths = new Paths
+              - generic [ref=e358]:
+                - text: ();
+                - generic [ref=e359]:
+                  - text: "55"
+                  - generic [ref=e360]: "56"
+                  - generic [ref=e361]:
+                    - text: // LOAD THE FRAMEWORK BOOTSTRAP FILE
+                    - generic [ref=e362]: "57"
+                    - text: require $paths->systemDirectory . '/Boot.php'
+                    - generic [ref=e363]:
+                      - text: ;
+                      - generic [ref=e364]:
+                        - text: "58"
+                        - generic [ref=e365]: 59 exit(Boot::bootWeb($paths));
+                      - generic [ref=e367]: "60"

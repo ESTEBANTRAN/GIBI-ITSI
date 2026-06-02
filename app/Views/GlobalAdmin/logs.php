@@ -556,13 +556,17 @@ function mostrarArchivosLog(archivos) {
                 <td>${file.tamaño}</td>
                 <td>${file.fecha_modificacion}</td>
                 <td>
-                    <a href="<?= base_url('writable/logs/') ?>${file.nombre}" download class="btn btn-sm btn-outline-primary">
+                    <button class="btn btn-sm btn-outline-primary" onclick="descargarLog('${encodeURIComponent(file.nombre)}')">
                         <i class="bi bi-download"></i> Descargar
-                    </a>
+                    </button>
                 </td>
             </tr>
         `);
     });
+}
+
+function descargarLog(nombre) {
+    window.open('<?= base_url('index.php/global-admin/exportar-logs') ?>?archivo=' + nombre, '_blank');
 }
 </script>
 <?= $this->endSection() ?> 

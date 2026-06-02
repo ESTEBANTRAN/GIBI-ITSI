@@ -643,16 +643,12 @@ document.getElementById('formEditarUsuario').addEventListener('submit', function
 
 // Editar usuario
 function editarUsuario(id) {
-    console.log('Función editarUsuario llamada con ID:', id);
-    
     // Obtener datos del usuario
     fetch(`<?= base_url('index.php/global-admin/obtener-usuario') ?>/${id}`)
         .then(response => {
-            console.log('Respuesta del servidor:', response);
             return response.json();
         })
         .then(data => {
-            console.log('Datos recibidos:', data);
             if (data.success) {
                 const usuario = data.usuario;
                 
@@ -687,13 +683,10 @@ function editarUsuario(id) {
 
 // Ver usuario
 function verUsuario(id) {
-    console.log('Función verUsuario llamada con ID:', id);
-    
     // Obtener datos del usuario
     fetch(`<?= base_url('index.php/global-admin/obtener-usuario') ?>/${id}`)
         .then(response => response.json())
         .then(data => {
-            console.log('Datos del usuario:', data);
             if (data.success) {
                 const usuario = data.usuario;
                 
@@ -772,8 +765,6 @@ function verUsuario(id) {
 
 // Eliminar usuario
 function eliminarUsuario(id) {
-    console.log('Función eliminarUsuario llamada con ID:', id);
-    
     if (confirm('¿Está seguro de que desea eliminar este usuario? Esta acción no se puede deshacer.')) {
         const formData = new FormData();
         formData.append('id', id);

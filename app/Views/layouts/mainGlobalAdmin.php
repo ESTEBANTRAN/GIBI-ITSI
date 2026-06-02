@@ -60,6 +60,7 @@
     <script src="<?= base_url('sistema/assets/js/dashboard.js') ?>"></script>
     <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
     const csrfMeta = document.querySelector('meta[name="X-CSRF-TOKEN"]');

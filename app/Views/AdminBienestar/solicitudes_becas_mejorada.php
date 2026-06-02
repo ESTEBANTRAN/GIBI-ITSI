@@ -890,11 +890,6 @@ function inicializarGraficosSolicitudesBecas() {
     };
     
     // Debug
-    console.log('Estadísticas Estado:', estadisticasEstado);
-    console.log('Estadísticas Progreso:', estadisticasProgreso);
-    console.log('Datos procesados Estado:', datosEstado);
-    console.log('Datos procesados Progreso:', datosProgreso);
-    
     // Fallback si no hay datos
     if (datosEstado.labels.length === 0) {
         datosEstado.labels = ['Postulada', 'En Revisión', 'Aprobada', 'Rechazada', 'Lista de Espera'];

@@ -495,10 +495,6 @@ function exportarBecas() {
 }
 
 // Debug
-console.log('Configuración de Becas cargada correctamente');
-console.log('Total becas:', <?= count($becas ?? []) ?>);
-console.log('Datos de becas:', <?= json_encode($becas ?? []) ?>);
-
 // Event Listeners para formularios
 document.addEventListener('DOMContentLoaded', function() {
     // Formulario nueva beca

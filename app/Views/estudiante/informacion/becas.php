@@ -152,7 +152,7 @@
                                 <!-- Imagen de la Dependencia de Becas -->
                                 <div class="card mt-3">
                                     <div class="card-body text-center">
-                                        <img src="<?= base_url('sistema/assets/images/IMAGENES INFORMACION/Dependencia de Becas.png') ?>" 
+                                                                                    <img src="<?= base_url('sistema/assets/images/IMAGENES INFORMACION/Dependencia de Becas.png') . '?v=' . filemtime(FCPATH . 'sistema/assets/images/IMAGENES INFORMACION/Dependencia de Becas.png') ?>" 
                                              alt="Dependencia de Becas" 
                                              class="img-fluid rounded" 
                                              style="max-height: 250px; width: 100%; object-fit: cover;">

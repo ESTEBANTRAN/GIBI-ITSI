@@ -41,7 +41,7 @@
                                 </select>
                             </div>
                             <div class="col-md-3 d-flex align-items-end">
-                                <button type="button" class="btn btn-primary" onclick="actualizarEstadisticas()">
+                                <button type="button" class="btn btn-primary" onclick="cargarEstadisticas()">
                                     <i class="bi bi-arrow-clockwise me-2"></i>Actualizar
                                 </button>
                             </div>
@@ -320,6 +320,8 @@
 </div>
 
 <script>
+const charts = {};
+
 $(document).ready(function() {
     cargarEstadisticas();
     inicializarGraficos();
@@ -337,11 +339,11 @@ function cargarEstadisticas() {
         type: 'GET',
         data: filtros,
         success: function(response) {
-            if (response.success) {
-                actualizarEstadisticas(response.estadisticas);
-                actualizarGraficos(response.graficos);
-                actualizarTablas(response.tablas);
-                actualizarKPIs(response.kpis);
+                if (response.success) {
+                    renderEstadisticas(response.estadisticas);
+                    actualizarGraficos(response.graficos);
+                    actualizarTablas(response.tablas);
+                    actualizarKPIs(response.kpis);
             } else {
                 console.error('Error al cargar estadísticas:', response.error);
             }
@@ -352,7 +354,7 @@ function cargarEstadisticas() {
     });
 }
 
-function actualizarEstadisticas(estadisticas) {
+function renderEstadisticas(estadisticas) {
     $('#totalUsuarios').text(estadisticas.total_usuarios);
     $('#usuariosActivos').text(estadisticas.usuarios_activos);
     $('#totalRoles').text(estadisticas.total_roles);
@@ -360,17 +362,17 @@ function actualizarEstadisticas(estadisticas) {
     
     $('#cambioUsuarios').text(estadisticas.cambio_usuarios);
     $('#cambioActivos').text(estadisticas.cambio_activos);
-    $('#ultimoRespaldo').text(estadisticas.ultimo_respaldo);
+    $('#ultimoRespaldo').text(estadisticas.ultimo_respaldo || 'Último: Hoy');
 }
 
 function actualizarGraficos(graficos) {
     // Gráfico de Actividad
-    if (window.chartActividad) {
-        window.chartActividad.destroy();
+    if (charts.actividad) {
+        charts.actividad.destroy();
     }
     
     const ctxActividad = document.getElementById('chartActividad').getContext('2d');
-    window.chartActividad = new Chart(ctxActividad, {
+    charts.actividad = new Chart(ctxActividad, {
         type: 'line',
         data: {
             labels: graficos.actividad.labels,
@@ -388,12 +390,12 @@ function actualizarGraficos(graficos) {
     });
     
     // Gráfico de Roles
-    if (window.chartRoles) {
-        window.chartRoles.destroy();
+    if (charts.roles) {
+        charts.roles.destroy();
     }
     
     const ctxRoles = document.getElementById('chartRoles').getContext('2d');
-    window.chartRoles = new Chart(ctxRoles, {
+    charts.roles = new Chart(ctxRoles, {
         type: 'doughnut',
         data: {
             labels: graficos.roles.labels,
@@ -409,12 +411,12 @@ function actualizarGraficos(graficos) {
     });
     
     // Gráfico de Registros
-    if (window.chartRegistros) {
-        window.chartRegistros.destroy();
+    if (charts.registros) {
+        charts.registros.destroy();
     }
     
     const ctxRegistros = document.getElementById('chartRegistros').getContext('2d');
-    window.chartRegistros = new Chart(ctxRegistros, {
+    charts.registros = new Chart(ctxRegistros, {
         type: 'bar',
         data: {
             labels: graficos.registros.labels,
@@ -436,12 +438,12 @@ function actualizarGraficos(graficos) {
     });
     
     // Gráfico de Logs
-    if (window.chartLogs) {
-        window.chartLogs.destroy();
+    if (charts.logs) {
+        charts.logs.destroy();
     }
     
     const ctxLogs = document.getElementById('chartLogs').getContext('2d');
-    window.chartLogs = new Chart(ctxLogs, {
+    charts.logs = new Chart(ctxLogs, {
         type: 'line',
         data: {
             labels: graficos.logs.labels,
@@ -459,12 +461,12 @@ function actualizarGraficos(graficos) {
     });
     
     // Gráfico de Tendencias
-    if (window.chartTendencias) {
-        window.chartTendencias.destroy();
+    if (charts.tendencias) {
+        charts.tendencias.destroy();
     }
     
     const ctxTendencias = document.getElementById('chartTendencias').getContext('2d');
-    window.chartTendencias = new Chart(ctxTendencias, {
+    charts.tendencias = new Chart(ctxTendencias, {
         type: 'line',
         data: {
             labels: graficos.tendencias.labels,
@@ -579,10 +581,6 @@ function inicializarGraficos() {
     };
     
     actualizarGraficos(datosVacios);
-}
-
-function actualizarEstadisticas() {
-    cargarEstadisticas();
 }
 
 function formatearFecha(fecha) {

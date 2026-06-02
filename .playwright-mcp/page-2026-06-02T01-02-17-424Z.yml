@@ -1,0 +1,117 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - link "Logo Estudiante Bienestar Estudiantil" [ref=e6] [cursor=pointer]:
+          - /url: http://localhost/ITSI/public/index.php/estudiante
+          - img "Logo" [ref=e7]
+          - generic [ref=e8]:
+            - text: Estudiante Bienestar
+            - text: Estudiantil
+        - text: 
+      - navigation [ref=e9]:
+        - region "scrollable content" [ref=e13]:
+          - list [ref=e15]:
+            - listitem [ref=e16]:  INICIO
+            - listitem [ref=e17]:
+              - link " Dashboard" [ref=e18] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante
+                - generic [ref=e20]: 
+                - generic [ref=e21]: Dashboard
+            - listitem [ref=e22]:  FORMULARIOS
+            - listitem [ref=e23]:
+              - link " Ficha Socioeconómica" [ref=e24] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/ficha-socioeconomica
+                - generic [ref=e26]: 
+                - generic [ref=e27]: Ficha Socioeconómica
+            - listitem [ref=e28]:
+              - link " Mis Documentos" [ref=e29] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/documentos
+                - generic [ref=e31]: 
+                - generic [ref=e32]: Mis Documentos
+            - listitem [ref=e33]:  BECAS
+            - listitem [ref=e34]:
+              - link " Solicitudes de Becas" [ref=e35] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/becas
+                - generic [ref=e37]: 
+                - generic [ref=e38]: Solicitudes de Becas
+            - listitem [ref=e39]:  SOLICITUDES
+            - listitem [ref=e40]:
+              - link " Solicitudes de Ayuda" [ref=e41] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/solicitudes-ayuda
+                - generic [ref=e43]: 
+                - generic [ref=e44]: Solicitudes de Ayuda
+            - listitem [ref=e45]:  INFORMACIÓN
+            - listitem [ref=e46]:
+              - link " Servicios de Bienestar" [ref=e47] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/servicios
+                - generic [ref=e49]: 
+                - generic [ref=e50]: Servicios de Bienestar
+            - listitem [ref=e51]:
+              - link " Información de Becas" [ref=e52] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/becas
+                - generic [ref=e54]: 
+                - generic [ref=e55]: Información de Becas
+            - listitem [ref=e56]:
+              - link " Apoyo Psicológico" [ref=e57] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/psicologia
+                - generic [ref=e59]: 
+                - generic [ref=e60]: Apoyo Psicológico
+            - listitem [ref=e61]:
+              - link " Servicios de Salud" [ref=e62] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/salud
+                - generic [ref=e64]: 
+                - generic [ref=e65]: Servicios de Salud
+            - listitem [ref=e66]:
+              - link " Trabajo Social" [ref=e67] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/trabajo-social
+                - generic [ref=e69]: 
+                - generic [ref=e70]: Trabajo Social
+            - listitem [ref=e71]:
+              - link " Orientación Académica" [ref=e72] [cursor=pointer]:
+                - /url: http://localhost/ITSI/public/index.php/estudiante/informacion/orientacion-academica
+                - generic [ref=e74]: 
+                - generic [ref=e75]: Orientación Académica
+  - generic [ref=e76]:
+    - banner [ref=e77]:
+      - navigation [ref=e78]:
+        - link:
+          - /url: http://localhost/ITSI/public/
+        - list: 
+        - list [ref=e80]:
+          - listitem [ref=e81]:
+            - generic [ref=e82]:
+              - generic [ref=e83]: 
+              - text: Bienvenido al sistema, estudiantedos
+          - listitem [ref=e84]:
+            - link "Foto de perfil" [ref=e85] [cursor=pointer]:
+              - /url: javascript:void(0)
+              - img "Foto de perfil" [ref=e86]
+            - text:   
+    - generic [ref=e87]:
+      - generic [ref=e91]:
+        - heading " Mis Documentos" [level=4] [ref=e92]:
+          - generic [ref=e93]: 
+          - text: Mis Documentos
+        - paragraph [ref=e94]: Documentos subidos en solicitudes de becas
+      - generic [ref=e98]:
+        - generic [ref=e99]: 
+        - generic [ref=e100]:
+          - strong [ref=e101]: "Información:"
+          - paragraph [ref=e102]: En esta sección puedes visualizar todos los documentos que has subido al momento de solicitar becas. Los documentos se organizan por beca y período académico. Para subir nuevos documentos, debes solicitar una beca desde la sección de Becas.
+      - generic [ref=e105]:
+        - heading " Documentos de Solicitudes de Becas" [level=5] [ref=e108]:
+          - generic [ref=e109]: 
+          - text: Documentos de Solicitudes de Becas
+        - generic [ref=e111]:
+          - generic [ref=e112]: 
+          - heading "No tienes documentos subidos" [level=5] [ref=e113]
+          - paragraph [ref=e114]: Los documentos aparecerán aquí cuando solicites una beca y subas los archivos requeridos.
+          - link " Ver Becas Disponibles" [ref=e115] [cursor=pointer]:
+            - /url: http://localhost/ITSI/public/index.php/estudiante/becas
+            - generic [ref=e116]: 
+            - text: Ver Becas Disponibles
+    - contentinfo [ref=e118]:
+      - generic [ref=e120]:
+        - img "ITSI Logo" [ref=e122]
+        - paragraph [ref=e124]: Tecnológico Ibarra. © 2024. All Rights Reserved

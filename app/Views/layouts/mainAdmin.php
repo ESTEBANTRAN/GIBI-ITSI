@@ -29,8 +29,6 @@
     
     <!-- Debug: Verificar rutas CSS -->
     <script>
-        console.log('CSS Styles URL:', '<?= base_url('sistema/assets/css/styles.min.css') ?>');
-        console.log('CSS Custom URL:', '<?= base_url('sistema/assets/css/custom.css') ?>');
     </script>
     <?= csrf_meta() ?>
 </head>
@@ -80,11 +78,9 @@
     
     <!-- Debug: Verify jQuery is loaded -->
     <script>
-        console.log('jQuery version:', $.fn.jquery);
         if (typeof $ === 'undefined') {
             console.error('jQuery is not loaded!');
         } else {
-            console.log('jQuery is properly loaded');
         }
     </script>
     
@@ -129,14 +125,12 @@
         if (typeof $ === 'undefined') {
             console.error('jQuery no está disponible');
         } else {
-            console.log('jQuery cargado correctamente');
         }
         
         // Verificar que ApexCharts esté disponible
         if (typeof ApexCharts === 'undefined') {
             console.error('ApexCharts no está disponible');
         } else {
-            console.log('ApexCharts cargado correctamente');
         }
     </script>
 </body>

@@ -182,6 +182,79 @@
     </div>
 </div>
 
+<!-- Paginación -->
+<?php if (isset($paginacion) && $paginacion['total_paginas'] > 1): ?>
+<div class="card mt-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted">
+                Mostrando <?= ($paginacion['offset'] + 1) ?> a <?= min($paginacion['offset'] + $paginacion['por_pagina'], $paginacion['total_registros']) ?> 
+                de <?= $paginacion['total_registros'] ?> estudiantes
+            </div>
+            <nav aria-label="Paginación de estudiantes">
+                <ul class="pagination pagination-sm mb-0">
+                    <?php if ($paginacion['pagina_actual'] > 1): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?= $paginacion['pagina_actual'] - 1 ?>" aria-label="Anterior">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    <?php else: ?>
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo;</span>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php
+                    $inicio = max(1, $paginacion['pagina_actual'] - 2);
+                    $fin = min($paginacion['total_paginas'], $paginacion['pagina_actual'] + 2);
+
+                    if ($inicio > 1): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1">1</a>
+                        </li>
+                        <?php if ($inicio > 2): ?>
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        <?php endif; ?>
+                    <?php endif; ?>
+
+                    <?php for ($i = $inicio; $i <= $fin; $i++): ?>
+                        <li class="page-item <?= $i == $paginacion['pagina_actual'] ? 'active' : '' ?>">
+                            <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+                        </li>
+                    <?php endfor; ?>
+
+                    <?php if ($fin < $paginacion['total_paginas']): ?>
+                        <?php if ($fin < $paginacion['total_paginas'] - 1): ?>
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        <?php endif; ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?= $paginacion['total_paginas'] ?>"><?= $paginacion['total_paginas'] ?></a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php if ($paginacion['pagina_actual'] < $paginacion['total_paginas']): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?= $paginacion['pagina_actual'] + 1 ?>" aria-label="Siguiente">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    <?php else: ?>
+                        <li class="page-item disabled">
+                            <span class="page-link">&raquo;</span>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 <!-- Gráficos Informativos -->
 <div class="row mt-4">
     <div class="col-md-6">
@@ -560,9 +633,6 @@ function verDetallesEstudiante(estudianteId) {
 }
 
 // Debug info
-console.log('Estudiantes cargados:', <?= json_encode($estudiantes ?? []) ?>);
-console.log('Carreras cargadas:', <?= json_encode($carreras ?? []) ?>);
-
 // Función para crear gráficos informativos
 function crearGraficos() {
     const estudiantes = <?= json_encode($estudiantes ?? []) ?>;

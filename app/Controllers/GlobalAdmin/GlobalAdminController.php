@@ -48,6 +48,10 @@ class GlobalAdminController extends BaseController
         return $tmpFile;
     }
 
+    // ──────────────────────────────────────────────
+    //  Dashboard
+    // ──────────────────────────────────────────────
+
     public function index()
     {
         if (!session('id') || session('rol_id') != 4) {
@@ -311,1865 +315,6 @@ class GlobalAdminController extends BaseController
         }
     }
 
-    // Método para crear respaldo
-    public function crearBackup()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        try {
-            $database = $this->db->database;
-            $filename = 'backup_' . date('Y-m-d_H-i-s') . '.sql';
-            $filepath = WRITEPATH . 'backups/' . $filename;
-            if (!is_dir(WRITEPATH . 'backups/')) {
-                mkdir(WRITEPATH . 'backups/', 0755, true);
-            }
-            $mysqldump_path = 'C:\\xampp\\mysql\\bin\\mysqldump.exe';
-            if (!file_exists($mysqldump_path)) {
-                $mysqldump_path = 'mysqldump';
-            }
-            $credentialsFile = $this->getDbCredentialsFile();
-            $command = '"' . $mysqldump_path . '" --defaults-extra-file=' . escapeshellarg($credentialsFile) . ' ' . escapeshellarg($database);
-            $dump = shell_exec($command);
-            @unlink($credentialsFile);
-            if ($dump && strlen($dump) > 1000) {
-                file_put_contents($filepath, $dump);
-                $tamaño = filesize($filepath);
-                $this->db->table('respaldos')->insert([
-                    'nombre_archivo' => $filename,
-                    'ruta_archivo' => $filepath,
-                    'tamano_bytes' => $tamaño,
-                    'tipo' => 'manual',
-                    'estado' => 'completado',
-                    'descripcion' => 'Respaldo manual creado por SuperAdmin',
-                    'creado_por' => session('id')
-                ]);
-                log_message('info', 'Backup creado exitosamente: ' . $filename);
-                return $this->response->setJSON([
-                    'success' => true,
-                    'message' => 'Respaldo creado exitosamente',
-                    'filename' => $filename,
-                    'download_url' => base_url('index.php/global-admin/descargar-respaldo/' . $this->db->insertID()),
-                    'file_size' => $this->formatBytes($tamaño)
-                ]);
-            } else {
-                log_message('error', 'Error al crear backup.');
-                return $this->response->setJSON([
-                    'success' => false,
-                    'error' => 'Error al crear el respaldo. Verifique que mysqldump esté disponible y que el usuario tenga permisos.'
-                ]);
-            }
-        } catch (\Exception $e) {
-            log_message('error', 'Error al crear backup: ' . $e->getMessage());
-            return $this->response->setJSON([
-                'success' => false,
-                'error' => 'Error al crear el respaldo'
-            ]);
-        }
-    }
-
-    // Métodos para gestión de respaldos
-    public function respaldos()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return redirect()->to('/login');
-        }
-        return view('GlobalAdmin/respaldos');
-    }
-
-    public function crearRespaldo()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        try {
-            $database = $this->db->database;
-
-            // Crear nombre del archivo con fecha y hora
-            $filename = 'backup_' . date('Y-m-d_H-i-s') . '.sql';
-            $filepath = WRITEPATH . 'backups/' . $filename;
-
-            // Crear directorio si no existe
-            if (!is_dir(WRITEPATH . 'backups/')) {
-                mkdir(WRITEPATH . 'backups/', 0755, true);
-            }
-
-            // Usar ruta absoluta de mysqldump si existe
-            $mysqldump_path = 'C:\\xampp\\mysql\\bin\\mysqldump.exe';
-            if (!file_exists($mysqldump_path)) {
-                $mysqldump_path = 'mysqldump';
-            }
-            
-            $credentialsFile = $this->getDbCredentialsFile();
-            $command = '"' . $mysqldump_path . '" --defaults-extra-file=' . escapeshellarg($credentialsFile) . ' ' . escapeshellarg($database) . ' > "' . $filepath . '" 2>&1';
-
-            // Ejecutar comando y capturar salida y código de retorno
-            exec($command, $output, $return_var);
-            @unlink($credentialsFile);
-
-            if ($return_var === 0 && file_exists($filepath)) {
-                $tamaño = filesize($filepath);
-                $respaldoId = $this->db->table('respaldos')->insert([
-                    'nombre_archivo' => $filename,
-                    'ruta_archivo' => $filepath,
-                    'tamano_bytes' => $tamaño,
-                    'tipo' => 'manual',
-                    'estado' => 'completado',
-                    'descripcion' => 'Respaldo manual creado por SuperAdmin',
-                    'creado_por' => session('id')
-                ]);
-                
-                $respaldoId = $this->db->insertID();
-                log_message('info', 'Backup creado exitosamente local: ' . $filename);
-                
-                // Mirror obligatorio a Google Drive
-                $driveId = \App\Helpers\GoogleDriveHelper::subirArchivo(
-                    $filepath,
-                    $filename,
-                    'application/sql',
-                    'backups' // Subcarpeta destino
-                );
-                
-                $cloudMsg = $driveId ? " y sincronizado con Google Drive" : "";
-                $fileSizeFormatted = $this->formatBytes($tamaño);
-                
-                return $this->response->setJSON([
-                    'success' => true,
-                    'message' => "Respaldo creado exitosamente en servidor{$cloudMsg}.\nTamaño: {$fileSizeFormatted}\n\n¿Deseas descargar una copia adicional?",
-                    'filename' => $filename,
-                    'download_url' => base_url('index.php/global-admin/descargar-respaldo/' . $respaldoId),
-                    'respaldo_id' => $respaldoId,
-                    'auto_download' => false, // Cambiado a false para mostrar opción
-                    'file_size' => $fileSizeFormatted
-                ]);
-            } else {
-                log_message('error', 'Error al crear respaldo. Código: ' . $return_var);
-                return $this->response->setJSON([
-                    'success' => false,
-                    'error' => 'Error al crear el respaldo. Verifique que mysqldump esté disponible.'
-                ]);
-            }
-        } catch (\Exception $e) {
-            log_message('error', 'Error al crear respaldo: ' . $e->getMessage());
-            return $this->response->setJSON([
-                'success' => false,
-                'error' => 'Error al crear el respaldo'
-            ]);
-        }
-    }
-
-    public function obtenerRespaldos()
-    {
-        log_message('info', 'obtenerRespaldos called via ' . $this->request->getMethod() . '. Session ID: ' . session('id'));
-        if (!session('id') || session('rol_id') != 4) {
-            log_message('error', 'obtenerRespaldos: No autorizado');
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        try {
-            $respaldos = $this->db->table('respaldos')
-                ->select('id, nombre_archivo, fecha_creacion, tamano_bytes, tipo, estado, descripcion')
-                ->orderBy('fecha_creacion', 'DESC')
-                ->get()
-                ->getResultArray();
-            
-            // Formatear datos
-            foreach ($respaldos as &$respaldo) {
-                $respaldo['tamaño_formateado'] = $this->formatBytes($respaldo['tamano_bytes']);
-                $respaldo['fecha_formateada'] = date('d/m/Y H:i', strtotime($respaldo['fecha_creacion']));
-            }
-            
-            return $this->response->setJSON([
-                'success' => true,
-                'respaldos' => $respaldos
-            ]);
-            
-        } catch (\Exception $e) {
-            log_message('error', 'Error al obtener respaldos: ' . $e->getMessage());
-            return $this->response->setJSON([
-                'success' => false,
-                'error' => 'Error al obtener respaldos'
-            ]);
-        }
-    }
-
-    public function restaurarRespaldo()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        $id = $this->getPostInt('id');
-        
-        try {
-            $respaldo = $this->db->table('respaldos')->where('id', $id)->get()->getRowArray();
-            
-            if ($respaldo && file_exists($respaldo['ruta_archivo'])) {
-                $file = $respaldo['ruta_archivo'];
-                $database = $this->db->database;
-                
-                $mysql_path = 'C:\\xampp\\mysql\\bin\\mysql.exe';
-                if (!file_exists($mysql_path)) {
-                    $mysql_path = 'mysql';
-                }
-                
-                $credentialsFile = $this->getDbCredentialsFile();
-                $command = '"' . $mysql_path . '" --defaults-extra-file=' . escapeshellarg($credentialsFile) . ' ' . escapeshellarg($database) . ' < "' . $file . '" 2>&1';
-                
-                exec($command, $output, $return_var);
-                @unlink($credentialsFile);
-                
-                if ($return_var === 0) {
-                    return $this->response->setJSON(['success' => true, 'message' => 'Respaldo restaurado exitosamente']);
-                } else {
-                    log_message('error', 'Error al restaurar respaldo. Código: ' . $return_var);
-                    return $this->response->setJSON(['success' => false, 'error' => 'Error al restaurar el respaldo']);
-                }
-            } else {
-                return $this->response->setJSON(['success' => false, 'error' => 'Respaldo no encontrado o archivo no existe']);
-            }
-        } catch (\Exception $e) {
-            log_message('error', 'Error al restaurar respaldo: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al restaurar el respaldo']);
-        }
-    }
-
-    public function descargarRespaldo($id)
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return redirect()->to('/login');
-        }
-
-        try {
-            // Obtener información del respaldo
-            $respaldo = $this->db->table('respaldos')->where('id', $id)->get()->getRowArray();
-            
-            if (!$respaldo) {
-                return redirect()->back()->with('error', 'Respaldo no encontrado');
-            }
-            
-            $filepath = $respaldo['ruta_archivo'];
-            
-            if (!file_exists($filepath)) {
-                return redirect()->back()->with('error', 'Archivo de respaldo no encontrado');
-            }
-            
-            // Configurar headers para descarga con diálogo de "Guardar como"
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename="' . $respaldo['nombre_archivo'] . '"; filename*=UTF-8\'\'' . urlencode($respaldo['nombre_archivo']));
-            header('Content-Length: ' . filesize($filepath));
-            header('Cache-Control: no-cache, must-revalidate, post-check=0, pre-check=0');
-            header('Pragma: no-cache');
-            header('Expires: 0');
-            
-            // Leer y enviar archivo
-            readfile($filepath);
-            exit;
-            
-        } catch (\Exception $e) {
-            log_message('error', 'Error al descargar backup: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Error al descargar el respaldo');
-        }
-    }
-
-    public function eliminarRespaldo()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        $id = $this->getPostInt('id');
-        
-        try {
-            $respaldo = $this->db->table('respaldos')->where('id', $id)->get()->getRowArray();
-            
-            if ($respaldo) {
-                $file = $respaldo['ruta_archivo'];
-                
-                // Si el archivo existe lo eliminamos, y en cualquier caso borramos el registro
-                if (file_exists($file)) {
-                    unlink($file);
-                }
-                
-                $this->db->table('respaldos')->where('id', $id)->delete();
-                
-                return $this->response->setJSON(['success' => true, 'message' => 'Respaldo eliminado exitosamente']);
-            } else {
-                return $this->response->setJSON(['success' => false, 'error' => 'Respaldo no encontrado']);
-            }
-        } catch (\Exception $e) {
-            log_message('error', 'Error al eliminar respaldo: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al eliminar el respaldo']);
-        }
-    }
-
-    public function limpiarRespaldos()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        try {
-            $backupDir = WRITEPATH . 'backups/';
-            $files = glob($backupDir . '*.sql');
-            $deleted = 0;
-            
-            foreach ($files as $file) {
-                if (unlink($file)) {
-                    $deleted++;
-                }
-            }
-            
-            // Eliminar todos los registros de la base de datos
-            $this->db->table('respaldos')->emptyTable();
-            
-            return $this->response->setJSON([
-                'success' => true, 
-                'message' => "Se eliminaron {$deleted} respaldos antiguos y se limpió el registro"
-            ]);
-        } catch (\Exception $e) {
-            log_message('error', 'Error al limpiar respaldos: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al limpiar los respaldos']);
-        }
-    }
-
-    public function guardarConfiguracionRespaldos()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        try {
-            $data = [
-                'frecuencia' => $this->getPostString('frecuencia'),
-                'retener_dias' => $this->getPostString('retener_dias'),
-                'automatico' => $this->getPostBool('automatico') ? 1 : 0,
-                'comprimir' => $this->getPostBool('comprimir') ? 1 : 0
-            ];
-            
-            foreach ($data as $clave => $valor) {
-                $exists = $this->db->table('configuracion_sistema')
-                    ->where('clave', 'backup_' . $clave)
-                    ->countAllResults();
-                if ($exists > 0) {
-                    $this->db->table('configuracion_sistema')
-                        ->where('clave', 'backup_' . $clave)
-                        ->update(['valor' => $valor]);
-                } else {
-                    $this->db->table('configuracion_sistema')
-                        ->insert(['clave' => 'backup_' . $clave, 'valor' => $valor]);
-                }
-            }
-            
-            return $this->response->setJSON(['success' => true, 'message' => 'Configuración guardada exitosamente']);
-        } catch (\Exception $e) {
-            log_message('error', 'Error guardando config respaldos: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al guardar la configuración']);
-        }
-    }
-
-    public function estadisticasRespaldos()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        try {
-            $backupDir = WRITEPATH . 'backups/';
-            $files = glob($backupDir . '*.sql');
-            $totalSize = 0;
-            $ultimoRespaldo = 'Nunca';
-            
-            foreach ($files as $file) {
-                $totalSize += filesize($file);
-                $fileTime = filemtime($file);
-                if ($fileTime > strtotime($ultimoRespaldo)) {
-                    $ultimoRespaldo = date('Y-m-d H:i:s', $fileTime);
-                }
-            }
-            
-            return $this->response->setJSON([
-                'success' => true,
-                'estadisticas' => [
-                    'total' => count($files),
-                    'ultimo' => $ultimoRespaldo,
-                    'tamaño_total' => $totalSize,
-                    'estado' => 'Activo'
-                ]
-            ]);
-        } catch (\Exception $e) {
-            log_message('error', 'Error obteniendo estadísticas respaldos: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al obtener estadísticas']);
-        }
-    }
-
-    // Métodos para logs del sistema
-    public function logs()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return redirect()->to('/login');
-        }
-        return view('GlobalAdmin/logs');
-    }
-
-    public function obtenerLogs()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        try {
-            // Obtener logs de la base de datos
-            $logs = $this->db->table('logs')
-                ->select('id, id_usuario, accion, tabla, registro_id, datos, fecha_creacion')
-                ->orderBy('fecha_creacion', 'DESC')
-                ->limit(100)
-                ->get()
-                ->getResultArray();
-            
-            // Obtener logs de archivos (writable/logs)
-            $logFiles = [];
-            $logDir = WRITEPATH . 'logs/';
-            
-            if (is_dir($logDir)) {
-                $files = glob($logDir . '*.log');
-                foreach ($files as $file) {
-                    $filename = basename($file);
-                    $filesize = filesize($file);
-                    $logFiles[] = [
-                        'nombre' => $filename,
-                        'tamaño' => $this->formatBytes($filesize),
-                        'fecha_modificacion' => date('d/m/Y H:i', filemtime($file)),
-                        'ruta' => $file
-                    ];
-                }
-            }
-            
-            return $this->response->setJSON([
-                'success' => true,
-                'logs_bd' => $logs,
-                'logs_archivos' => $logFiles
-            ]);
-            
-        } catch (\Exception $e) {
-            log_message('error', 'Error al obtener logs: ' . $e->getMessage());
-            return $this->response->setJSON([
-                'success' => false,
-                'error' => 'Error al obtener logs'
-            ]);
-        }
-    }
-
-    public function obtenerLog($id)
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        try {
-            $log = $this->db->table('logs')->where('id', $id)->get()->getRowArray();
-            
-            if (!$log) {
-                return $this->response->setJSON(['success' => false, 'error' => 'Log no encontrado']);
-            }
-
-            $usuario = $this->db->table('usuarios')->where('id', $log['id_usuario'])->get()->getRowArray();
-            $log['nombre_usuario'] = $usuario ? $usuario['nombre'] . ' ' . $usuario['apellido'] : 'Sistema';
-            
-            return $this->response->setJSON(['success' => true, 'log' => $log]);
-        } catch (\Exception $e) {
-            log_message('error', 'Error obteniendo log: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al obtener el log']);
-        }
-    }
-
-    public function eliminarLog()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        $id = $this->getPostInt('id');
-        
-        try {
-            $this->db->table('logs')->where('id', $id)->delete();
-            return $this->response->setJSON(['success' => true, 'message' => 'Log eliminado exitosamente']);
-        } catch (\Exception $e) {
-            log_message('error', 'Error eliminando log: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al eliminar el log']);
-        }
-    }
-
-    public function limpiarLogs()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        try {
-            $dias = $this->getPostInt('dias') ?: 90;
-            $fechaLimite = date('Y-m-d', strtotime("-{$dias} days"));
-            
-            $this->db->table('logs')->where('fecha_creacion <', $fechaLimite)->delete();
-            
-            return $this->response->setJSON(['success' => true, 'message' => "Logs anteriores a {$dias} días eliminados exitosamente"]);
-        } catch (\Exception $e) {
-            log_message('error', 'Error limpiando logs: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al limpiar los logs']);
-        }
-    }
-
-    public function exportarLogs()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return redirect()->to('/login');
-        }
-
-        try {
-            // Obtener logs de la base de datos
-            $logs = $this->db->table('logs')
-                ->select('nivel, accion, mensaje, ip, fecha_creacion')
-                ->orderBy('fecha_creacion', 'DESC')
-                ->get()
-                ->getResultArray();
-            
-            // Crear archivo CSV
-            $filename = 'logs_sistema_' . date('Y-m-d_H-i-s') . '.csv';
-            $filepath = WRITEPATH . 'backups/' . $filename;
-            
-            // Crear directorio si no existe
-            if (!is_dir(WRITEPATH . 'backups/')) {
-                mkdir(WRITEPATH . 'backups/', 0755, true);
-            }
-            
-            // Escribir CSV
-            $file = fopen($filepath, 'w');
-            fputcsv($file, ['Nivel', 'Acción', 'Mensaje', 'IP', 'Fecha']);
-            
-            foreach ($logs as $log) {
-                fputcsv($file, [
-                    $log['nivel'],
-                    $log['accion'],
-                    $log['mensaje'],
-                    $log['ip'],
-                    $log['fecha_creacion']
-                ]);
-            }
-            
-            fclose($file);
-            
-            // Descargar archivo
-            header('Content-Type: application/csv');
-            header('Content-Disposition: attachment; filename="' . $filename . '"');
-            header('Content-Length: ' . filesize($filepath));
-            readfile($filepath);
-            unlink($filepath); // Eliminar archivo temporal
-            exit;
-            
-        } catch (\Exception $e) {
-            log_message('error', 'Error al exportar logs: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Error al exportar logs');
-        }
-    }
-
-    public function estadisticasLogs()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        try {
-            // Simular estadísticas de logs
-            return $this->response->setJSON([
-                'success' => true,
-                'estadisticas' => [
-                    'errores' => 5,
-                    'warnings' => 12,
-                    'info' => 45,
-                    'total' => 62
-                ]
-            ]);
-        } catch (\Exception $e) {
-            log_message('error', 'Error obteniendo estadísticas logs: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al obtener estadísticas']);
-        }
-    }
-
-    // Métodos para estadísticas globales
-    public function estadisticas()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return redirect()->to('/login');
-        }
-        return view('GlobalAdmin/estadisticas');
-    }
-
-    public function obtenerEstadisticasGlobales()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        try {
-            // Obtener estadísticas reales de la base de datos
-            $totalUsuarios = $this->db->table('usuarios')->countAllResults();
-            $usuariosActivos = $this->db->table('usuarios')->where('estado', 'Activo')->countAllResults();
-            $totalRoles = $this->db->table('roles')->countAllResults();
-            
-            // Calcular cambios porcentuales
-            $cambioUsuarios = $this->calcularCambioUsuarios();
-            $cambioActivos = $this->calcularCambioActivos();
-            
-            // Obtener respaldos recientes
-            $backupDir = WRITEPATH . 'backups/';
-            $respaldosRecientes = is_dir($backupDir) ? count(glob($backupDir . '*.sql')) : 0;
-            
-            // Obtener datos para gráficos
-            $datosGraficos = $this->obtenerDatosGraficosEstadisticas();
-            
-            // Obtener datos de tablas
-            $datosTablas = $this->obtenerDatosTablasEstadisticas();
-            
-            // Obtener KPIs
-            $kpis = $this->obtenerKPIsEstadisticas();
-
-            return $this->response->setJSON([
-                'success' => true,
-                'estadisticas' => [
-                    'total_usuarios' => $totalUsuarios,
-                    'usuarios_activos' => $usuariosActivos,
-                    'total_roles' => $totalRoles,
-                    'respaldos_recientes' => $respaldosRecientes,
-                    'cambio_usuarios' => $cambioUsuarios,
-                    'cambio_activos' => $cambioActivos
-                ],
-                'graficos' => $datosGraficos,
-                'tablas' => $datosTablas,
-                'kpis' => $kpis
-            ]);
-        } catch (\Exception $e) {
-            log_message('error', 'Error obteniendo estadísticas globales: ' . $e->getMessage());
-            return $this->response->setJSON([
-                'success' => false, 
-                'error' => 'Error al obtener estadísticas'
-            ]);
-        }
-    }
-
-    private function obtenerDatosGraficosEstadisticas()
-    {
-        try {
-            // Gráfico de actividad del sistema (últimos 6 meses)
-            $actividad = [];
-            $labels = [];
-            for ($i = 5; $i >= 0; $i--) {
-                $mes = date('n', strtotime("-$i months"));
-                $año = date('Y', strtotime("-$i months"));
-                $labels[] = date('M', strtotime("-$i months"));
-                
-                $usuariosActivos = $this->db->table('usuarios')
-                    ->where('estado', 'Activo')
-                    ->where('MONTH(ultimo_acceso)', $mes)
-                    ->where('YEAR(ultimo_acceso)', $año)
-                    ->countAllResults();
-                
-                $actividad[] = $usuariosActivos;
-            }
-            
-            // Distribución por roles
-            $roles = $this->db->table('usuarios u')
-                ->select('r.nombre, COUNT(u.id) as total')
-                ->join('roles r', 'r.id = u.rol_id')
-                ->groupBy('u.rol_id')
-                ->get()
-                ->getResultArray();
-            
-            $rolesLabels = [];
-            $rolesData = [];
-            $rolesColors = ['#007bff', '#28a745', '#dc3545', '#ffc107'];
-            
-            foreach ($roles as $index => $rol) {
-                $rolesLabels[] = $rol['nombre'];
-                $rolesData[] = $rol['total'];
-            }
-            
-            // Registros por mes
-            $registros = [];
-            $registrosLabels = [];
-            for ($i = 5; $i >= 0; $i--) {
-                $mes = date('n', strtotime("-$i months"));
-                $año = date('Y', strtotime("-$i months"));
-                $registrosLabels[] = date('M', strtotime("-$i months"));
-                
-                $nuevosUsuarios = $this->db->table('usuarios')
-                    ->where('MONTH(fecha_registro)', $mes)
-                    ->where('YEAR(fecha_registro)', $año)
-                    ->countAllResults();
-                
-                $registros[] = $nuevosUsuarios;
-            }
-            
-            // Actividad de logs (simulado)
-            $logsLabels = ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'];
-            $logsData = [5, 3, 8, 12, 6, 4];
-            
-            // Tendencias
-            $tendenciasLabels = ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'];
-            $tendenciasData = [25, 32, 28, 35];
-
-            return [
-                'actividad' => [
-                    'labels' => $labels,
-                    'datasets' => [[
-                        'label' => 'Usuarios Activos',
-                        'data' => $actividad,
-                        'borderColor' => '#007bff',
-                        'backgroundColor' => 'rgba(0, 123, 255, 0.1)',
-                        'tension' => 0.4
-                    ]]
-                ],
-                'roles' => [
-                    'labels' => $rolesLabels,
-                    'data' => $rolesData,
-                    'colors' => array_slice($rolesColors, 0, count($rolesLabels))
-                ],
-                'registros' => [
-                    'labels' => $registrosLabels,
-                    'data' => $registros
-                ],
-                'logs' => [
-                    'labels' => $logsLabels,
-                    'datasets' => [[
-                        'label' => 'Errores',
-                        'data' => $logsData,
-                        'borderColor' => '#dc3545',
-                        'backgroundColor' => 'rgba(220, 53, 69, 0.1)',
-                        'tension' => 0.4
-                    ]]
-                ],
-                'tendencias' => [
-                    'labels' => $tendenciasLabels,
-                    'datasets' => [[
-                        'label' => 'Nuevos Usuarios',
-                        'data' => $tendenciasData,
-                        'borderColor' => '#007bff',
-                        'backgroundColor' => 'rgba(0, 123, 255, 0.1)',
-                        'tension' => 0.4
-                    ]]
-                ]
-            ];
-        } catch (\Exception $e) {
-            return [
-                'actividad' => ['labels' => [], 'datasets' => []],
-                'roles' => ['labels' => [], 'data' => [], 'colors' => []],
-                'registros' => ['labels' => [], 'data' => []],
-                'logs' => ['labels' => [], 'datasets' => []],
-                'tendencias' => ['labels' => [], 'datasets' => []]
-            ];
-        }
-    }
-
-    private function obtenerDatosTablasEstadisticas()
-    {
-        try {
-            // Top 5 usuarios más activos
-            $usuariosActivos = $this->db->table('usuarios u')
-                ->select('u.nombre, r.nombre as rol, u.ultimo_acceso, COUNT(l.id) as acciones')
-                ->join('roles r', 'r.id = u.rol_id', 'left')
-                ->join('logs l', 'l.usuario_id = u.id', 'left')
-                ->where('u.estado', 'Activo')
-                ->groupBy('u.id')
-                ->orderBy('acciones', 'DESC')
-                ->limit(5)
-                ->get()
-                ->getResultArray();
-            
-            // Resumen de roles
-            $resumenRoles = $this->db->table('roles r')
-                ->select('r.nombre, COUNT(u.id) as usuarios, r.estado, MAX(u.ultimo_acceso) as ultima_actividad')
-                ->join('usuarios u', 'u.rol_id = r.id', 'left')
-                ->groupBy('r.id')
-                ->get()
-                ->getResultArray();
-
-            return [
-                'usuarios_activos' => $usuariosActivos,
-                'resumen_roles' => $resumenRoles
-            ];
-        } catch (\Exception $e) {
-            return [
-                'usuarios_activos' => [],
-                'resumen_roles' => []
-            ];
-        }
-    }
-
-    private function obtenerKPIsEstadisticas()
-    {
-        try {
-            $totalUsuarios = $this->db->table('usuarios')->countAllResults();
-            $usuariosActivos = $this->db->table('usuarios')->where('estado', 'Activo')->countAllResults();
-            $usuariosBloqueados = $this->db->table('usuarios')->where('estado', 'Suspendido')->countAllResults();
-            $usuariosInactivos = $this->db->table('usuarios')->where('estado', 'Inactivo')->countAllResults();
-
-            $crecimientoUsuarios = $this->calcularCambioUsuarios();
-            $tasaActividad = $totalUsuarios > 0 ? round(($usuariosActivos / $totalUsuarios) * 100, 1) : 0;
-
-            $totalRespaldos = $this->db->table('backups')->countAllResults();
-            $respaldosRecientes = $this->db->table('backups')
-                ->where('created_at >=', date('Y-m-d', strtotime('-30 days')))
-                ->countAllResults();
-            $coberturaRespaldos = $totalRespaldos > 0 ? round(($respaldosRecientes / max($totalRespaldos, 1)) * 100, 1) : 0;
-
-            $totalLogs = $this->db->table('logs')->countAllResults();
-            $loginsExitosos = $this->db->table('logs')
-                ->like('accion', 'login_exitoso')
-                ->where('fecha_creacion >=', date('Y-m-d', strtotime('-30 days')))
-                ->countAllResults();
-            $intentosFallidos = $this->db->table('logs')
-                ->like('accion', 'login_fallido')
-                ->where('fecha_creacion >=', date('Y-m-d', strtotime('-30 days')))
-                ->countAllResults();
-
-            return [
-                'crecimiento_usuarios' => $crecimientoUsuarios,
-                'tasa_actividad' => $tasaActividad,
-                'indice_seguridad' => $totalLogs > 0 ? round(($loginsExitosos / max($totalLogs, 1)) * 100, 1) : 0,
-                'cobertura_respaldos' => $coberturaRespaldos,
-                'accesos_exitosos' => $loginsExitosos,
-                'intentos_fallidos' => $intentosFallidos,
-                'usuarios_bloqueados' => $usuariosBloqueados,
-                'respaldos_automaticos' => $respaldosRecientes
-            ];
-        } catch (\Exception $e) {
-            log_message('error', 'Error calculando KPIs: ' . $e->getMessage());
-            return [
-                'crecimiento_usuarios' => 0,
-                'tasa_actividad' => 0,
-                'indice_seguridad' => 0,
-                'cobertura_respaldos' => 0,
-                'accesos_exitosos' => 0,
-                'intentos_fallidos' => 0,
-                'usuarios_bloqueados' => 0,
-                'respaldos_automaticos' => 0
-            ];
-        }
-    }
-
-    public function gestionUsuarios()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return redirect()->to('/login');
-        }
-        
-        $page = $this->request->getGet('page') ?? 1;
-        $perPage = 30;
-        $search = $this->request->getGet('search') ?? '';
-        
-        // Si hay búsqueda, siempre ir a página 1 para mostrar todos los resultados
-        if (!empty($search) && $page != 1) {
-            return redirect()->to(base_url('index.php/global-admin/usuarios?search=' . urlencode($search) . '&page=1'));
-        }
-        
-        $data = $this->usuarioModel->getUsuariosConRolesPaginados($page, $perPage, $search);
-        
-        // Agregar información adicional para la vista
-        $data['search'] = $search;
-        $data['has_search'] = !empty($search);
-        
-        return view('GlobalAdmin/gestion_usuarios', $data);
-    }
-
-    public function exportarUsuariosPDF()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return redirect()->to('/login');
-        }
-
-        // Obtener todos los usuarios para exportar
-        $usuarios = $this->usuarioModel->getTodosLosUsuariosConRoles();
-        
-        // Configurar zona horaria de Ecuador
-        date_default_timezone_set('America/Guayaquil');
-        
-        try {
-            // Verificar si TCPDF está disponible
-            if (!class_exists('TCPDF')) {
-                // Fallback a HTML
-                header('Content-Type: text/html; charset=utf-8');
-                echo '<h1>Reporte de Usuarios - ITSI</h1>';
-                echo '<p>Fecha: ' . date('d/m/Y H:i:s') . ' (Ecuador)</p>';
-                echo '<table border="1"><tr><th>#</th><th>Nombre</th><th>Email</th><th>Rol</th></tr>';
-                foreach ($usuarios as $i => $usuario) {
-                    echo '<tr><td>' . ($i + 1) . '</td><td>' . $usuario['nombre'] . ' ' . $usuario['apellido'] . '</td><td>' . $usuario['email'] . '</td><td>' . $usuario['nombre_rol'] . '</td></tr>';
-                }
-                echo '</table>';
-                return;
-            }
-            
-            // Crear nueva instancia de TCPDF
-            $pdf = new \TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
-            
-            // Configurar información del documento
-            $pdf->SetCreator('ITSI');
-            $pdf->SetAuthor('ITSI');
-            $pdf->SetTitle('Reporte de Usuarios');
-            
-            // Configurar márgenes
-            $pdf->SetMargins(15, 15, 15);
-            $pdf->SetHeaderMargin(5);
-            $pdf->SetFooterMargin(10);
-            
-            // Configurar saltos de página automáticos
-            $pdf->SetAutoPageBreak(TRUE, 25);
-            
-            // Configurar fuente
-            $pdf->SetFont('helvetica', '', 10);
-            
-            // Agregar página
-            $pdf->AddPage();
-            
-            // Título
-            $pdf->SetFont('helvetica', 'B', 16);
-            $pdf->Cell(0, 10, 'Instituto Tecnologico Superior Ibarra', 0, 1, 'C');
-            $pdf->SetFont('helvetica', '', 12);
-            $pdf->Cell(0, 5, 'Reporte de Usuarios del Sistema', 0, 1, 'C');
-            $pdf->Cell(0, 5, 'Fecha y Hora: ' . date('d/m/Y H:i:s') . ' (Ecuador)', 0, 1, 'C');
-            $pdf->Ln(10);
-            
-            // Información de contacto
-            $pdf->SetFont('helvetica', '', 10);
-            $pdf->Cell(0, 5, 'Direccion: Ibarra, Av. Atahualpa 14-148 y Jose M. Leoro', 0, 1, 'L');
-            $pdf->Cell(0, 5, 'Telefonos: 0978609734 / 062952535', 0, 1, 'L');
-            $pdf->Cell(0, 5, 'Email: itsiibarra@itsi.edu.ec', 0, 1, 'L');
-            $pdf->Ln(10);
-            
-            // Crear tabla manualmente
-            $pdf->SetFont('helvetica', 'B', 10);
-            $pdf->Cell(10, 7, '#', 1, 0, 'C');
-            $pdf->Cell(60, 7, 'Nombre', 1, 0, 'C');
-            $pdf->Cell(60, 7, 'Email', 1, 0, 'C');
-            $pdf->Cell(40, 7, 'Rol', 1, 1, 'C');
-            
-            $pdf->SetFont('helvetica', '', 9);
-            $contador = 1;
-            foreach ($usuarios as $usuario) {
-                $nombre = $usuario['nombre'] . ' ' . $usuario['apellido'];
-                $email = $usuario['email'];
-                $rol = $usuario['nombre_rol'];
-                
-                // Verificar si necesitamos nueva página
-                if ($pdf->GetY() > 250) {
-                    $pdf->AddPage();
-                    $pdf->SetFont('helvetica', 'B', 10);
-                    $pdf->Cell(10, 7, '#', 1, 0, 'C');
-                    $pdf->Cell(60, 7, 'Nombre', 1, 0, 'C');
-                    $pdf->Cell(60, 7, 'Email', 1, 0, 'C');
-                    $pdf->Cell(40, 7, 'Rol', 1, 1, 'C');
-                    $pdf->SetFont('helvetica', '', 9);
-                }
-                
-                $pdf->Cell(10, 6, $contador, 1, 0, 'C');
-                $pdf->Cell(60, 6, substr($nombre, 0, 25), 1, 0, 'L');
-                $pdf->Cell(60, 6, substr($email, 0, 25), 1, 0, 'L');
-                $pdf->Cell(40, 6, substr($rol, 0, 15), 1, 1, 'L');
-                $contador++;
-            }
-            
-            $pdf->Ln(10);
-            $pdf->SetFont('helvetica', '', 10);
-            $pdf->Cell(0, 5, 'Total de Usuarios: ' . count($usuarios), 0, 1, 'C');
-            $pdf->Cell(0, 5, 'Documento generado automaticamente por el Sistema de Bienestar Estudiantil', 0, 1, 'C');
-            $pdf->Cell(0, 5, 'Instituto Tecnologico Superior Ibarra - Todos los derechos reservados', 0, 1, 'C');
-            
-            // Generar PDF
-            $pdf->Output('usuarios_itsi_' . date('Y-m-d_H-i-s') . '.pdf', 'D');
-            
-        } catch (\Exception $e) {
-            // Si hay error, mostrar información de debug
-            log_message('error', 'Error generando PDF: ' . $e->getMessage());
-            
-            // Mostrar error en HTML genérico
-            log_message('error', 'Error generando PDF usuarios: ' . $e->getMessage() . ' en ' . $e->getFile() . ':' . $e->getLine());
-            header('Content-Type: text/html; charset=utf-8');
-            echo '<h1>Error generando PDF</h1>';
-            echo '<p>Ocurrió un error al generar el reporte. Por favor intente nuevamente.</p>';
-        }
-    }
-
-    public function gestionRoles()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return redirect()->to('/login');
-        }
-
-        $search = $this->request->getGet('search') ?? '';
-        
-        if (!empty($search)) {
-            $roles = $this->rolModel->buscarRoles($search);
-        } else {
-            $roles = $this->rolModel->getRolesConUsuarios();
-        }
-
-        $data = [
-            'roles' => $roles,
-            'search' => $search,
-            'estadisticas' => $this->rolModel->getEstadisticasRoles()
-        ];
-
-        return view('GlobalAdmin/gestion_roles', $data);
-    }
-
-    public function crearRol()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        $nombre = $this->getPostString('nombre');
-        $descripcion = $this->getPostString('descripcion', '');
-        $codigo = $this->getPostString('codigo', '');
-        $activo = $this->getPostBool('activo') ? 1 : 0;
-
-        // Validar que el nombre no esté vacío
-        if (empty($nombre)) {
-            return $this->response->setJSON(['success' => false, 'error' => 'El nombre del rol es obligatorio']);
-        }
-
-        // Verificar si ya existe un rol con ese nombre
-        if ($this->rolModel->existeRolConNombre($nombre)) {
-            return $this->response->setJSON(['success' => false, 'error' => 'Ya existe un rol con ese nombre']);
-        }
-
-        $data = [
-            'nombre' => $nombre,
-            'descripcion' => $descripcion
-        ];
-
-        try {
-            $this->rolModel->insert($data);
-            return $this->response->setJSON(['success' => true, 'message' => 'Rol creado exitosamente']);
-        } catch (\Exception $e) {
-            log_message('error', 'Error creando rol: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al crear el rol']);
-        }
-    }
-
-    public function obtenerRol($id)
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        $rol = $this->rolModel->find($id);
-        
-        if (!$rol) {
-            return $this->response->setJSON(['success' => false, 'error' => 'Rol no encontrado']);
-        }
-
-        return $this->response->setJSON(['success' => true, 'rol' => $rol]);
-    }
-
-    public function actualizarRol()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        $id = $this->getPostInt('id');
-        $nombre = $this->getPostString('nombre');
-        $descripcion = $this->getPostString('descripcion', '');
-        $codigo = $this->getPostString('codigo', '');
-        $activo = $this->getPostBool('activo') ? 1 : 0;
-
-        // Validar que el nombre no esté vacío
-        if (empty($nombre)) {
-            return $this->response->setJSON(['success' => false, 'error' => 'El nombre del rol es obligatorio']);
-        }
-
-        // Verificar si ya existe un rol con ese nombre (excluyendo el actual)
-        if ($this->rolModel->existeRolConNombre($nombre, $id)) {
-            return $this->response->setJSON(['success' => false, 'error' => 'Ya existe un rol con ese nombre']);
-        }
-
-        $data = [
-            'nombre' => $nombre,
-            'descripcion' => $descripcion
-        ];
-
-        try {
-            $this->rolModel->update($id, $data);
-            return $this->response->setJSON(['success' => true, 'message' => 'Rol actualizado exitosamente']);
-        } catch (\Exception $e) {
-            log_message('error', 'Error actualizando rol: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al actualizar el rol']);
-        }
-    }
-
-    public function eliminarRol()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        $id = $this->getPostInt('id');
-
-        // No permitir eliminar roles del sistema (ID 1, 2, 4)
-        if (in_array($id, [1, 2, 4])) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No se puede eliminar un rol del sistema']);
-        }
-
-        // Verificar si el rol tiene usuarios asignados
-        if (!$this->rolModel->puedeEliminarRol($id)) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No se puede eliminar el rol porque tiene usuarios asignados']);
-        }
-
-        try {
-            $this->rolModel->delete($id);
-            return $this->response->setJSON(['success' => true, 'message' => 'Rol eliminado exitosamente']);
-        } catch (\Exception $e) {
-            log_message('error', 'Error eliminando rol: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al eliminar el rol']);
-        }
-    }
-
-    public function obtenerPermisosRol($id)
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        $rol = $this->rolModel->find($id);
-        
-        if (!$rol) {
-            return $this->response->setJSON(['success' => false, 'error' => 'Rol no encontrado']);
-        }
-
-        $permisos = $this->getPermisosFromDatabase($id);
-
-        return $this->response->setJSON([
-            'success' => true, 
-            'rol' => $rol,
-            'permisos' => $permisos
-        ]);
-    }
-
-    private function getPermisosFromDatabase($rol_id)
-    {
-        $permisosBase = [
-            'dashboard' => false,
-            'usuarios' => false,
-            'roles' => false,
-            'configuracion' => false,
-            'fichas' => false,
-            'becas' => false,
-            'solicitudes' => false,
-            'reportes' => false
-        ];
-
-        $rol = $this->rolModel->find($rol_id);
-        if ($rol && !empty($rol['permisos'])) {
-            $permisosJson = json_decode($rol['permisos'], true);
-            if (is_array($permisosJson)) {
-                return array_merge($permisosBase, $permisosJson);
-            }
-        }
-
-        return $permisosBase;
-    }
-
-    public function configuracionSistema()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return redirect()->to('/login');
-        }
-
-        try {
-            $configRows = $this->db->table('configuracion_sistema')->get()->getResultArray();
-            $configuracion = [];
-            foreach ($configRows as $row) {
-                $configuracion[$row['clave']] = $row['valor'];
-            }
-            
-            return view('GlobalAdmin/configuracion_sistema', [
-                'configuracion' => $configuracion
-            ]);
-        } catch (\Exception $e) {
-            log_message('error', 'GlobalAdmin::configuracionSistema - Error: ' . $e->getMessage());
-            return view('GlobalAdmin/configuracion_sistema', [
-                'configuracion' => [],
-                'error' => 'Error cargando configuración del sistema'
-            ]);
-        }
-    }
-
-    /**
-     * Guardar configuración del sistema (AJAX desde formularios por sección)
-     */
-    public function guardarConfiguracion()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        try {
-            $postData = $this->request->getPost();
-            $adminId = session('id');
-
-            if (empty($postData)) {
-                return $this->response->setJSON(['success' => false, 'error' => 'Datos de configuración requeridos']);
-            }
-
-            // Obtener todas las configuraciones actuales
-            $existingConfigs = $this->db->table('configuracion_sistema')->get()->getResultArray();
-            
-            // Identificar qué categorías de configuración se incluyeron en este submit
-            $submittedCategories = [];
-            foreach ($existingConfigs as $c) {
-                if (array_key_exists($c['clave'], $postData)) {
-                    $submittedCategories[$c['categoria']] = true;
-                }
-            }
-
-            // Si es un submit específico de alguna categoría, actualizar los campos
-            foreach ($existingConfigs as $c) {
-                $clave = $c['clave'];
-                $categoria = $c['categoria'];
-                
-                if (isset($submittedCategories[$categoria])) {
-                    if (array_key_exists($clave, $postData)) {
-                        $valor = $postData[$clave];
-                        if ($c['tipo'] === 'boolean') {
-                            $valor = ($valor === 'on' || $valor === '1' || $valor === 1) ? '1' : '0';
-                        }
-                        $this->db->table('configuracion_sistema')
-                            ->where('clave', $clave)
-                            ->update(['valor' => $valor]);
-                    } else {
-                        // Si es boolean y pertenece a una categoría enviada pero no está en POST, se desmarcó
-                        if ($c['tipo'] === 'boolean') {
-                            $this->db->table('configuracion_sistema')
-                                ->where('clave', $clave)
-                                ->update(['valor' => '0']);
-                        }
-                    }
-                }
-            }
-
-            // Registrar en logs si existe la tabla
-            try {
-                $this->db->table('logs')->insert([
-                    'usuario_id' => $adminId,
-                    'accion' => 'actualizar_configuracion_sistema',
-                    'tabla' => 'configuracion_sistema',
-                    'valores_nuevos' => json_encode($postData),
-                    'fecha' => date('Y-m-d H:i:s'),
-                    'ip' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'
-                ]);
-            } catch (\Exception $e) {
-                log_message('warning', 'No se pudo guardar log de configuración: ' . $e->getMessage());
-            }
-                
-            return $this->response->setJSON([
-                'success' => true,
-                'message' => 'Configuración guardada correctamente'
-            ]);
-        } catch (\Exception $e) {
-            log_message('error', 'Error guardando configuración: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error del sistema']);
-        }
-    }
-
-    public function restaurarBackup()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['error' => 'No autorizado'])->setStatusCode(401);
-        }
-
-        return $this->response->setJSON(['success' => true, 'mensaje' => 'Backup restaurado exitosamente']);
-    }
-
-    public function actualizarConfiguracion()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return redirect()->to('/login');
-        }
-
-        return redirect()->back()->with('success', 'Configuración actualizada exitosamente.');
-    }
-
-    // Métodos AJAX para gestión de usuarios
-    public function crearUsuario()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['error' => 'No autorizado'])->setStatusCode(401);
-        }
-
-        try {
-            $datos = $this->request->getPost();
-            
-            // Validar datos requeridos
-            if (empty($datos['nombre']) || empty($datos['apellido']) || empty($datos['email']) || 
-                empty($datos['cedula']) || empty($datos['password']) || empty($datos['rol_id'])) {
-                return $this->response->setJSON(['error' => 'Todos los campos marcados con * son obligatorios'])->setStatusCode(400);
-            }
-
-            // Verificar si el email ya existe
-            if ($this->usuarioModel->where('email', $datos['email'])->first()) {
-                return $this->response->setJSON(['error' => 'El email ya está registrado'])->setStatusCode(400);
-            }
-
-            // Verificar si la cédula ya existe
-            if ($this->usuarioModel->where('cedula', $datos['cedula'])->first()) {
-                return $this->response->setJSON(['error' => 'La cédula ya está registrada'])->setStatusCode(400);
-            }
-
-            // Hash de la contraseña
-            $password_hash = password_hash($datos['password'], PASSWORD_DEFAULT);
-
-            // Preparar datos para insertar
-            $usuarioData = [
-                'rol_id' => $datos['rol_id'],
-                'nombre' => $datos['nombre'],
-                'apellido' => $datos['apellido'],
-                'cedula' => $datos['cedula'],
-                'email' => $datos['email'],
-                'password_hash' => $password_hash,
-                'telefono' => $datos['telefono'] ?? null,
-                'direccion' => $datos['direccion'] ?? null,
-                'carrera' => $datos['carrera'] ?? null,
-                'semestre' => $datos['semestre'] ?? null
-            ];
-
-            // Insertar usuario
-            $usuario_id = $this->usuarioModel->insert($usuarioData);
-
-            if ($usuario_id) {
-                return $this->response->setJSON([
-                    'success' => true, 
-                    'mensaje' => 'Usuario creado exitosamente',
-                    'usuario_id' => $usuario_id
-                ]);
-            } else {
-                return $this->response->setJSON(['error' => 'Error al crear el usuario'])->setStatusCode(500);
-            }
-
-        } catch (\Exception $e) {
-            log_message('error', 'Error al crear usuario: ' . $e->getMessage());
-            return $this->response->setJSON(['error' => 'Error interno del servidor'])->setStatusCode(500);
-        }
-    }
-
-    public function actualizarUsuario()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['error' => 'No autorizado'])->setStatusCode(401);
-        }
-
-        try {
-            $datos = $this->request->getPost();
-            
-            // Validar datos requeridos
-            if (empty($datos['id']) || empty($datos['nombre']) || empty($datos['apellido']) || 
-                empty($datos['email']) || empty($datos['cedula']) || empty($datos['rol_id'])) {
-                return $this->response->setJSON(['error' => 'Todos los campos marcados con * son obligatorios'])->setStatusCode(400);
-            }
-
-            $usuario_id = $datos['id'];
-
-            // Verificar si el usuario existe
-            $usuario = $this->usuarioModel->find($usuario_id);
-            if (!$usuario) {
-                return $this->response->setJSON(['error' => 'Usuario no encontrado'])->setStatusCode(404);
-            }
-
-            // Verificar si el email ya existe en otro usuario
-            $emailExistente = $this->usuarioModel->where('email', $datos['email'])->where('id !=', $usuario_id)->first();
-            if ($emailExistente) {
-                return $this->response->setJSON(['error' => 'El email ya está registrado por otro usuario'])->setStatusCode(400);
-            }
-
-            // Verificar si la cédula ya existe en otro usuario
-            $cedulaExistente = $this->usuarioModel->where('cedula', $datos['cedula'])->where('id !=', $usuario_id)->first();
-            if ($cedulaExistente) {
-                return $this->response->setJSON(['error' => 'La cédula ya está registrada por otro usuario'])->setStatusCode(400);
-            }
-
-            // Preparar datos para actualizar
-            $usuarioData = [
-                'rol_id' => $datos['rol_id'],
-                'nombre' => $datos['nombre'],
-                'apellido' => $datos['apellido'],
-                'cedula' => $datos['cedula'],
-                'email' => $datos['email'],
-                'telefono' => $datos['telefono'] ?? null,
-                'direccion' => $datos['direccion'] ?? null,
-                'carrera' => $datos['carrera'] ?? null,
-                'semestre' => $datos['semestre'] ?? null
-            ];
-
-            // Si se proporcionó una nueva contraseña, actualizarla
-            if (!empty($datos['password'])) {
-                $usuarioData['password_hash'] = password_hash($datos['password'], PASSWORD_DEFAULT);
-            }
-
-            // Actualizar usuario
-            $resultado = $this->usuarioModel->update($usuario_id, $usuarioData);
-
-            if ($resultado) {
-                return $this->response->setJSON([
-                    'success' => true, 
-                    'mensaje' => 'Usuario actualizado exitosamente'
-                ]);
-            } else {
-                return $this->response->setJSON(['error' => 'Error al actualizar el usuario'])->setStatusCode(500);
-            }
-
-        } catch (\Exception $e) {
-            log_message('error', 'Error al actualizar usuario: ' . $e->getMessage());
-            return $this->response->setJSON(['error' => 'Error interno del servidor'])->setStatusCode(500);
-        }
-    }
-
-    public function eliminarUsuario()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['error' => 'No autorizado'])->setStatusCode(401);
-        }
-
-        try {
-            $usuario_id = $this->getPostInt('id');
-            
-            if (empty($usuario_id)) {
-                return $this->response->setJSON(['error' => 'ID de usuario requerido'])->setStatusCode(400);
-            }
-
-            // Verificar si el usuario existe
-            $usuario = $this->usuarioModel->find($usuario_id);
-            if (!$usuario) {
-                return $this->response->setJSON(['error' => 'Usuario no encontrado'])->setStatusCode(404);
-            }
-
-            // No permitir eliminar el propio usuario
-            if ($usuario_id == session('id')) {
-                return $this->response->setJSON(['error' => 'No puedes eliminar tu propia cuenta'])->setStatusCode(400);
-            }
-
-            // Eliminar usuario
-            $resultado = $this->usuarioModel->delete($usuario_id);
-
-            if ($resultado) {
-                return $this->response->setJSON([
-                    'success' => true, 
-                    'mensaje' => 'Usuario eliminado exitosamente'
-                ]);
-            } else {
-                return $this->response->setJSON(['error' => 'Error al eliminar el usuario'])->setStatusCode(500);
-            }
-
-        } catch (\Exception $e) {
-            log_message('error', 'Error al eliminar usuario: ' . $e->getMessage());
-            return $this->response->setJSON(['error' => 'Error interno del servidor'])->setStatusCode(500);
-        }
-    }
-
-    public function obtenerUsuario($id)
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['error' => 'No autorizado'])->setStatusCode(401);
-        }
-
-        try {
-            $usuario = $this->usuarioModel->getUsuariosConRoles();
-            $usuario = array_filter($usuario, function($u) use ($id) {
-                return $u['id'] == $id;
-            });
-            
-            if (empty($usuario)) {
-                return $this->response->setJSON(['error' => 'Usuario no encontrado'])->setStatusCode(404);
-            }
-
-            $usuario = array_values($usuario)[0];
-            
-            return $this->response->setJSON([
-                'success' => true,
-                'usuario' => $usuario
-            ]);
-
-        } catch (\Exception $e) {
-            log_message('error', 'Error al obtener usuario: ' . $e->getMessage());
-            return $this->response->setJSON(['error' => 'Error interno del servidor'])->setStatusCode(500);
-        }
-    }
-
-    // Métodos para perfil del Super Administrador
-    public function perfil()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return redirect()->to('/login');
-        }
-
-        return view('GlobalAdmin/perfil', [
-            'usuario' => [
-                'id' => session('id'),
-                'nombre' => session('nombre'),
-                'apellido' => session('apellido'),
-                'email' => session('email'),
-                'cedula' => session('cedula'),
-                'telefono' => session('telefono'),
-                'direccion' => session('direccion'),
-                'foto_perfil' => session('foto_perfil')
-            ]
-        ]);
-    }
-
-    public function actualizarPerfil()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return redirect()->to('/login');
-        }
-
-        try {
-            $datos = $this->request->getPost();
-
-            $data = [
-                'nombre' => $datos['nombre'] ?? session('nombre'),
-                'apellido' => $datos['apellido'] ?? session('apellido'),
-                'email' => $datos['email'] ?? session('email'),
-                'telefono' => $datos['telefono'] ?? session('telefono'),
-                'direccion' => $datos['direccion'] ?? session('direccion'),
-            ];
-
-            $this->db->table('usuarios')->where('id', session('id'))->update($data);
-
-            session()->set($data);
-
-            return redirect()->back()->with('success', 'Perfil actualizado exitosamente.');
-        } catch (\Exception $e) {
-            log_message('error', 'Error actualizando perfil: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Error al actualizar perfil');
-        }
-    }
-
-    public function cambiarFotoPerfil()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['error' => 'No autorizado'])->setStatusCode(401);
-        }
-
-        try {
-            $file = $this->request->getFile('foto');
-            
-            if ($file->isValid() && !$file->hasMoved()) {
-                $newName = $file->getRandomName();
-                $file->move(ROOTPATH . 'public/uploads/perfiles/', $newName);
-                
-                session()->set('foto_perfil', $newName);
-                
-                return $this->response->setJSON(['success' => true, 'mensaje' => 'Foto actualizada exitosamente']);
-            }
-            
-            return $this->response->setJSON(['error' => 'Error al subir la imagen'])->setStatusCode(400);
-        } catch (\Exception $e) {
-            log_message('error', 'Error subiendo foto: ' . $e->getMessage());
-            return $this->response->setJSON(['error' => 'Error al subir la imagen'])->setStatusCode(500);
-        }
-    }
-
-    // Métodos para cuenta del Super Administrador
-    public function cuenta()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return redirect()->to('/login');
-        }
-
-        return view('GlobalAdmin/cuenta', [
-            'usuario' => [
-                'id' => session('id'),
-                'email' => session('email'),
-                'nombre' => session('nombre'),
-                'apellido' => session('apellido')
-            ]
-        ]);
-    }
-
-    public function cambiarPassword()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return redirect()->to('/login');
-        }
-
-        try {
-            $datos = $this->request->getPost();
-            $passwordActual = $datos['password_actual'] ?? '';
-            $nuevaPassword = $datos['new_password'] ?? '';
-            $confirmarPassword = $datos['confirm_password'] ?? '';
-
-            if (empty($passwordActual) || empty($nuevaPassword) || empty($confirmarPassword)) {
-                return redirect()->back()->with('error', 'Todos los campos son requeridos.');
-            }
-
-            $usuario = $this->db->table('usuarios')->where('id', session('id'))->get()->getRowArray();
-
-            if (!password_verify($passwordActual, $usuario['password_hash'])) {
-                return redirect()->back()->with('error', 'La contraseña actual no es correcta.');
-            }
-
-            if ($nuevaPassword !== $confirmarPassword) {
-                return redirect()->back()->with('error', 'Las contraseñas no coinciden.');
-            }
-
-            if (strlen($nuevaPassword) < 8) {
-                return redirect()->back()->with('error', 'La contraseña debe tener al menos 8 caracteres.');
-            }
-
-            $this->db->table('usuarios')
-                ->where('id', session('id'))
-                ->update(['password_hash' => password_hash($nuevaPassword, PASSWORD_DEFAULT)]);
-
-            return redirect()->back()->with('success', 'Contraseña cambiada exitosamente.');
-        } catch (\Exception $e) {
-            log_message('error', 'Error cambiando contraseña: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Error al cambiar contraseña');
-        }
-    }
-
-    public function configuracionNotificaciones()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return redirect()->to('/login');
-        }
-
-        try {
-            $datos = $this->request->getPost();
-
-            $configNotif = json_encode([
-                'email_notificaciones' => $datos['email_notificaciones'] ?? true,
-                'backup_notificaciones' => $datos['backup_notificaciones'] ?? true,
-                'login_notificaciones' => $datos['login_notificaciones'] ?? false,
-            ]);
-
-            $this->db->table('usuarios')
-                ->where('id', session('id'))
-                ->update(['configuraciones_usuario' => $configNotif]);
-
-            return redirect()->back()->with('success', 'Configuración de notificaciones actualizada.');
-        } catch (\Exception $e) {
-            log_message('error', 'Error en config notificaciones: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Error al actualizar configuración');
-        }
-    }
-
-    public function eliminarCuenta()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return redirect()->to('/login');
-        }
-
-        try {
-            $userId = session('id');
-
-            $this->db->table('usuarios')->where('id', $userId)->update([
-                'estado' => 'Inactivo',
-                'email' => 'deleted_' . $userId . '_' . session('email'),
-                'cedula' => 'DEL_' . $userId,
-            ]);
-
-            session()->destroy();
-            return redirect()->to('/login')->with('success', 'Cuenta desactivada exitosamente.');
-        } catch (\Exception $e) {
-            log_message('error', 'Error eliminando cuenta: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Error al eliminar cuenta');
-        }
-    }
-
-    public function exportarDatos()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return redirect()->to('/login');
-        }
-
-        try {
-            $usuario = $this->db->table('usuarios')->where('id', session('id'))->get()->getRowArray();
-            unset($usuario['password_hash']);
-
-            $filename = 'mis_datos_' . date('Y-m-d') . '.json';
-            $filepath = WRITEPATH . 'temp/' . $filename;
-
-            file_put_contents($filepath, json_encode($usuario, JSON_PRETTY_PRINT));
-
-            return $this->response->download($filepath, null)->setFileName($filename);
-        } catch (\Exception $e) {
-            log_message('error', 'Error exportando datos: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Error al exportar datos');
-        }
-    }
-
-    /**
-     * @deprecated Endpoint de depuración. No usar en producción.
-     * Se mantiene solo para referencia durante desarrollo.
-     */
-    public function testBusqueda()
-    {
-        if (ENVIRONMENT !== 'development') {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
-        }
-
-        if (!session('id') || session('rol_id') != 4) {
-            return redirect()->to('/login');
-        }
-
-        // Registrar acceso a endpoint de depuración
-        log_message('warning', 'Acceso a endpoint de depuración testBusqueda por usuario ID: ' . session('id'));
-
-        $search = $this->request->getGet('search') ?? '';
-        
-        // Limitar resultados para no exponer datos masivos
-        $limit = min((int)$this->request->getGet('limit') ?: 20, 50);
-        
-        $usuarios = $this->usuarioModel->getTodosLosUsuariosConRoles();
-        
-        $resultados = [];
-        foreach ($usuarios as $usuario) {
-            $nombreCompleto = $usuario['nombre'] . ' ' . $usuario['apellido'];
-            if (empty($search) || 
-                stripos($nombreCompleto, $search) !== false ||
-                stripos($usuario['email'], $search) !== false ||
-                stripos($usuario['cedula'], $search) !== false ||
-                stripos($usuario['nombre_rol'], $search) !== false) {
-                $resultados[] = $usuario;
-            }
-            if (count($resultados) >= $limit) {
-                break;
-            }
-        }
-        
-        echo "<h1>🔧 Endpoint de Depuración - Test Búsqueda</h1>";
-        echo "<p><strong>⚠️ ADVERTENCIA:</strong> Este es un endpoint de depuración. No debe usarse en producción.</p>";
-        echo "<p>Término de búsqueda: '" . esc($search) . "'</p>";
-        echo "<p>Total usuarios encontrados (limitado a {$limit}): " . count($resultados) . "</p>";
-        echo "<h2>Resultados:</h2>";
-        echo "<table border='1'>";
-        echo "<tr><th>ID</th><th>Nombre</th><th>Email</th><th>Rol</th></tr>";
-        foreach ($resultados as $usuario) {
-            echo "<tr>";
-            echo "<td>" . esc($usuario['id']) . "</td>";
-            echo "<td>" . esc($usuario['nombre'] . ' ' . $usuario['apellido']) . "</td>";
-            echo "<td>" . esc($usuario['email']) . "</td>";
-            echo "<td>" . esc($usuario['nombre_rol']) . "</td>";
-            echo "</tr>";
-        }
-        echo "</table>";
-    }
-
-    /**
-     * @deprecated Endpoint de depuración. No usar en producción.
-     * Se mantiene solo para referencia durante desarrollo.
-     */
-    public function testBusquedaDetallada()
-    {
-        if (ENVIRONMENT !== 'development') {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
-        }
-
-        if (!session('id') || session('rol_id') != 4) {
-            return redirect()->to('/login');
-        }
-
-        // Registrar acceso a endpoint de depuración
-        log_message('warning', 'Acceso a endpoint de depuración testBusquedaDetallada por usuario ID: ' . session('id'));
-
-        $search = $this->request->getGet('search') ?? '';
-        $page = max(1, min((int)$this->request->getGet('page') ?: 1, 10)); // Máx 10 páginas
-        $perPage = min((int)$this->request->getGet('per_page') ?: 30, 50); // Máx 50 por página
-        
-        echo "<h1>🔧 Endpoint de Depuración - Test Búsqueda Detallada</h1>";
-        echo "<p><strong>⚠️ ADVERTENCIA:</strong> Este es un endpoint de depuración. No debe usarse en producción.</p>";
-        echo "<p>Término de búsqueda: '" . esc($search) . "'</p>";
-        echo "<p>Página: " . esc((string)$page) . "</p>";
-        echo "<p>Usuarios por página: " . esc((string)$perPage) . "</p>";
-        
-        // Obtener datos con paginación
-        $data = $this->usuarioModel->getUsuariosConRolesPaginados($page, $perPage, $search);
-        
-        echo "<h2>Resultados de la Consulta Paginada:</h2>";
-        echo "<p>Total usuarios encontrados: " . esc((string)$data['total']) . "</p>";
-        echo "<p>Página actual: " . esc((string)$data['current_page']) . "</p>";
-        echo "<p>Total páginas: " . esc((string)$data['total_pages']) . "</p>";
-        echo "<p>Usuarios en esta página: " . esc((string)count($data['usuarios'])) . "</p>";
-        
-        echo "<h3>Usuarios en esta página:</h3>";
-        echo "<table border='1'>";
-        echo "<tr><th>ID</th><th>Nombre</th><th>Email</th><th>Rol</th></tr>";
-        foreach ($data['usuarios'] as $usuario) {
-            echo "<tr>";
-            echo "<td>" . esc($usuario['id']) . "</td>";
-            echo "<td>" . esc($usuario['nombre'] . ' ' . $usuario['apellido']) . "</td>";
-            echo "<td>" . esc($usuario['email']) . "</td>";
-            echo "<td>" . esc($usuario['nombre_rol']) . "</td>";
-            echo "</tr>";
-        }
-        echo "</table>";
-    }
-
-    // Métodos para acceso rápido a vistas de perfiles
-    public function vistaEstudiante()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return redirect()->to('/login');
-        }
-        
-        // Simular datos de estudiante para la vista
-        $data = [
-            'estudiante' => [
-                'nombre' => 'Juan Pérez',
-                'email' => 'juan.perez@estudiante.itsi.edu.ec',
-                'carrera' => 'Ingeniería Informática',
-                'semestre' => '5to Semestre'
-            ],
-            'fichas' => [
-                ['periodo' => '2024-2', 'estado' => 'Aprobada', 'fecha' => '2024-12-15'],
-                ['periodo' => '2024-1', 'estado' => 'Enviada', 'fecha' => '2024-06-20']
-            ],
-            'becas' => [
-                ['tipo' => 'Excelencia Académica', 'estado' => 'Aprobada', 'monto' => '$500'],
-                ['tipo' => 'Socioeconómica', 'estado' => 'En Revisión', 'monto' => '$300']
-            ]
-        ];
-        
-        return view('GlobalAdmin/vista_estudiante', $data);
-    }
-
-    public function vistaAdminBienestar()
-    {
-        if (!session('id') || session('rol_id') != 4) {
-            return redirect()->to('/login');
-        }
-        
-        // Simular datos de admin bienestar para la vista
-        $data = [
-            'admin' => [
-                'nombre' => 'María González',
-                'email' => 'maria.gonzalez@itsi.edu.ec',
-                'cargo' => 'Coordinadora de Bienestar Estudiantil'
-            ],
-            'estadisticas' => [
-                'total_estudiantes' => 1247,
-                'fichas_pendientes' => 45,
-                'becas_aprobadas' => 156,
-                'solicitudes_ayuda' => 23
-            ],
-            'fichas_recientes' => [
-                ['estudiante' => 'Ana López', 'periodo' => '2024-2', 'estado' => 'Pendiente'],
-                ['estudiante' => 'Carlos Ruiz', 'periodo' => '2024-2', 'estado' => 'Aprobada']
-            ]
-        ];
-        
-        return view('GlobalAdmin/vista_admin_bienestar', $data);
-    }
-
     /**
      * Obtener estadísticas del sistema de bienestar estudiantil
      */
@@ -2323,152 +468,714 @@ class GlobalAdminController extends BaseController
         return $alertas;
     }
 
+    // ──────────────────────────────────────────────
+    //  Configuración del Sistema
+    // ──────────────────────────────────────────────
+
+    public function configuracionSistema()
+    {
+        if (!session('id') || session('rol_id') != 4) {
+            return redirect()->to('/login');
+        }
+
+        try {
+            $configRows = $this->db->table('configuracion_sistema')->get()->getResultArray();
+            $configuracion = [];
+            foreach ($configRows as $row) {
+                $configuracion[$row['clave']] = $row['valor'];
+            }
+            
+            return view('GlobalAdmin/configuracion_sistema', [
+                'configuracion' => $configuracion
+            ]);
+        } catch (\Exception $e) {
+            log_message('error', 'GlobalAdmin::configuracionSistema - Error: ' . $e->getMessage());
+            return view('GlobalAdmin/configuracion_sistema', [
+                'configuracion' => [],
+                'error' => 'Error cargando configuración del sistema'
+            ]);
+        }
+    }
+
     /**
-     * Obtener métricas de rendimiento del sistema
+     * Guardar configuración del sistema (AJAX desde formularios por sección)
      */
-    public function getMetricasRendimiento()
+    public function guardarConfiguracion()
     {
         if (!session('id') || session('rol_id') != 4) {
             return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
         }
 
         try {
-            $metricas = [
-                'usuarios_activos_24h' => $this->db->table('usuarios')
-                    ->where('ultimo_acceso >=', date('Y-m-d H:i:s', strtotime('-24 hours')))
-                    ->countAllResults(),
-                
-                'fichas_creadas_semana' => $this->db->table('fichas_socioeconomicas')
-                    ->where('fecha_creacion >=', date('Y-m-d H:i:s', strtotime('-7 days')))
-                    ->countAllResults(),
-                
-                'solicitudes_procesadas_semana' => $this->db->table('solicitudes_becas')
-                    ->where('fecha_solicitud >=', date('Y-m-d H:i:s', strtotime('-7 days')))
-                    ->whereNotIn('estado', ['Pendiente'])
-                    ->countAllResults(),
-                
-                'tiempo_promedio_aprobacion' => $this->calcularTiempoPromedioAprobacion(),
-                
-                'satisfaccion_usuarios' => $this->calcularSatisfaccionUsuarios()
-            ];
+            $postData = $this->request->getPost();
+            $adminId = session('id');
+
+            if (empty($postData)) {
+                return $this->response->setJSON(['success' => false, 'error' => 'Datos de configuración requeridos']);
+            }
+
+            // Obtener todas las configuraciones actuales
+            $existingConfigs = $this->db->table('configuracion_sistema')->get()->getResultArray();
             
+            // Identificar qué categorías de configuración se incluyeron en este submit
+            $submittedCategories = [];
+            foreach ($existingConfigs as $c) {
+                if (array_key_exists($c['clave'], $postData)) {
+                    $submittedCategories[$c['categoria']] = true;
+                }
+            }
+
+            // Si es un submit específico de alguna categoría, actualizar los campos
+            foreach ($existingConfigs as $c) {
+                $clave = $c['clave'];
+                $categoria = $c['categoria'];
+                
+                if (isset($submittedCategories[$categoria])) {
+                    if (array_key_exists($clave, $postData)) {
+                        $valor = $postData[$clave];
+                        if ($c['tipo'] === 'boolean') {
+                            $valor = ($valor === 'on' || $valor === '1' || $valor === 1) ? '1' : '0';
+                        }
+                        $this->db->table('configuracion_sistema')
+                            ->where('clave', $clave)
+                            ->update(['valor' => $valor]);
+                    } else {
+                        // Si es boolean y pertenece a una categoría enviada pero no está en POST, se desmarcó
+                        if ($c['tipo'] === 'boolean') {
+                            $this->db->table('configuracion_sistema')
+                                ->where('clave', $clave)
+                                ->update(['valor' => '0']);
+                        }
+                    }
+                }
+            }
+
+            // Registrar en logs si existe la tabla
+            try {
+                $this->db->table('logs')->insert([
+                    'usuario_id' => $adminId,
+                    'accion' => 'actualizar_configuracion_sistema',
+                    'tabla' => 'configuracion_sistema',
+                    'valores_nuevos' => json_encode($postData),
+                    'fecha' => date('Y-m-d H:i:s'),
+                    'ip' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'
+                ]);
+            } catch (\Exception $e) {
+                log_message('warning', 'No se pudo guardar log de configuración: ' . $e->getMessage());
+            }
+                
             return $this->response->setJSON([
                 'success' => true,
-                'metricas' => $metricas
+                'message' => 'Configuración guardada correctamente'
             ]);
-            
         } catch (\Exception $e) {
-            log_message('error', 'Error obteniendo métricas de rendimiento: ' . $e->getMessage());
-            return $this->response->setJSON([
-                'success' => false,
-                'error' => 'Error obteniendo métricas'
+            log_message('error', 'Error guardando configuración: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error del sistema']);
+        }
+    }
+
+    public function actualizarConfiguracion()
+    {
+        if (!session('id') || session('rol_id') != 4) {
+            return redirect()->to('/login');
+        }
+
+        return redirect()->back()->with('success', 'Configuración actualizada exitosamente.');
+    }
+
+    // ──────────────────────────────────────────────
+    //  Perfil del Super Administrador
+    // ──────────────────────────────────────────────
+
+    public function perfil()
+    {
+        if (!session('id') || session('rol_id') != 4) {
+            return redirect()->to('/login');
+        }
+
+        return view('GlobalAdmin/perfil', [
+            'usuario' => [
+                'id' => session('id'),
+                'nombre' => session('nombre'),
+                'apellido' => session('apellido'),
+                'email' => session('email'),
+                'cedula' => session('cedula'),
+                'telefono' => session('telefono'),
+                'direccion' => session('direccion'),
+                'foto_perfil' => session('foto_perfil')
+            ]
+        ]);
+    }
+
+    public function actualizarPerfil()
+    {
+        if (!session('id') || session('rol_id') != 4) {
+            return redirect()->to('/login');
+        }
+
+        try {
+            $datos = $this->request->getPost();
+
+            $data = [
+                'nombre' => $datos['nombre'] ?? session('nombre'),
+                'apellido' => $datos['apellido'] ?? session('apellido'),
+                'email' => $datos['email'] ?? session('email'),
+                'telefono' => $datos['telefono'] ?? session('telefono'),
+                'direccion' => $datos['direccion'] ?? session('direccion'),
+            ];
+
+            $this->db->table('usuarios')->where('id', session('id'))->update($data);
+
+            session()->set($data);
+
+            return redirect()->back()->with('success', 'Perfil actualizado exitosamente.');
+        } catch (\Exception $e) {
+            log_message('error', 'Error actualizando perfil: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error al actualizar perfil');
+        }
+    }
+
+    public function cambiarFotoPerfil()
+    {
+        if (!session('id') || session('rol_id') != 4) {
+            return $this->response->setJSON(['error' => 'No autorizado'])->setStatusCode(401);
+        }
+
+        try {
+            $file = $this->request->getFile('foto');
+            
+            if ($file->isValid() && !$file->hasMoved()) {
+                $newName = $file->getRandomName();
+                $file->move(ROOTPATH . 'public/uploads/perfiles/', $newName);
+                
+                session()->set('foto_perfil', $newName);
+                
+                return $this->response->setJSON(['success' => true, 'mensaje' => 'Foto actualizada exitosamente']);
+            }
+            
+            return $this->response->setJSON(['error' => 'Error al subir la imagen'])->setStatusCode(400);
+        } catch (\Exception $e) {
+            log_message('error', 'Error subiendo foto: ' . $e->getMessage());
+            return $this->response->setJSON(['error' => 'Error al subir la imagen'])->setStatusCode(500);
+        }
+    }
+
+    // ──────────────────────────────────────────────
+    //  Cuenta del Super Administrador
+    // ──────────────────────────────────────────────
+
+    public function cuenta()
+    {
+        if (!session('id') || session('rol_id') != 4) {
+            return redirect()->to('/login');
+        }
+
+        return view('GlobalAdmin/cuenta', [
+            'usuario' => [
+                'id' => session('id'),
+                'email' => session('email'),
+                'nombre' => session('nombre'),
+                'apellido' => session('apellido')
+            ]
+        ]);
+    }
+
+    public function cambiarPassword()
+    {
+        if (!session('id') || session('rol_id') != 4) {
+            return redirect()->to('/login');
+        }
+
+        try {
+            $datos = $this->request->getPost();
+            $passwordActual = $datos['password_actual'] ?? '';
+            $nuevaPassword = $datos['new_password'] ?? '';
+            $confirmarPassword = $datos['confirm_password'] ?? '';
+
+            if (empty($passwordActual) || empty($nuevaPassword) || empty($confirmarPassword)) {
+                return redirect()->back()->with('error', 'Todos los campos son requeridos.');
+            }
+
+            $usuario = $this->db->table('usuarios')->where('id', session('id'))->get()->getRowArray();
+
+            if (!password_verify($passwordActual, $usuario['password_hash'])) {
+                return redirect()->back()->with('error', 'La contraseña actual no es correcta.');
+            }
+
+            if ($nuevaPassword !== $confirmarPassword) {
+                return redirect()->back()->with('error', 'Las contraseñas no coinciden.');
+            }
+
+            if (strlen($nuevaPassword) < 8) {
+                return redirect()->back()->with('error', 'La contraseña debe tener al menos 8 caracteres.');
+            }
+
+            $this->db->table('usuarios')
+                ->where('id', session('id'))
+                ->update(['password_hash' => password_hash($nuevaPassword, PASSWORD_DEFAULT)]);
+
+            return redirect()->back()->with('success', 'Contraseña cambiada exitosamente.');
+        } catch (\Exception $e) {
+            log_message('error', 'Error cambiando contraseña: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error al cambiar contraseña');
+        }
+    }
+
+    public function configuracionNotificaciones()
+    {
+        if (!session('id') || session('rol_id') != 4) {
+            return redirect()->to('/login');
+        }
+
+        try {
+            $datos = $this->request->getPost();
+
+            $configNotif = json_encode([
+                'email_notificaciones' => $datos['email_notificaciones'] ?? true,
+                'backup_notificaciones' => $datos['backup_notificaciones'] ?? true,
+                'login_notificaciones' => $datos['login_notificaciones'] ?? false,
             ]);
-        }
-    }
 
-    /**
-     * Calcular tiempo promedio de aprobación de solicitudes
-     */
-    private function calcularTiempoPromedioAprobacion()
-    {
-        try {
-            $resultado = $this->db->table('solicitudes_becas')
-                ->select('AVG(TIMESTAMPDIFF(HOUR, fecha_solicitud, fecha_aprobacion)) as promedio_horas')
-                ->where('estado', 'Aprobada')
-                ->where('fecha_aprobacion IS NOT NULL')
-                ->get()
-                ->getRowArray();
-            
-            return round($resultado['promedio_horas'] ?? 0, 1);
+            $this->db->table('usuarios')
+                ->where('id', session('id'))
+                ->update(['configuraciones_usuario' => $configNotif]);
+
+            return redirect()->back()->with('success', 'Configuración de notificaciones actualizada.');
         } catch (\Exception $e) {
-            return 0;
+            log_message('error', 'Error en config notificaciones: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error al actualizar configuración');
         }
     }
 
-    /**
-     * Calcular satisfacción promedio de usuarios
-     */
-    private function calcularSatisfaccionUsuarios()
+    public function eliminarCuenta()
     {
+        if (!session('id') || session('rol_id') != 4) {
+            return redirect()->to('/login');
+        }
+
         try {
-            $resultado = $this->db->table('solicitudes_ayuda_mejorada')
-                ->select('AVG(CAST(satisfaccion_usuario as DECIMAL)) as promedio_satisfaccion')
-                ->where('satisfaccion_usuario IS NOT NULL')
-                ->get()
-                ->getRowArray();
-            
-            return round($resultado['promedio_satisfaccion'] ?? 0, 1);
+            $userId = session('id');
+
+            $this->db->table('usuarios')->where('id', $userId)->update([
+                'estado' => 'Inactivo',
+                'email' => 'deleted_' . $userId . '_' . session('email'),
+                'cedula' => 'DEL_' . $userId,
+            ]);
+
+            session()->destroy();
+            return redirect()->to('/login')->with('success', 'Cuenta desactivada exitosamente.');
         } catch (\Exception $e) {
-            return 0;
+            log_message('error', 'Error eliminando cuenta: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error al eliminar cuenta');
         }
     }
 
+    public function exportarDatos()
+    {
+        if (!session('id') || session('rol_id') != 4) {
+            return redirect()->to('/login');
+        }
+
+        try {
+            $usuario = $this->db->table('usuarios')->where('id', session('id'))->get()->getRowArray();
+            unset($usuario['password_hash']);
+
+            $filename = 'mis_datos_' . date('Y-m-d') . '.json';
+            $filepath = WRITEPATH . 'temp/' . $filename;
+
+            file_put_contents($filepath, json_encode($usuario, JSON_PRETTY_PRINT));
+
+            return $this->response->download($filepath, null)->setFileName($filename);
+        } catch (\Exception $e) {
+            log_message('error', 'Error exportando datos: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error al exportar datos');
+        }
+    }
+
+    // ──────────────────────────────────────────────
+    //  Vistas de perfiles
+    // ──────────────────────────────────────────────
+
+    public function vistaEstudiante()
+    {
+        if (!session('id') || session('rol_id') != 4) {
+            return redirect()->to('/login');
+        }
+        
+        // Simular datos de estudiante para la vista
+        $data = [
+            'estudiante' => [
+                'nombre' => 'Juan Pérez',
+                'email' => 'juan.perez@estudiante.itsi.edu.ec',
+                'carrera' => 'Ingeniería Informática',
+                'semestre' => '5to Semestre'
+            ],
+            'fichas' => [
+                ['periodo' => '2024-2', 'estado' => 'Aprobada', 'fecha' => '2024-12-15'],
+                ['periodo' => '2024-1', 'estado' => 'Enviada', 'fecha' => '2024-06-20']
+            ],
+            'becas' => [
+                ['tipo' => 'Excelencia Académica', 'estado' => 'Aprobada', 'monto' => '$500'],
+                ['tipo' => 'Socioeconómica', 'estado' => 'En Revisión', 'monto' => '$300']
+            ]
+        ];
+        
+        return view('GlobalAdmin/vista_estudiante', $data);
+    }
+
+    public function vistaAdminBienestar()
+    {
+        if (!session('id') || session('rol_id') != 4) {
+            return redirect()->to('/login');
+        }
+        
+        // Simular datos de admin bienestar para la vista
+        $data = [
+            'admin' => [
+                'nombre' => 'María González',
+                'email' => 'maria.gonzalez@itsi.edu.ec',
+                'cargo' => 'Coordinadora de Bienestar Estudiantil'
+            ],
+            'estadisticas' => [
+                'total_estudiantes' => 1247,
+                'fichas_pendientes' => 45,
+                'becas_aprobadas' => 156,
+                'solicitudes_ayuda' => 23
+            ],
+            'fichas_recientes' => [
+                ['estudiante' => 'Ana López', 'periodo' => '2024-2', 'estado' => 'Pendiente'],
+                ['estudiante' => 'Carlos Ruiz', 'periodo' => '2024-2', 'estado' => 'Aprobada']
+            ]
+        ];
+        
+        return view('GlobalAdmin/vista_admin_bienestar', $data);
+    }
+
+    // ══════════════════════════════════════════════
+    //  FACADE METHODS (deprecated — redirect to new controllers)
+    // ══════════════════════════════════════════════
+
     /**
-     * Enviar respaldo por correo electrónico
+     * @deprecated Use GlobalAdmin\UsuariosController::gestionUsuarios()
+     */
+    public function gestionUsuarios()
+    {
+        log_message('debug', 'GlobalAdminController::gestionUsuarios() called (deprecated, use UsuariosController)');
+        return redirect()->to('global-admin/usuarios');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\UsuariosController::exportarUsuariosPDF()
+     */
+    public function exportarUsuariosPDF()
+    {
+        log_message('debug', 'GlobalAdminController::exportarUsuariosPDF() called (deprecated)');
+        return redirect()->to('global-admin/exportar-usuarios-pdf');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\UsuariosController::crearUsuario()
+     */
+    public function crearUsuario()
+    {
+        log_message('debug', 'GlobalAdminController::crearUsuario() called (deprecated, use UsuariosController)');
+        return redirect()->to('global-admin/crear-usuario');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\UsuariosController::actualizarUsuario()
+     */
+    public function actualizarUsuario()
+    {
+        log_message('debug', 'GlobalAdminController::actualizarUsuario() called (deprecated, use UsuariosController)');
+        return redirect()->to('global-admin/actualizar-usuario');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\UsuariosController::eliminarUsuario()
+     */
+    public function eliminarUsuario()
+    {
+        log_message('debug', 'GlobalAdminController::eliminarUsuario() called (deprecated, use UsuariosController)');
+        return redirect()->to('global-admin/eliminar-usuario');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\UsuariosController::obtenerUsuario()
+     */
+    public function obtenerUsuario($id)
+    {
+        log_message('debug', 'GlobalAdminController::obtenerUsuario() called (deprecated, use UsuariosController)');
+        return redirect()->to('global-admin/obtener-usuario/' . $id);
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\UsuariosController::testBusqueda()
+     */
+    public function testBusqueda()
+    {
+        log_message('debug', 'GlobalAdminController::testBusqueda() called (deprecated, use UsuariosController)');
+        return redirect()->to('global-admin/test-busqueda');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\UsuariosController::testBusquedaDetallada()
+     */
+    public function testBusquedaDetallada()
+    {
+        log_message('debug', 'GlobalAdminController::testBusquedaDetallada() called (deprecated, use UsuariosController)');
+        return redirect()->to('global-admin/test-busqueda-detallada');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\RolesController::gestionRoles()
+     */
+    public function gestionRoles()
+    {
+        log_message('debug', 'GlobalAdminController::gestionRoles() called (deprecated, use RolesController)');
+        return redirect()->to('global-admin/roles');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\RolesController::crearRol()
+     */
+    public function crearRol()
+    {
+        log_message('debug', 'GlobalAdminController::crearRol() called (deprecated, use RolesController)');
+        return redirect()->to('global-admin/crear-rol');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\RolesController::obtenerRol()
+     */
+    public function obtenerRol($id)
+    {
+        log_message('debug', 'GlobalAdminController::obtenerRol() called (deprecated, use RolesController)');
+        return redirect()->to('global-admin/obtener-rol/' . $id);
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\RolesController::actualizarRol()
+     */
+    public function actualizarRol()
+    {
+        log_message('debug', 'GlobalAdminController::actualizarRol() called (deprecated, use RolesController)');
+        return redirect()->to('global-admin/actualizar-rol');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\RolesController::eliminarRol()
+     */
+    public function eliminarRol()
+    {
+        log_message('debug', 'GlobalAdminController::eliminarRol() called (deprecated, use RolesController)');
+        return redirect()->to('global-admin/eliminar-rol');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\RolesController::obtenerPermisosRol()
+     */
+    public function obtenerPermisosRol($id)
+    {
+        log_message('debug', 'GlobalAdminController::obtenerPermisosRol() called (deprecated, use RolesController)');
+        return redirect()->to('global-admin/permisos-rol/' . $id);
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\BackupsController::respaldos()
+     */
+    public function respaldos()
+    {
+        log_message('debug', 'GlobalAdminController::respaldos() called (deprecated, use BackupsController)');
+        return redirect()->to('global-admin/respaldos');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\BackupsController::crearRespaldo()
+     */
+    public function crearRespaldo()
+    {
+        log_message('debug', 'GlobalAdminController::crearRespaldo() called (deprecated, use BackupsController)');
+        return redirect()->to('global-admin/crear-respaldo');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\BackupsController::obtenerRespaldos()
+     */
+    public function obtenerRespaldos()
+    {
+        log_message('debug', 'GlobalAdminController::obtenerRespaldos() called (deprecated, use BackupsController)');
+        return redirect()->to('global-admin/obtener-respaldos');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\BackupsController::restaurarRespaldo()
+     */
+    public function restaurarRespaldo()
+    {
+        log_message('debug', 'GlobalAdminController::restaurarRespaldo() called (deprecated, use BackupsController)');
+        return redirect()->to('global-admin/restaurar-respaldo');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\BackupsController::descargarRespaldo()
+     */
+    public function descargarRespaldo($id)
+    {
+        log_message('debug', 'GlobalAdminController::descargarRespaldo() called (deprecated, use BackupsController)');
+        return redirect()->to('global-admin/descargar-respaldo/' . $id);
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\BackupsController::eliminarRespaldo()
+     */
+    public function eliminarRespaldo()
+    {
+        log_message('debug', 'GlobalAdminController::eliminarRespaldo() called (deprecated, use BackupsController)');
+        return redirect()->to('global-admin/eliminar-respaldo');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\BackupsController::limpiarRespaldos()
+     */
+    public function limpiarRespaldos()
+    {
+        log_message('debug', 'GlobalAdminController::limpiarRespaldos() called (deprecated, use BackupsController)');
+        return redirect()->to('global-admin/limpiar-respaldos');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\BackupsController::guardarConfiguracionRespaldos()
+     */
+    public function guardarConfiguracionRespaldos()
+    {
+        log_message('debug', 'GlobalAdminController::guardarConfiguracionRespaldos() called (deprecated)');
+        return redirect()->to('global-admin/guardar-configuracion-respaldos');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\BackupsController::estadisticasRespaldos()
+     */
+    public function estadisticasRespaldos()
+    {
+        log_message('debug', 'GlobalAdminController::estadisticasRespaldos() called (deprecated)');
+        return redirect()->to('global-admin/estadisticas-respaldos');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\BackupsController::enviarRespaldoPorEmail()
      */
     public function enviarRespaldoPorEmail()
     {
-        if (!session('id') || session('rol_id') != 4) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        $respaldoId = $this->getPostInt('respaldo_id');
-        $emailDestino = $this->getPostString('email');
-        
-        if (!$respaldoId || !$emailDestino) {
-            return $this->response->setJSON(['success' => false, 'error' => 'ID de respaldo y email son requeridos']);
-        }
-
-        try {
-            // Obtener información del respaldo
-            $respaldo = $this->db->table('respaldos')->where('id', $respaldoId)->get()->getRowArray();
-            
-            if (!$respaldo) {
-                return $this->response->setJSON(['success' => false, 'error' => 'Respaldo no encontrado']);
-            }
-            
-            $filepath = $respaldo['ruta_archivo'];
-            
-            if (!file_exists($filepath)) {
-                return $this->response->setJSON(['success' => false, 'error' => 'Archivo de respaldo no encontrado']);
-            }
-
-            $mensaje = "Hola,<br><br>";
-            $mensaje .= "Se ha generado un respaldo de la base de datos del Sistema de Bienestar Estudiantil.<br><br>";
-            $mensaje .= "<b>Detalles del respaldo:</b><br>";
-            $mensaje .= "- Nombre del archivo: " . $respaldo['nombre_archivo'] . "<br>";
-            $mensaje .= "- Fecha de creación: " . $respaldo['fecha_creacion'] . "<br>";
-            $mensaje .= "- Tamaño: " . $this->formatBytes($respaldo['tamano_bytes']) . "<br>";
-            $mensaje .= "- Tipo: " . ucfirst($respaldo['tipo']) . "<br><br>";
-            $mensaje .= "El archivo se encuentra adjunto a este correo.<br><br>";
-            $mensaje .= "Saludos,<br>Sistema de Bienestar Estudiantil";
-            
-            // Usar el helper centralizado para asegurar que se usen las credenciales correctas de la DB
-            $enviado = \App\Helpers\EmailHelper::enviarCorreo(
-                $emailDestino,
-                'Respaldo de Base de Datos - ' . $respaldo['nombre_archivo'],
-                $mensaje,
-                [$filepath]
-            );
-            
-            if ($enviado) {
-                return $this->response->setJSON([
-                    'success' => true,
-                    'message' => 'Respaldo enviado por correo electrónico exitosamente'
-                ]);
-            } else {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'error' => 'Error al enviar el correo electrónico (Verifique las credenciales SMTP en Configuración)'
-                ]);
-            }
-            
-        } catch (\Exception $e) {
-            log_message('error', 'Error al enviar respaldo por email: ' . $e->getMessage());
-            return $this->response->setJSON([
-                'success' => false,
-                'error' => 'Error al enviar el respaldo por correo'
-            ]);
-        }
+        log_message('debug', 'GlobalAdminController::enviarRespaldoPorEmail() called (deprecated)');
+        return redirect()->to('global-admin/enviar-respaldo-email');
     }
-} 
+
+    /**
+     * @deprecated Use GlobalAdmin\BackupsController::crearBackup()
+     */
+    public function crearBackup()
+    {
+        log_message('debug', 'GlobalAdminController::crearBackup() called (deprecated, use BackupsController)');
+        return redirect()->to('global-admin/crear-backup');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\BackupsController::restaurarBackup()
+     */
+    public function restaurarBackup()
+    {
+        log_message('debug', 'GlobalAdminController::restaurarBackup() called (deprecated, use BackupsController)');
+        return redirect()->to('global-admin/restaurar-backup');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\LogsController::logs()
+     */
+    public function logs()
+    {
+        log_message('debug', 'GlobalAdminController::logs() called (deprecated, use LogsController)');
+        return redirect()->to('global-admin/logs');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\LogsController::obtenerLogs()
+     */
+    public function obtenerLogs()
+    {
+        log_message('debug', 'GlobalAdminController::obtenerLogs() called (deprecated, use LogsController)');
+        return redirect()->to('global-admin/obtener-logs');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\LogsController::obtenerLog()
+     */
+    public function obtenerLog($id)
+    {
+        log_message('debug', 'GlobalAdminController::obtenerLog() called (deprecated, use LogsController)');
+        return redirect()->to('global-admin/obtener-log/' . $id);
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\LogsController::eliminarLog()
+     */
+    public function eliminarLog()
+    {
+        log_message('debug', 'GlobalAdminController::eliminarLog() called (deprecated, use LogsController)');
+        return redirect()->to('global-admin/eliminar-log');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\LogsController::limpiarLogs()
+     */
+    public function limpiarLogs()
+    {
+        log_message('debug', 'GlobalAdminController::limpiarLogs() called (deprecated, use LogsController)');
+        return redirect()->to('global-admin/limpiar-logs');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\LogsController::exportarLogs()
+     */
+    public function exportarLogs()
+    {
+        log_message('debug', 'GlobalAdminController::exportarLogs() called (deprecated, use LogsController)');
+        return redirect()->to('global-admin/exportar-logs');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\LogsController::estadisticasLogs()
+     */
+    public function estadisticasLogs()
+    {
+        log_message('debug', 'GlobalAdminController::estadisticasLogs() called (deprecated, use LogsController)');
+        return redirect()->to('global-admin/estadisticas-logs');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\EstadisticasController::estadisticas()
+     */
+    public function estadisticas()
+    {
+        log_message('debug', 'GlobalAdminController::estadisticas() called (deprecated, use EstadisticasController)');
+        return redirect()->to('global-admin/estadisticas');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\EstadisticasController::obtenerEstadisticasGlobales()
+     */
+    public function obtenerEstadisticasGlobales()
+    {
+        log_message('debug', 'GlobalAdminController::obtenerEstadisticasGlobales() called (deprecated)');
+        return redirect()->to('global-admin/obtener-estadisticas-globales');
+    }
+
+    /**
+     * @deprecated Use GlobalAdmin\EstadisticasController::getMetricasRendimiento()
+     */
+    public function getMetricasRendimiento()
+    {
+        log_message('debug', 'GlobalAdminController::getMetricasRendimiento() called (deprecated)');
+        return redirect()->to('global-admin/metricas-rendimiento');
+    }
+}

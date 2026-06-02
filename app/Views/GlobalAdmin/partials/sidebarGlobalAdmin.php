@@ -75,15 +75,15 @@
                     <span class="hide-menu">ACCESO RÁPIDO</span>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="<?= base_url('index.php/admin-bienestar') ?>" aria-expanded="false">
+                    <a class="sidebar-link" href="<?= base_url('index.php/global-admin/vista-admin-bienestar') ?>" aria-expanded="false">
                         <span><i class="bi bi-arrow-right-circle"></i></span>
-                        <span class="hide-menu">Admin Bienestar</span>
+                        <span class="hide-menu">Ver vista Admin Bienestar</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="<?= base_url('index.php/estudiante') ?>" aria-expanded="false">
+                    <a class="sidebar-link" href="<?= base_url('index.php/global-admin/vista-estudiante') ?>" aria-expanded="false">
                         <span><i class="bi bi-arrow-right-circle"></i></span>
-                        <span class="hide-menu">Vista Estudiante</span>
+                        <span class="hide-menu">Ver vista Estudiante</span>
                     </a>
                 </li>
             </ul>

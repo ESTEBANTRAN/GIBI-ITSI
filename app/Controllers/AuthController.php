@@ -54,7 +54,21 @@ class AuthController extends BaseController
             );
         }
 
-        // ====== 2. Validar reCAPTCHA ======
+        // ====== 2. Validar los datos de entrada ======
+        $rules = [
+            'identificador' => 'required',
+            'password'      => 'required'
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('error', 'Por favor complete todos los campos.');
+        }
+
+        // ====== 3. Obtener datos del formulario ======
+        $identifier = $this->getPostString('identificador');
+        $password = $this->request->getPost('password');
+
+        // ====== 4. Validar reCAPTCHA ======
         // NOTA: En desarrollo se omite para pruebas automatizadas, pero se registra en log
         if (ENVIRONMENT === 'development') {
             log_message('warning', "[DEV MODE] Login sin verificar reCAPTCHA para: {$identifier}");
@@ -68,20 +82,6 @@ class AuthController extends BaseController
                 );
             }
         }
-
-        // ====== 3. Validar los datos de entrada ======
-        $rules = [
-            'identificador' => 'required',
-            'password'      => 'required'
-        ];
-
-        if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('error', 'Por favor complete todos los campos.');
-        }
-
-        // ====== 4. Obtener datos del formulario ======
-        $identifier = $this->getPostString('identificador');
-        $password = $this->request->getPost('password');
 
         log_message('debug', 'AuthController::attemptLogin - Intentando login con identificador: ' . SecurityHelper::maskEmail($identifier));
 

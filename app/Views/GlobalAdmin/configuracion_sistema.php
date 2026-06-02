@@ -142,7 +142,7 @@
                         <div class="mb-3">
                             <label for="drive_client_secret" class="form-label fw-bold">Google API Client Secret</label>
                             <div class="input-group">
-                                <input type="password" class="form-control" id="drive_client_secret" name="drive_client_secret" value="<?= esc($configuracion['drive_client_secret'] ?? '') ?>" placeholder="Ingrese su Client Secret">
+                                <input type="password" class="form-control" id="drive_client_secret" name="drive_client_secret" value="<?= !empty($configuracion['drive_client_secret']) ? '********' : '' ?>" placeholder="Ingrese su Client Secret">
                                 <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('drive_client_secret')">
                                     <i class="bi bi-eye" id="eye-drive_client_secret"></i>
                                 </button>

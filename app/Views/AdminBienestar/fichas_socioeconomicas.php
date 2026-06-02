@@ -1055,7 +1055,6 @@ function mostrarDatosSocioeconomicosEvaluacion(ficha) {
 function cargarEvaluacionExistente(fichaId) {
     // Aquí se cargaría la evaluación existente desde la base de datos
     // Por ahora se deja vacío para implementar después
-    console.log('Cargando evaluación para ficha:', fichaId);
 }
 
 // Función para guardar la evaluación socioeconómica
@@ -1103,9 +1102,6 @@ function guardarEvaluacionSocioeconomica() {
 }
 
 // Debug
-console.log('Estadísticas:', estadisticas);
-console.log('Total fichas cargadas:', <?= count($fichas ?? []) ?>);
-
 // ===== FUNCIONES PARA EVALUACIÓN AUTOMÁTICA =====
 
 // Función para abrir la evaluación automática masiva
@@ -1534,7 +1530,6 @@ function restaurarRangosDefault() {
         .then(response => response.json())
         .then(data => {
             Swal.close();
-            console.log('Respuesta del servidor:', data); // Debug
             mostrarResultadoVerificacion(data);
         })
         .catch(error => {

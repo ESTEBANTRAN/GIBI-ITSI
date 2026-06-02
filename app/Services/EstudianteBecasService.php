@@ -388,11 +388,27 @@ class EstudianteBecasService
 
         $solicitudes = $builder->orderBy('sb.fecha_solicitud', 'DESC')->get()->getResultArray();
 
-        // Obtener detalles de documentos para cada solicitud
-        foreach ($solicitudes as &$solicitud) {
-            $documentos = $this->getDocumentosSolicitud($solicitud['id']);
-            $solicitud['documentos'] = $documentos;
-            $solicitud['progreso_documentos'] = $this->calcularProgresoDocumentos($documentos);
+        // Obtener documentos de todas las solicitudes en una sola consulta
+        if (!empty($solicitudes)) {
+            $solicitudIds = array_column($solicitudes, 'id');
+            $todosDocumentos = $this->db->table('documentos_solicitud_becas dsb')
+                ->select('dsb.*, bdr.nombre_documento as documento_nombre, bdr.descripcion, bdr.obligatorio')
+                ->join('becas_documentos_requisitos bdr', 'bdr.id = dsb.documento_requerido_id')
+                ->whereIn('dsb.solicitud_beca_id', $solicitudIds)
+                ->get()
+                ->getResultArray();
+
+            $documentosPorSolicitud = [];
+            foreach ($todosDocumentos as $doc) {
+                $sid = $doc['solicitud_beca_id'];
+                $documentosPorSolicitud[$sid][] = $doc;
+            }
+
+            foreach ($solicitudes as &$solicitud) {
+                $docs = $documentosPorSolicitud[$solicitud['id']] ?? [];
+                $solicitud['documentos'] = $docs;
+                $solicitud['progreso_documentos'] = $this->calcularProgresoDocumentos($docs);
+            }
         }
 
         return $solicitudes;

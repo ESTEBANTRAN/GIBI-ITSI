@@ -732,13 +732,11 @@ $(document).ready(function() {
     // Manejar checkboxes de emigrantes (no requerir todos)
     $('input[name="quien_emigrante[]"]').change(function() {
         // No hacer nada especial, permitir selección libre
-        console.log('Checkbox emigrante cambiado:', $(this).val(), $(this).is(':checked'));
     });
 
     // Manejar checkboxes de emigrantes en edición (no requerir todos)
     $('input[name="quien_emigrante[]"]').change(function() {
         // No hacer nada especial, permitir selección libre
-        console.log('Checkbox emigrante edición cambiado:', $(this).val(), $(this).is(':checked'));
     });
 
     // Calcular diferencia entre ingresos y egresos automáticamente (formulario editar)
@@ -1006,7 +1004,6 @@ function eliminarFilaFamilia(button) {
 
 // Función para ver ficha
 function verFicha(id) {
-    console.log('Ver ficha ID:', id); // Debug
     
     // Mostrar loading
     Swal.fire({
@@ -1024,7 +1021,6 @@ function verFicha(id) {
         dataType: 'json',
         success: function(response) {
             Swal.close();
-            console.log('Respuesta:', response); // Debug
             if (response.success) {
                 $('#contenidoFicha').html(response.html);
                 $('#modalVerFicha').modal('show');
@@ -1067,7 +1063,6 @@ function verFicha(id) {
 
 // Función para editar ficha
 function editarFicha(id) {
-    console.log('Editar ficha ID:', id); // Debug
     
     // Mostrar loading
     Swal.fire({
@@ -1112,7 +1107,6 @@ function editarFicha(id) {
 
 // Función para cargar datos en el formulario de edición
 function cargarDatosEnFormulario(datos) {
-    console.log('Cargando datos:', datos); // Debug
     
     // Limpiar formulario
     $('#formEditarFicha')[0].reset();
@@ -1187,7 +1181,6 @@ function agregarFilaFamiliaConDatos(datos) {
 
 // Función para enviar ficha con confirmación
 function enviarFicha(id) {
-    console.log('Enviar ficha ID:', id); // Debug
     
     Swal.fire({
         title: '¿Estás seguro de enviar la ficha?',
@@ -1227,7 +1220,6 @@ function enviarFicha(id) {
                 data: { id: id },
                 dataType: 'json',
                 success: function(response) {
-                    console.log('Respuesta envío:', response); // Debug
                     if (response.success) {
                         Swal.fire({
                             icon: 'success',
@@ -1268,7 +1260,6 @@ $(document).ready(function() {
 
 // Función para crear nueva ficha
 function crearFicha() {
-    console.log('Creando nueva ficha...'); // Debug
     
     // Obtener el formulario
     const form = document.getElementById('formFichaSocioeconomica');
@@ -1310,7 +1301,6 @@ function crearFicha() {
         contentType: false,
         dataType: 'json',
         success: function(response) {
-            console.log('Respuesta creación:', response); // Debug
             if (response.success) {
                 Swal.fire({
                     icon: 'success',
@@ -1341,7 +1331,6 @@ function crearFicha() {
 
 // Función para exportar PDF
 function exportarFichaPDF(id) {
-    console.log('Exportar PDF ID:', id); // Debug
     
     // Mostrar loading
     Swal.fire({

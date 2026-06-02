@@ -184,6 +184,8 @@ function cambiarFoto(input) {
     if (input.files && input.files[0]) {
         const formData = new FormData();
         formData.append('foto', input.files[0]);
+        const csrfToken = document.querySelector('input[name="<?= csrf_token() ?>"]')?.value;
+        if (csrfToken) formData.append('<?= csrf_token() ?>', csrfToken);
 
         fetch('<?= base_url('index.php/perfil/cambiarFoto') ?>', {
             method: 'POST',

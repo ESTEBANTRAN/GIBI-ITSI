@@ -92,10 +92,27 @@ class AdminBienestarService
     {
         $alertas = [];
 
-        // Fichas pendientes
-        $fichasPendientes = $this->db->table('fichas_socioeconomicas')
-            ->where('estado', 'Enviada')
-            ->countAllResults();
+        // Todas las alerts en una sola consulta (3 COUNT → 1 UNION ALL)
+        $conteos = $this->db->query("
+            SELECT 'fichas' as tipo, COUNT(*) as total FROM fichas_socioeconomicas WHERE estado = 'Enviada'
+            UNION ALL
+            SELECT 'becas', COUNT(*) FROM solicitudes_becas WHERE estado = 'Pendiente'
+            UNION ALL
+            SELECT 'ayudas', COUNT(*) FROM solicitudes_ayuda WHERE estado = 'Pendiente'
+        ")->getResultArray();
+
+        $fichasPendientes = 0;
+        $solicitudesPendientes = 0;
+        $ayudasPendientes = 0;
+
+        foreach ($conteos as $row) {
+            switch ($row['tipo']) {
+                case 'fichas': $fichasPendientes = (int)$row['total']; break;
+                case 'becas': $solicitudesPendientes = (int)$row['total']; break;
+                case 'ayudas': $ayudasPendientes = (int)$row['total']; break;
+            }
+        }
+
         if ($fichasPendientes > 0) {
             $alertas[] = [
                 'tipo' => 'warning',
@@ -104,10 +121,6 @@ class AdminBienestarService
             ];
         }
 
-        // Solicitudes de becas pendientes
-        $solicitudesPendientes = $this->db->table('solicitudes_becas')
-            ->where('estado', 'Pendiente')
-            ->countAllResults();
         if ($solicitudesPendientes > 0) {
             $alertas[] = [
                 'tipo' => 'info',
@@ -116,10 +129,6 @@ class AdminBienestarService
             ];
         }
 
-        // Solicitudes de ayuda pendientes
-        $ayudasPendientes = $this->db->table('solicitudes_ayuda')
-            ->where('estado', 'Pendiente')
-            ->countAllResults();
         if ($ayudasPendientes > 0) {
             $alertas[] = [
                 'tipo' => 'danger',
@@ -128,7 +137,6 @@ class AdminBienestarService
             ];
         }
 
-        // Si no hay alertas
         if (empty($alertas)) {
             $alertas[] = [
                 'tipo' => 'success',
@@ -241,15 +249,28 @@ class AdminBienestarService
      */
     public function getEstadisticasPeriodos()
     {
-        $periodos = $this->db->table('periodos_academicos')
-            ->select('*, 
-                (SELECT COUNT(*) FROM fichas_socioeconomicas WHERE periodo_id = periodos_academicos.id) as total_fichas,
-                (SELECT COUNT(*) FROM solicitudes_becas WHERE periodo_id = periodos_academicos.id) as total_solicitudes')
-            ->orderBy('fecha_inicio', 'DESC')
-            ->get()
-            ->getResultArray();
+        $periodos = $this->db->query("
+            SELECT p.*,
+                COUNT(DISTINCT fs.id) as total_fichas,
+                COUNT(DISTINCT sb.id) as total_solicitudes
+            FROM periodos_academicos p
+            LEFT JOIN fichas_socioeconomicas fs ON fs.periodo_id = p.id
+            LEFT JOIN solicitudes_becas sb ON sb.periodo_id = p.id
+            GROUP BY p.id
+            ORDER BY p.fecha_inicio DESC
+        ")->getResultArray();
 
         return $periodos;
+    }
+
+    public function getPeriodosActivos()
+    {
+        return $this->periodoModel->where('activo', 1)->findAll();
+    }
+
+    public function getCarrerasActivas()
+    {
+        return $this->db->table('carreras')->where('activa', 1)->get()->getResultArray();
     }
 
     /**
@@ -805,13 +826,31 @@ class AdminBienestarService
                     throw new \Exception('Tipo de exportación no válido');
             }
 
-            // Aquí se implementaría la exportación a Excel/CSV
-            // Por ahora retornamos los datos
+            if ($formato === 'csv') {
+                return $this->arrayToCsv($data);
+            }
+
             return $data;
         } catch (\Exception $e) {
             log_message('error', 'Error exportando datos: ' . $e->getMessage());
             return false;
         }
+    }
+
+    private function arrayToCsv(array $data): string
+    {
+        if (empty($data)) {
+            return '';
+        }
+        $output = fopen('php://temp', 'r+');
+        fputcsv($output, array_keys($data[0]));
+        foreach ($data as $row) {
+            fputcsv($output, $row);
+        }
+        rewind($output);
+        $csv = stream_get_contents($output);
+        fclose($output);
+        return $csv;
     }
 }
 

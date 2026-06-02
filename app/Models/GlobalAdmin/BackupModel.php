@@ -45,17 +45,18 @@ class BackupModel extends Model
             $password = $dbConfig->default['password'];
             $database = $dbConfig->default['database'];
             
-            // Comando mysqldump
-            $comando = "mysqldump --host={$host} --user={$usuario}";
+            // Usar archivo temporal my.cnf para evitar exponer password en CLI
+            $myCnf = tempnam(sys_get_temp_dir(), 'mycnf');
+            $myCnfContent = "[client]\nhost=\"{$host}\"\nuser=\"{$usuario}\"\npassword=\"{$password}\"\n";
+            file_put_contents($myCnf, $myCnfContent);
             
-            if (!empty($password)) {
-                $comando .= " --password={$password}";
-            }
-            
-            $comando .= " --single-transaction --routines --triggers {$database} > {$rutaBackup}";
+            $comando = "mysqldump --defaults-extra-file={$myCnf} --single-transaction --routines --triggers {$database} > {$rutaBackup}";
             
             // Ejecutar comando
             exec($comando, $output, $returnCode);
+            
+            // Eliminar archivo temporal
+            @unlink($myCnf);
             
             if ($returnCode !== 0) {
                 throw new \Exception('Error al crear el respaldo de la base de datos');
@@ -117,17 +118,18 @@ class BackupModel extends Model
             $password = $dbConfig->default['password'];
             $database = $dbConfig->default['database'];
             
-            // Comando mysql para restaurar
-            $comando = "mysql --host={$host} --user={$usuario}";
+            // Usar archivo temporal my.cnf para evitar exponer password en CLI
+            $myCnf = tempnam(sys_get_temp_dir(), 'mycnf');
+            $myCnfContent = "[client]\nhost=\"{$host}\"\nuser=\"{$usuario}\"\npassword=\"{$password}\"\n";
+            file_put_contents($myCnf, $myCnfContent);
             
-            if (!empty($password)) {
-                $comando .= " --password={$password}";
-            }
-            
-            $comando .= " {$database} < {$rutaBackup}";
+            $comando = "mysql --defaults-extra-file={$myCnf} {$database} < {$rutaBackup}";
             
             // Ejecutar comando
             exec($comando, $output, $returnCode);
+            
+            // Eliminar archivo temporal
+            @unlink($myCnf);
             
             if ($returnCode !== 0) {
                 throw new \Exception('Error al restaurar el respaldo');

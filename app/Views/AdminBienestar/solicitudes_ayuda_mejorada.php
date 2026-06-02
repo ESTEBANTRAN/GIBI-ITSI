@@ -760,8 +760,6 @@ function insertarTexto(texto) {
 
 function mostrarModalCrearRespuesta() {
     // Solo abrir si se hace clic específicamente en "Crear Respuesta"
-    console.log('Abriendo modal de crear respuesta...');
-    
     // Cerrar el modal de responder para evitar conflictos
     const modalResponder = bootstrap.Modal.getInstance(document.getElementById('modalResponderSolicitud'));
     if (modalResponder) {
@@ -1043,14 +1041,8 @@ function actualizarVista() {
 function toggleSelectAll() {
     const selectAll = document.getElementById('selectAll');
     const checkboxes = document.querySelectorAll('.solicitud-checkbox');
-    
-    console.log('toggleSelectAll ejecutado');
-    console.log('selectAll checked:', selectAll.checked);
-    console.log('Total checkboxes:', checkboxes.length);
-    
     checkboxes.forEach((checkbox, index) => {
         checkbox.checked = selectAll.checked;
-        console.log(`Checkbox ${index} (ID: ${checkbox.value}) marcado como:`, checkbox.checked);
     });
     
     // Actualizar contador después de cambiar selección
@@ -1151,19 +1143,11 @@ function crearRespuestaRapida() {
 function obtenerSolicitudesSeleccionadas() {
     const checkboxes = document.querySelectorAll('.solicitud-checkbox:checked');
     const solicitudes = Array.from(checkboxes).map(cb => parseInt(cb.value));
-    
-    console.log('Checkboxes encontrados:', document.querySelectorAll('.solicitud-checkbox').length);
-    console.log('Checkboxes seleccionados:', checkboxes.length);
-    console.log('IDs de solicitudes seleccionadas:', solicitudes);
-    
     return solicitudes;
 }
 
 // Función para aplicar respuesta rápida a múltiples solicitudes
 function aplicarRespuestaRapida(solicitudesIds, datosRespuesta) {
-    console.log('Aplicando respuesta rápida a:', solicitudesIds);
-    console.log('Datos de respuesta:', datosRespuesta);
-    
     Swal.fire({
         title: 'Aplicando Respuesta Rápida',
         text: `Procesando ${solicitudesIds.length} solicitud(es)...`,
@@ -1186,12 +1170,7 @@ function aplicarRespuestaRapida(solicitudesIds, datosRespuesta) {
             comentario_adicional: datosRespuesta.comentarioAdicional || '',
             respuesta_personalizada: datosRespuesta.respuestaPersonalizada || ''
         };
-        
-        console.log(`Procesando solicitud ${solicitudId}:`, datos);
-        
         const url = '<?= base_url('admin-bienestar/crear-respuesta-rapida') ?>';
-        console.log(`URL de la petición: ${url}`);
-        
         fetch(url, {
             method: 'POST',
             headers: {
@@ -1201,7 +1180,6 @@ function aplicarRespuestaRapida(solicitudesIds, datosRespuesta) {
             body: JSON.stringify(datos)
         })
         .then(response => {
-            console.log(`Respuesta para solicitud ${solicitudId}:`, response);
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
@@ -1209,8 +1187,6 @@ function aplicarRespuestaRapida(solicitudesIds, datosRespuesta) {
         })
         .then(data => {
             procesadas++;
-            console.log(`Resultado para solicitud ${solicitudId}:`, data);
-            
             if (data.success) {
                 exitosas++;
             } else {
@@ -1308,16 +1284,12 @@ function exportarSolicitudes() {
         }
     })
     .then(response => {
-        console.log('Respuesta de exportación:', response);
-        
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         
         // Verificar el tipo de contenido
         const contentType = response.headers.get('content-type');
-        console.log('Tipo de contenido:', contentType);
-        
         if (contentType && contentType.includes('application/json')) {
             // Si es JSON, hay un error
             return response.json().then(data => {
@@ -1329,9 +1301,6 @@ function exportarSolicitudes() {
         return response.blob();
     })
     .then(blob => {
-        console.log('Blob recibido:', blob);
-        console.log('Tamaño del blob:', blob.size, 'bytes');
-        
         if (blob.size < 100) {
             throw new Error('El archivo generado está vacío o es muy pequeño');
         }
@@ -1373,8 +1342,6 @@ function exportarSolicitudes() {
 }
 
 function verDetalleSolicitud(solicitudId) {
-    console.log('Abriendo modal de responder solicitud para ID:', solicitudId);
-    
     fetch(`<?= base_url('admin-bienestar/detalle-solicitud-ayuda') ?>/${solicitudId}`)
     .then(response => response.json())
     .then(data => {
@@ -1681,20 +1648,11 @@ function actualizarContadorSeleccionadas() {
 
 // Función de prueba para verificar selección
 function probarSeleccion() {
-    console.log('=== PRUEBA DE SELECCIÓN ===');
-    
     const totalCheckboxes = document.querySelectorAll('.solicitud-checkbox').length;
     const checkboxesSeleccionados = document.querySelectorAll('.solicitud-checkbox:checked').length;
     const selectAll = document.getElementById('selectAll');
-    
-    console.log('Total checkboxes:', totalCheckboxes);
-    console.log('Checkboxes seleccionados:', checkboxesSeleccionados);
-    console.log('SelectAll checked:', selectAll ? selectAll.checked : 'NO ENCONTRADO');
-    
     // Mostrar IDs de los seleccionados
     const seleccionados = Array.from(document.querySelectorAll('.solicitud-checkbox:checked')).map(cb => cb.value);
-    console.log('IDs seleccionados:', seleccionados);
-    
     // Mostrar en alerta
     Swal.fire({
         title: 'Información de Selección',
@@ -1803,11 +1761,6 @@ function inicializarGraficosSolicitudes() {
     };
     
     // Debug
-    console.log('Estadísticas Estado:', estadisticasEstado);
-    console.log('Estadísticas Prioridad:', estadisticasPrioridad);
-    console.log('Datos procesados Estado:', datosEstado);
-    console.log('Datos procesados Prioridad:', datosPrioridad);
-    
     // Fallback si no hay datos
     if (datosEstado.labels.length === 0) {
         datosEstado.labels = ['Sin datos'];
@@ -1971,8 +1924,6 @@ function inicializarGraficosSolicitudes() {
 
 <script>
 function verHistorialSolicitudes(estudianteId, nombreEstudiante) {
-    console.log('Abriendo historial de solicitudes para estudiante ID:', estudianteId);
-    
     // Mostrar loading
     Swal.fire({
         title: 'Cargando Historial',

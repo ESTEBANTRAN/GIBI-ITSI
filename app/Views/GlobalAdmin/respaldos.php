@@ -98,18 +98,7 @@
                                      <span class="text-center">Crear Respaldo</span>
                                  </button>
                              </div>
-                             <div class="col-md-2">
-                                 <button type="button" class="btn btn-success w-100 h-100 d-flex flex-column align-items-center justify-content-center py-4" onclick="restaurarRespaldo()">
-                                     <i class="bi bi-arrow-clockwise mb-2" style="font-size: 2rem;"></i>
-                                     <span class="text-center">Restaurar</span>
-                                 </button>
-                             </div>
-                             <div class="col-md-2">
-                                 <button type="button" class="btn btn-info w-100 h-100 d-flex flex-column align-items-center justify-content-center py-4" onclick="descargarRespaldo()">
-                                     <i class="bi bi-download mb-2" style="font-size: 2rem;"></i>
-                                     <span class="text-center">Descargar</span>
-                                 </button>
-                             </div>
+
                              <div class="col-md-2">
                                  <button type="button" class="btn btn-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center py-4" onclick="configurarRespaldos()">
                                      <i class="bi bi-gear mb-2" style="font-size: 2rem;"></i>
@@ -245,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function cargarRespaldos() {
     $.ajax({
-        url: '<?= base_url('index.php/global-admin/obtener-lista-respaldos') ?>',
+        url: '<?= base_url('index.php/global-admin/obtener-respaldos') ?>',
         type: 'GET',
         cache: false,
         success: function(response) {

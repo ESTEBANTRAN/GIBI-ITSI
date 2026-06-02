@@ -31,7 +31,7 @@ class PdfCodigoVerificacionModel extends Model
         do {
             // Formato: ITSI-YYYYMMDD-HHMMSS-XXXXX
             $fecha = date('Ymd-His');
-            $random = strtoupper(substr(md5(uniqid()), 0, 5));
+            $random = strtoupper(substr(bin2hex(random_bytes(4)), 0, 5));
             $codigo = "ITSI-{$fecha}-{$random}";
             
             // Verificar que no exista
