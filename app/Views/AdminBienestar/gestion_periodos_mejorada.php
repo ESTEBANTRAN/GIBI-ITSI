@@ -537,7 +537,6 @@ function guardarPeriodo() {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         mostrarNotificacion('Error de conexión', 'error');
     });
 }
@@ -750,7 +749,6 @@ function verPeriodoCompleto(periodoId) {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             Swal.close();
             mostrarNotificacion('Error de conexión', 'error');
         });

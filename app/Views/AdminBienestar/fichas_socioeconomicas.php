@@ -2,6 +2,34 @@
 
 <?= $this->section('content') ?>
 
+<?php
+if (!function_exists('obtenerCategoriaSocioeconomica')) {
+    function obtenerCategoriaSocioeconomica($puntaje) {
+        if (empty($puntaje)) return 'Sin Evaluación';
+        $puntajeVal = floatval($puntaje);
+        if ($puntajeVal == 3.00) return 'A';
+        if ($puntajeVal == 2.00) return 'B';
+        if ($puntajeVal == 1.00) return 'C';
+        
+        // Legacy scores (> 3.00)
+        if ($puntajeVal >= 8.00) return 'A';
+        if ($puntajeVal >= 6.00) return 'B';
+        return 'C';
+    }
+}
+
+if (!function_exists('obtenerBadgeCategoria')) {
+    function obtenerBadgeCategoria($puntaje) {
+        $cat = obtenerCategoriaSocioeconomica($puntaje);
+        $class = 'bg-secondary';
+        if ($cat === 'A') $class = 'bg-danger';
+        elseif ($cat === 'B') $class = 'bg-warning text-dark';
+        elseif ($cat === 'C') $class = 'bg-success';
+        return '<span class="badge ' . $class . ' ms-1">Categoría ' . $cat . '</span>';
+    }
+}
+?>
+
 <!-- Page Header -->
 <div class="row">
     <div class="col-12">
@@ -68,6 +96,16 @@
                 </div>
             </div>
             <div class="row mt-3">
+                <div class="col-md-3">
+                    <label for="filtroEvaluacion" class="form-label">Evaluación</label>
+                    <select class="form-select" id="filtroEvaluacion" name="evaluacion">
+                        <option value="">Todas</option>
+                        <option value="con" <?= (isset($filtros['evaluacion']) && $filtros['evaluacion'] === 'con') ? 'selected' : '' ?>>Con Evaluación</option>
+                        <option value="sin" <?= (isset($filtros['evaluacion']) && $filtros['evaluacion'] === 'sin') ? 'selected' : '' ?>>Sin Evaluación</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-3">
                 <div class="col-12">
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-search"></i> Aplicar Filtros
@@ -86,7 +124,7 @@
     <div class="d-flex align-items-center">
         <h4><i class="bi bi-award me-2"></i>ESTUDIANTES BECADOS</h4>
         <div class="section-stats ms-3">
-            <span class="stat-item">Total: <?= isset($estadisticasBecados['total']) ? $estadisticasBecados['total'] : count($fichas ?? []) ?></span>
+            <span class="stat-item">Total: <?= isset($paginacion['total_registros']) ? $paginacion['total_registros'] : count($fichas ?? []) ?></span>
             <span class="stat-item">Enviadas: <?= isset($estadisticasBecados['enviadas']) ? $estadisticasBecados['enviadas'] : 0 ?></span>
             <span class="stat-item">Aprobadas: <?= isset($estadisticasBecados['aprobadas']) ? $estadisticasBecados['aprobadas'] : 0 ?></span>
             <span class="stat-item">Rechazadas: <?= isset($estadisticasBecados['rechazadas']) ? $estadisticasBecados['rechazadas'] : 0 ?></span>
@@ -107,6 +145,7 @@
                     <th>Carrera</th>
                     <th>Período</th>
                     <th>Estado</th>
+                    <th>Evaluación</th>
                     <th>Estado Beca</th>
                     <th>Fecha Envío</th>
                     <th>Acciones</th>
@@ -115,7 +154,7 @@
             <tbody>
                 <?php if (empty($fichas)): ?>
                 <tr>
-                    <td colspan="7" class="empty-state">
+                    <td colspan="8" class="empty-state">
                         <i class="bi bi-inbox"></i>
                         <p>No se encontraron fichas de estudiantes becados con los filtros aplicados</p>
                     </td>
@@ -140,16 +179,27 @@
                     <td><?= esc($ficha['periodo_nombre'] ?? '') ?></td>
                     <td>
                         <?php
-                        $estadoClass = 'bg-secondary';
-                        $estadoText = $ficha['estado'] ?? 'Sin estado';
-                        switch($ficha['estado'] ?? '') {
-                            case 'Enviada': $estadoClass = 'bg-info'; break;
-                            case 'Revisada': $estadoClass = 'bg-warning'; break;
-                            case 'Aprobada': $estadoClass = 'bg-success'; break;
-                            case 'Rechazada': $estadoClass = 'bg-danger'; break;
-                        }
+                        $estado = $ficha['estado'] ?? 'Sin estado';
+                        if ($estado === 'Enviada'):
                         ?>
-                        <span class="badge <?= $estadoClass ?>"><?= esc($estadoText) ?></span>
+                            <span class="badge bg-info">Enviada</span>
+                        <?php elseif ($estado === 'Aprobada'): ?>
+                            <span class="badge bg-success">Aprobada</span>
+                        <?php elseif ($estado === 'Rechazada'): ?>
+                            <span class="badge bg-danger">Rechazada</span>
+                        <?php else: ?>
+                            <span class="badge bg-secondary"><?= esc($estado) ?></span>
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <?php if (($ficha['revisada_por_admin'] ?? 0) == 1): ?>
+                            <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Evaluada</span>
+                            <?php if (!empty($ficha['puntaje_calculado'])): ?>
+                                <?= obtenerBadgeCategoria($ficha['puntaje_calculado']) ?>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <span class="badge bg-warning text-dark"><i class="bi bi-clock me-1"></i>Sin Evaluación</span>
+                        <?php endif; ?>
                     </td>
                     <td>
                         <span class="badge bg-primary">Solicitante</span>
@@ -181,6 +231,12 @@
                                 <i class="bi bi-x-lg"></i>
                             </button>
                             <?php endif; ?>
+                            <?php if (($ficha['estado'] ?? '') === 'Aprobada'): ?>
+                            <button type="button" class="btn btn-sm btn-outline-info" 
+                                    onclick="descargarFicha(<?= $ficha['id'] ?? 0 ?>)" title="Descargar PDF">
+                                <i class="bi bi-download"></i>
+                            </button>
+                            <?php endif; ?>
                         </div>
                     </td>
                 </tr>
@@ -196,7 +252,7 @@
     <div class="d-flex align-items-center">
         <h4><i class="bi bi-people me-2"></i>ESTUDIANTES</h4>
         <div class="section-stats ms-3">
-            <span class="stat-item">Total: <?= count($fichas ?? []) ?></span>
+            <span class="stat-item">Total: <?= isset($paginacion['total_registros']) ? $paginacion['total_registros'] : count($fichas ?? []) ?></span>
             <span class="stat-item">Enviadas: <?= isset($estadisticasBecados['enviadas']) ? $estadisticasBecados['enviadas'] : 0 ?></span>
         </div>
     </div>
@@ -236,6 +292,7 @@
                     <th>Carrera</th>
                     <th>Período</th>
                     <th>Estado</th>
+                    <th>Evaluación</th>
                     <th>Fecha Envío</th>
                     <th>Acciones</th>
                 </tr>
@@ -243,7 +300,7 @@
             <tbody>
                 <?php if (empty($fichas)): ?>
                 <tr>
-                    <td colspan="6" class="empty-state">
+                    <td colspan="7" class="empty-state">
                         <i class="bi bi-inbox"></i>
                         <p>No se encontraron fichas de estudiantes con los filtros aplicados</p>
                     </td>
@@ -268,16 +325,27 @@
                     <td><?= esc($ficha['periodo_nombre'] ?? '') ?></td>
                     <td>
                         <?php
-                        $estadoClass = 'bg-secondary';
-                        $estadoText = $ficha['estado'] ?? 'Sin estado';
-                        switch($ficha['estado'] ?? '') {
-                            case 'Enviada': $estadoClass = 'bg-info'; break;
-                            case 'Revisada': $estadoClass = 'bg-warning'; break;
-                            case 'Aprobada': $estadoClass = 'bg-success'; break;
-                            case 'Rechazada': $estadoClass = 'bg-danger'; break;
-                        }
+                        $estado = $ficha['estado'] ?? 'Sin estado';
+                        if ($estado === 'Enviada'):
                         ?>
-                        <span class="badge <?= $estadoClass ?>"><?= esc($estadoText) ?></span>
+                            <span class="badge bg-info">Enviada</span>
+                        <?php elseif ($estado === 'Aprobada'): ?>
+                            <span class="badge bg-success">Aprobada</span>
+                        <?php elseif ($estado === 'Rechazada'): ?>
+                            <span class="badge bg-danger">Rechazada</span>
+                        <?php else: ?>
+                            <span class="badge bg-secondary"><?= esc($estado) ?></span>
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <?php if (($ficha['revisada_por_admin'] ?? 0) == 1): ?>
+                            <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Evaluada</span>
+                            <?php if (!empty($ficha['puntaje_calculado'])): ?>
+                                <?= obtenerBadgeCategoria($ficha['puntaje_calculado']) ?>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <span class="badge bg-warning text-dark"><i class="bi bi-clock me-1"></i>Sin Evaluación</span>
+                        <?php endif; ?>
                     </td>
                     <td>
                         <?php if (!empty($ficha['fecha_envio'])): ?>
@@ -309,6 +377,79 @@
         </table>
     </div>
 </div>
+
+<!-- Paginación -->
+<?php if (isset($paginacion) && $paginacion['total_paginas'] > 1): ?>
+<div class="card mt-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted">
+                Mostrando <?= ($paginacion['offset'] + 1) ?> a <?= min($paginacion['offset'] + $paginacion['por_pagina'], $paginacion['total_registros']) ?> 
+                de <?= $paginacion['total_registros'] ?> fichas
+            </div>
+            <nav aria-label="Paginación de fichas">
+                <ul class="pagination pagination-sm mb-0">
+                    <?php if ($paginacion['pagina_actual'] > 1): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?= $paginacion['pagina_actual'] - 1 ?>" aria-label="Anterior">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    <?php else: ?>
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo;</span>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php
+                    $inicio = max(1, $paginacion['pagina_actual'] - 2);
+                    $fin = min($paginacion['total_paginas'], $paginacion['pagina_actual'] + 2);
+
+                    if ($inicio > 1): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1">1</a>
+                        </li>
+                        <?php if ($inicio > 2): ?>
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        <?php endif; ?>
+                    <?php endif; ?>
+
+                    <?php for ($i = $inicio; $i <= $fin; $i++): ?>
+                        <li class="page-item <?= $i == $paginacion['pagina_actual'] ? 'active' : '' ?>">
+                            <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+                        </li>
+                    <?php endfor; ?>
+
+                    <?php if ($fin < $paginacion['total_paginas']): ?>
+                        <?php if ($fin < $paginacion['total_paginas'] - 1): ?>
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        <?php endif; ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?= $paginacion['total_paginas'] ?>"><?= $paginacion['total_paginas'] ?></a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php if ($paginacion['pagina_actual'] < $paginacion['total_paginas']): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?= $paginacion['pagina_actual'] + 1 ?>" aria-label="Siguiente">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    <?php else: ?>
+                        <li class="page-item disabled">
+                            <span class="page-link">&raquo;</span>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
 <!-- Gráficos de Estadísticas -->
 <div class="row mt-4">
@@ -461,9 +602,27 @@
 </style>
 
 <script>
+// Definición dinámica de URLs base para evitar CORS y problemas con Serveo/túneles
+const SITE_ROOT = window.location.origin + window.location.pathname.split('/admin-bienestar/')[0] + '/';
+const ADMIN_BASE = SITE_ROOT + 'admin-bienestar/';
+
+// Helper JS para mapear puntajes a Categorías
+function obtenerCategoriaSocioeconomica(puntaje) {
+    if (!puntaje) return 'Sin Evaluación';
+    const p = parseFloat(puntaje);
+    if (p === 3.0) return 'A';
+    if (p === 2.0) return 'B';
+    if (p === 1.0) return 'C';
+    
+    // Legacy scores
+    if (p >= 8.0) return 'A';
+    if (p >= 6.0) return 'B';
+    return 'C';
+}
+
 // Datos para gráficos
 const estadisticas = {
-    total: <?= count($fichas ?? []) ?>,
+    total: <?= isset($estadisticasBecados['total']) ? $estadisticasBecados['total'] : count($fichas ?? []) ?>,
     enviadas: <?= isset($estadisticasBecados['enviadas']) ? $estadisticasBecados['enviadas'] : 0 ?>,
     revisadas: <?= isset($estadisticasBecados['revisadas']) ? $estadisticasBecados['revisadas'] : 0 ?>,
     aprobadas: <?= isset($estadisticasBecados['aprobadas']) ? $estadisticasBecados['aprobadas'] : 0 ?>,
@@ -569,7 +728,7 @@ function verFicha(id) {
     });
     
     // Obtener detalles de la ficha via AJAX
-    fetch(`<?= base_url('admin-bienestar/ver-ficha/') ?>${id}`)
+    fetch(ADMIN_BASE + 'ver-ficha/' + id)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -580,7 +739,6 @@ function verFicha(id) {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             Swal.fire('Error', 'Error al cargar la ficha', 'error');
         });
 }
@@ -672,7 +830,7 @@ function aprobarFicha(id) {
     }).then((result) => {
         if (result.isConfirmed) {
             // Realizar petición AJAX para aprobar
-            fetch(`<?= base_url('admin-bienestar/aprobar-ficha') ?>/${id}`, {
+            fetch(ADMIN_BASE + 'aprobar-ficha/' + id, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -690,7 +848,6 @@ function aprobarFicha(id) {
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
                 Swal.fire('Error', 'Error al aprobar la ficha', 'error');
             });
         }
@@ -718,7 +875,7 @@ function rechazarFicha(id) {
             const formData = new FormData();
             formData.append('motivo', result.value);
             
-            fetch(`<?= base_url('admin-bienestar/rechazar-ficha') ?>/${id}`, {
+            fetch(ADMIN_BASE + 'rechazar-ficha/' + id, {
                 method: 'POST',
                 body: formData
             })
@@ -733,7 +890,6 @@ function rechazarFicha(id) {
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
                 Swal.fire('Error', 'Error al rechazar la ficha', 'error');
             });
         }
@@ -751,8 +907,8 @@ function descargarFicha(id) {
         }
     });
     
-    // Realizar descarga
-    window.open(`<?= base_url('admin-bienestar/exportar-ficha-pdf/') ?>${id}`, '_blank');
+    // Realizar descarga usando window.location.href para evitar popup blockers
+    window.location.href = ADMIN_BASE + 'exportar-ficha-pdf/' + id;
     
     // Cerrar indicador de carga después de un momento
     setTimeout(() => {
@@ -772,7 +928,7 @@ function verVistaPreviaFicha(id) {
     });
     
     // Obtener datos de la ficha para la vista previa
-    fetch(`<?= base_url('admin-bienestar/ver-ficha/') ?>${id}`)
+    fetch(ADMIN_BASE + 'ver-ficha/' + id)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -783,7 +939,6 @@ function verVistaPreviaFicha(id) {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             Swal.fire('Error', 'Error al cargar la vista previa', 'error');
         });
 }
@@ -888,6 +1043,9 @@ function mostrarVistaPreviaFicha(ficha) {
 
 // Función para abrir la evaluación socioeconómica
 function evaluacionSocioeconomica(id) {
+    // Guardar el ID en el hidden input
+    document.getElementById('idFichaActual').value = id;
+    
     // Mostrar modal
     const modal = new bootstrap.Modal(document.getElementById('modalEvaluacionSocioeconomica'));
     modal.show();
@@ -897,7 +1055,7 @@ function evaluacionSocioeconomica(id) {
     document.getElementById('contenidoEvaluacion').style.display = 'none';
     
     // Obtener datos de la ficha
-    fetch(`<?= base_url('admin-bienestar/ver-ficha/') ?>${id}`)
+    fetch(ADMIN_BASE + 'ver-ficha/' + id)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -905,14 +1063,13 @@ function evaluacionSocioeconomica(id) {
                 mostrarInfoEstudianteEvaluacion(ficha);
                 
                 // Cargar evaluación existente si existe
-                cargarEvaluacionExistente(id);
+                cargarEvaluacionExistente(ficha);
             } else {
                 Swal.fire('Error', data.error, 'error');
                 modal.hide();
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             Swal.fire('Error', 'Error al cargar la ficha', 'error');
             modal.hide();
         })
@@ -942,7 +1099,7 @@ function mostrarInfoEstudianteEvaluacion(ficha) {
             </div>
         </div>
         <div class="row mt-2">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <strong>Estado de la Ficha:</strong> 
                 <span class="badge ${ficha.estado === 'Aprobada' ? 'bg-success' : 
                                    ficha.estado === 'Rechazada' ? 'bg-danger' : 
@@ -950,7 +1107,14 @@ function mostrarInfoEstudianteEvaluacion(ficha) {
                     ${ficha.estado}
                 </span>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
+                <strong>Evaluación:</strong> 
+                <span class="badge ${ficha.revisada_por_admin == 1 ? 'bg-success' : 'bg-warning'}">
+                    ${ficha.revisada_por_admin == 1 ? 'Evaluada' : 'Sin Evaluación'}
+                </span>
+                ${ficha.puntaje_calculado ? `<span class="badge ${obtenerCategoriaSocioeconomica(ficha.puntaje_calculado) === 'A' ? 'bg-danger' : obtenerCategoriaSocioeconomica(ficha.puntaje_calculado) === 'B' ? 'bg-warning text-dark' : 'bg-success'} ms-1">Categoría ${obtenerCategoriaSocioeconomica(ficha.puntaje_calculado)}</span>` : ''}
+            </div>
+            <div class="col-md-4">
                 <strong>Fecha de Creación:</strong> ${new Date(ficha.fecha_creacion).toLocaleDateString('es-ES')}
             </div>
         </div>
@@ -970,7 +1134,6 @@ function mostrarDatosSocioeconomicosEvaluacion(ficha) {
             datosFicha = JSON.parse(ficha.json_data);
         }
     } catch (e) {
-        console.error('Error parseando JSON:', e);
     }
     
     // Crear elemento para mostrar datos socioeconómicos
@@ -1052,32 +1215,87 @@ function mostrarDatosSocioeconomicosEvaluacion(ficha) {
 }
 
 // Función para cargar evaluación existente
-function cargarEvaluacionExistente(fichaId) {
-    // Aquí se cargaría la evaluación existente desde la base de datos
-    // Por ahora se deja vacío para implementar después
+function cargarEvaluacionExistente(ficha) {
+    const categoriaA = document.getElementById('categoria_a');
+    const categoriaB = document.getElementById('categoria_b');
+    const categoriaC = document.getElementById('categoria_c');
+    const observaciones = document.getElementById('observacionesEvaluacion');
+    const btnGuardar = document.getElementById('btnGuardarEvaluacion');
+    const radios = document.querySelectorAll('input[name="categoria_socioeconomica"]');
+    
+    // Buscar o crear badge de estado de evaluación
+    let badgeEval = document.getElementById('badgeEstadoEvaluacion');
+    if (!badgeEval) {
+        badgeEval = document.createElement('div');
+        badgeEval.id = 'badgeEstadoEvaluacion';
+        badgeEval.className = 'mt-2';
+        const infoContainer = document.getElementById('infoEstudianteEvaluacion');
+        if (infoContainer) {
+            infoContainer.appendChild(badgeEval);
+        }
+    }
+    
+    if (ficha.revisada_por_admin == 1) {
+        // Evaluación ya fue realizada - seleccionar categoría según puntaje
+        const puntaje = ficha.puntaje_calculado || 0;
+        if (puntaje == 3) {
+            categoriaA.checked = true;
+        } else if (puntaje == 2) {
+            categoriaB.checked = true;
+        } else if (puntaje == 1) {
+            categoriaC.checked = true;
+        }
+        
+        observaciones.value = ficha.observaciones || '';
+        
+        // Deshabilitar todos los inputs
+        radios.forEach(r => r.disabled = true);
+        observaciones.disabled = true;
+        
+        // Cambiar botón
+        btnGuardar.innerHTML = '<i class="bi bi-check-circle me-2"></i>Evaluación ya realizada';
+        btnGuardar.disabled = true;
+        
+        // Mostrar badge
+        badgeEval.innerHTML = '<span class="badge bg-success fs-6"><i class="bi bi-check-circle me-1"></i>Esta ficha ya fue evaluada</span>';
+    } else {
+        // No evaluada - habilitar inputs y resetear
+        radios.forEach(r => { r.disabled = false; r.checked = false; });
+        observaciones.disabled = false;
+        observaciones.value = '';
+        
+        btnGuardar.innerHTML = '<i class="bi bi-save me-2"></i>Guardar Evaluación';
+        btnGuardar.disabled = false;
+        
+        badgeEval.innerHTML = '<span class="badge bg-warning fs-6"><i class="bi bi-clock me-1"></i>Pendiente de evaluación</span>';
+    }
 }
 
 // Función para guardar la evaluación socioeconómica
 function guardarEvaluacionSocioeconomica() {
+    const fichaId = document.getElementById('idFichaActual').value;
     const categoriaSeleccionada = document.querySelector('input[name="categoria_socioeconomica"]:checked');
     const observaciones = document.getElementById('observacionesEvaluacion').value;
+    
+    if (!fichaId) {
+        Swal.fire('Error', 'No se ha identificado la ficha a evaluar', 'error');
+        return;
+    }
     
     if (!categoriaSeleccionada) {
         Swal.fire('Error', 'Debe seleccionar una categoría socioeconómica', 'error');
         return;
     }
     
-    const datosEvaluacion = {
-        categoria: categoriaSeleccionada.value,
-        observaciones: observaciones,
-        fecha_evaluacion: new Date().toISOString(),
-        admin_evaluador_id: <?= session('id') ?? 0 ?>
-    };
+    const formData = new FormData();
+    formData.append('ficha_id', fichaId);
+    formData.append('categoria', categoriaSeleccionada.value);
+    formData.append('observaciones', observaciones);
     
     // Mostrar confirmación
     Swal.fire({
         title: '¿Guardar Evaluación?',
-        text: `Se guardará la categoría ${datosEvaluacion.categoria} para el estudiante`,
+        text: `Se guardará la categoría ${categoriaSeleccionada.value} para el estudiante`,
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#ffc107',
@@ -1086,16 +1304,39 @@ function guardarEvaluacionSocioeconomica() {
         cancelButtonText: 'Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            // Aquí se enviaría la evaluación a la base de datos
-            // Por ahora se simula el guardado
-            Swal.fire('¡Guardado!', 'La evaluación socioeconómica ha sido guardada exitosamente', 'success').then(() => {
-                // Cerrar modal
-                const modal = bootstrap.Modal.getInstance(document.getElementById('modalEvaluacionSocioeconomica'));
-                modal.hide();
-                
-                // Limpiar formulario
-                document.querySelector('input[name="categoria_socioeconomica"]:checked').checked = false;
-                document.getElementById('observacionesEvaluacion').value = '';
+            Swal.fire({
+                title: 'Guardando...',
+                text: 'Por favor espere...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+            
+            fetch(ADMIN_BASE + 'guardar-evaluacion', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire('¡Guardado!', data.message || 'La evaluación socioeconómica ha sido guardada exitosamente', 'success').then(() => {
+                        // Cerrar modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('modalEvaluacionSocioeconomica'));
+                        modal.hide();
+                        
+                        // Limpiar formulario
+                        const radios = document.querySelectorAll('input[name="categoria_socioeconomica"]');
+                        radios.forEach(r => r.checked = false);
+                        document.getElementById('observacionesEvaluacion').value = '';
+                        
+                        // Recargar tabla
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('Error', data.message || 'Error al guardar la evaluación', 'error');
+                }
+            })
+            .catch(error => {
+                Swal.fire('Error', 'Error de conexión al guardar la evaluación', 'error');
             });
         }
     });
@@ -1151,7 +1392,7 @@ function cargarEstudiantesSinBeca() {
     `;
     
     // Obtener estudiantes sin beca desde el controlador
-    fetch('<?= base_url('admin-bienestar/estudiantes-sin-beca') ?>')
+    fetch(ADMIN_BASE + 'estudiantes-sin-beca')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -1166,7 +1407,6 @@ function cargarEstudiantesSinBeca() {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             document.getElementById('datosSocioeconomicosAutomatica').innerHTML = `
                 <div class="alert alert-danger">
                     <i class="bi bi-exclamation-triangle me-2"></i>
@@ -1252,7 +1492,6 @@ function calcularTotalIngresosEstudiante(estudiante) {
             datosFicha = JSON.parse(estudiante.json_data);
         }
     } catch (e) {
-        console.error('Error parseando JSON:', e);
     }
     
     const ingresosPadre = parseFloat(datosFicha.ingresos_padre) || 0;
@@ -1299,7 +1538,6 @@ function mostrarDatosSocioeconomicosAutomatica(ficha) {
             datosFicha = JSON.parse(ficha.json_data);
         }
     } catch (e) {
-        console.error('Error parseando JSON:', e);
     }
     
     const contenido = `
@@ -1367,7 +1605,6 @@ function calcularCategoriaAutomatica(ficha) {
             datosFicha = JSON.parse(ficha.json_data);
         }
     } catch (e) {
-        console.error('Error parseando JSON:', e);
     }
     
     const totalIngresos = parseFloat(calcularTotalIngresos(datosFicha));
@@ -1447,7 +1684,7 @@ function aplicarRangosPersonalizados() {
     
     // Recalcular si hay una ficha cargada
     if (fichaId) {
-        fetch(`<?= base_url('admin-bienestar/ver-ficha/') ?>${fichaId}`)
+        fetch(ADMIN_BASE + 'ver-ficha/' + fichaId)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -1478,7 +1715,7 @@ function restaurarRangosDefault() {
     const modal = document.getElementById('modalEvaluacionAutomatica');
     const fichaId = modal.getAttribute('data-ficha-id');
     if (fichaId) {
-        fetch(`<?= base_url('admin-bienestar/ver-ficha/') ?>${fichaId}`)
+        fetch(ADMIN_BASE + 'ver-ficha/' + fichaId)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -1519,7 +1756,7 @@ function restaurarRangosDefault() {
         });
         
         // Llamada AJAX para verificar
-        fetch('<?= base_url('verificar-codigo-pdf') ?>', {
+        fetch(SITE_ROOT + 'verificar-codigo-pdf', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1622,107 +1859,79 @@ function restaurarRangosDefault() {
         resultadoDiv.show();
     }
     
-    // Función para guardar evaluación automática masiva
+    // Función para guardar evaluación automática masiva real en base de datos
     function guardarEvaluacionAutomatica() {
-    Swal.fire({
-        title: '¿Procesar Evaluación Masiva?',
-        text: '¿Desea procesar la evaluación socioeconómica automática para TODOS los estudiantes sin beca listados?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, Procesar Masivamente',
-        cancelButtonText: 'Cancelar',
-        confirmButtonColor: '#28a745'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Mostrar progreso
-            Swal.fire({
-                title: 'Procesando Evaluación Masiva',
-                html: `
-                    <div class="text-center">
-                        <div class="spinner-border text-success mb-3" role="status">
-                            <span class="visually-hidden">Procesando...</span>
-                        </div>
-                        <p>Procesando evaluación socioeconómica para todos los estudiantes...</p>
-                        <div class="progress">
-                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
-                                 role="progressbar" style="width: 0%"></div>
-                        </div>
-                    </div>
-                `,
-                allowOutsideClick: false,
-                showConfirmButton: false
-            });
-            
-            // Simular proceso de evaluación masiva
-            procesarEvaluacionMasiva();
-        }
-    });
-}
-
-// Función para procesar evaluación masiva
-function procesarEvaluacionMasiva() {
-    // Obtener estudiantes de la tabla
-    const tabla = document.querySelector('#datosSocioeconomicosAutomatica table tbody');
-    if (!tabla) {
-        Swal.fire('Error', 'No se encontró la lista de estudiantes', 'error');
-        return;
+        Swal.fire({
+            title: '¿Procesar y Guardar Evaluación Masiva?',
+            text: '¿Desea procesar y guardar permanentemente la evaluación socioeconómica automática para TODOS los estudiantes sin beca listados?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, Procesar y Guardar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#28a745'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Mostrar loading
+                Swal.fire({
+                    title: 'Procesando y Guardando...',
+                    text: 'Por favor espere mientras se realiza la evaluación masiva...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                
+                // Obtener rangos de ingresos
+                const rangoAInicio = parseFloat(document.getElementById('rangoAInicio').value || 100);
+                const rangoAFin = parseFloat(document.getElementById('rangoAFin').value || 500);
+                const rangoBInicio = parseFloat(document.getElementById('rangoBInicio').value || 501);
+                const rangoBFin = parseFloat(document.getElementById('rangoBFin').value || 1000);
+                const rangoCInicio = parseFloat(document.getElementById('rangoCInicio').value || 1001);
+                const rangoCFin = parseFloat(document.getElementById('rangoCFin').value || 1500);
+                
+                // Petición AJAX POST real
+                fetch(ADMIN_BASE + 'guardar-evaluacion-masiva', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        rangoAInicio,
+                        rangoAFin,
+                        rangoBInicio,
+                        rangoBFin,
+                        rangoCInicio,
+                        rangoCFin
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    Swal.close();
+                    if (data.success) {
+                        Swal.fire({
+                            title: '¡Evaluación Completada!',
+                            text: data.message,
+                            icon: 'success'
+                        }).then(() => {
+                            // Cerrar modal
+                            const modalElement = document.getElementById('modalEvaluacionAutomatica');
+                            const modal = bootstrap.Modal.getInstance(modalElement);
+                            if (modal) modal.hide();
+                            // Recargar la página
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire('Error', data.error || 'No se pudo procesar la evaluación masiva', 'error');
+                    }
+                })
+                .catch(error => {
+                    Swal.close();
+                    Swal.fire('Error', 'Error de red al procesar la evaluación masiva', 'error');
+                });
+            }
+        });
     }
-    
-    const filas = tabla.querySelectorAll('tr');
-    const totalEstudiantes = filas.length;
-    let procesados = 0;
-    
-    if (totalEstudiantes === 0) {
-        Swal.fire('Error', 'No hay estudiantes para procesar', 'error');
-        return;
-    }
-    
-    // Procesar cada estudiante
-    const procesarEstudiante = (index) => {
-        if (index >= totalEstudiantes) {
-            // Proceso completado
-            Swal.fire({
-                title: '¡Evaluación Masiva Completada!',
-                html: `
-                    <div class="text-center">
-                        <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
-                        <h5 class="mt-3">Proceso Finalizado Exitosamente</h5>
-                        <p>Se han procesado <strong>${totalEstudiantes} estudiantes</strong> con evaluación automática.</p>
-                        <div class="alert alert-info">
-                            <small><strong>Nota:</strong> Los resultados se han calculado automáticamente. Para guardar permanentemente en la base de datos, implemente la lógica correspondiente en el controlador.</small>
-                        </div>
-                    </div>
-                `,
-                icon: 'success',
-                confirmButtonText: 'Cerrar'
-            }).then(() => {
-                // Cerrar modal
-                const modal = bootstrap.Modal.getInstance(document.getElementById('modalEvaluacionAutomatica'));
-                modal.hide();
-            });
-            return;
-        }
-        
-        const fila = filas[index];
-        const nombreEstudiante = fila.querySelector('td:first-child strong').textContent;
-        const categoria = fila.querySelector('td:last-child .badge').textContent;
-        
-        // Actualizar progreso
-        const progreso = ((index + 1) / totalEstudiantes) * 100;
-        const progressBar = document.querySelector('.progress-bar');
-        if (progressBar) {
-            progressBar.style.width = progreso + '%';
-        }
-        
-        // Simular procesamiento
-        setTimeout(() => {
-            procesarEstudiante(index + 1);
-        }, 200); // Simular tiempo de procesamiento
-    };
-    
-    // Iniciar procesamiento
-    procesarEstudiante(0);
-}
 
 // ===== FIN FUNCIONES EVALUACIÓN AUTOMÁTICA =====
 </script>
@@ -1751,6 +1960,7 @@ function procesarEvaluacionMasiva() {
                 </div>
                 
                 <div id="contenidoEvaluacion" style="display: none;">
+                    <input type="hidden" id="idFichaActual">
                     <!-- Información del Estudiante -->
                     <div class="card mb-3">
                         <div class="card-header bg-primary text-white">

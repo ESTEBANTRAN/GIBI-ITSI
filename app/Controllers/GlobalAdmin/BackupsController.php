@@ -158,11 +158,22 @@ class BackupsController extends BaseController
         }
 
         try {
-            $respaldos = $this->db->table('respaldos')
+            $pagina = (int)($this->request->getGet('pagina') ?? 1);
+            $porPagina = 15;
+            $offset = ($pagina - 1) * $porPagina;
+
+            $builder = $this->db->table('respaldos');
+
+            $total = (clone $builder)->countAllResults();
+
+            $respaldos = $builder
                 ->select('id, nombre_archivo, fecha_creacion, tamano_bytes, tipo, estado, descripcion')
                 ->orderBy('fecha_creacion', 'DESC')
+                ->limit($porPagina, $offset)
                 ->get()
                 ->getResultArray();
+
+            $totalPaginas = max(1, (int)ceil($total / $porPagina));
             
             // Formatear datos
             foreach ($respaldos as &$respaldo) {
@@ -172,7 +183,13 @@ class BackupsController extends BaseController
             
             return $this->response->setJSON([
                 'success' => true,
-                'respaldos' => $respaldos
+                'respaldos' => $respaldos,
+                'paginacion' => [
+                    'pagina_actual' => $pagina,
+                    'total_paginas' => $totalPaginas,
+                    'total' => $total,
+                    'por_pagina' => $porPagina
+                ]
             ]);
             
         } catch (\Exception $e) {

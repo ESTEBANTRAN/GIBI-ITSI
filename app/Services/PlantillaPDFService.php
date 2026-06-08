@@ -301,25 +301,73 @@ class PlantillaPDFService
             </div>';
         }
         
-        // 3. INFORMACIÓN DE ADMINISTRACIÓN
+        // 3. INFORMACIÓN DE EVALUACIÓN Y ADMINISTRACIÓN
+        $puntaje = $ficha['puntaje_calculado'] ?? null;
+        $categoria = 'Sin evaluar';
+        $colorCategoria = '#6c757d';
+        if ($puntaje !== null && ($ficha['revisada_por_admin'] ?? 0) == 1) {
+            $puntajeVal = floatval($puntaje);
+            if ($puntajeVal == 3.00) {
+                $categoria = 'Categoría A (Baja capacidad económica)';
+                $colorCategoria = '#d9534f';
+            } elseif ($puntajeVal == 2.00) {
+                $categoria = 'Categoría B (Media capacidad económica)';
+                $colorCategoria = '#f0ad4e';
+            } elseif ($puntajeVal == 1.00) {
+                $categoria = 'Categoría C (Alta capacidad económica)';
+                $colorCategoria = '#5cb85c';
+            } elseif ($puntajeVal >= 8.00) {
+                $categoria = 'Categoría A (Baja capacidad económica)';
+                $colorCategoria = '#d9534f';
+            } elseif ($puntajeVal >= 6.00) {
+                $categoria = 'Categoría B (Media capacidad económica)';
+                $colorCategoria = '#f0ad4e';
+            } else {
+                $categoria = 'Categoría C (Alta capacidad económica)';
+                $colorCategoria = '#5cb85c';
+            }
+        }
+
+        $revisorNombre = 'N/A';
+        if (!empty($ficha['revisado_por'])) {
+            $db = \Config\Database::connect();
+            $revisor = $db->table('usuarios')->where('id', $ficha['revisado_por'])->get()->getRowArray();
+            if ($revisor) {
+                $revisorNombre = $revisor['nombre'] . ' ' . $revisor['apellido'];
+            }
+        }
+        if ($revisorNombre === 'N/A') {
+            $revisorNombre = session('nombre') ?? 'N/A';
+        }
+
         $html .= '
         <div class="section">
-            <div class="section-title">3. INFORMACIÓN DE ADMINISTRACIÓN</div>
+            <div class="section-title">3. EVALUACIÓN Y ADMINISTRACIÓN</div>
+            <div class="field">
+                <span class="field-label">Evaluación Socioeconómica:</span>
+                <span class="field-value" style="font-weight: bold; color: ' . $colorCategoria . ';">' . htmlspecialchars($categoria) . '</span>
+            </div>';
+            
+        if ($puntaje !== null) {
+            $html .= '
+            <div class="field">
+                <span class="field-label">Puntaje Mapeado:</span>
+                <span class="field-value">' . htmlspecialchars(number_format($puntaje, 2)) . '</span>
+            </div>';
+        }
+
+        $html .= '
+            <div class="field">
+                <span class="field-label">Observaciones:</span>
+                <span class="field-value">' . htmlspecialchars($ficha['observaciones_admin'] ?? 'Sin observaciones') . '</span>
+            </div>
             <div class="field">
                 <span class="field-label">Administrador Revisor:</span>
-                <span class="field-value">' . htmlspecialchars(session('nombre') ?? 'N/A') . '</span>
+                <span class="field-value">' . htmlspecialchars($revisorNombre) . '</span>
             </div>
             <div class="field">
                 <span class="field-label">Fecha de Revisión:</span>
-                <span class="field-value">' . date('d/m/Y H:i:s') . '</span>
-            </div>
-            <div class="field">
-                <span class="field-label">ID de Administrador:</span>
-                <span class="field-value">' . htmlspecialchars(session('id') ?? 'N/A') . '</span>
-            </div>
-            <div class="field">
-                <span class="field-label">Rol:</span>
-                <span class="field-value">Administrador de Bienestar Estudiantil</span>
+                <span class="field-value">' . (!empty($ficha['fecha_revision_admin']) ? date('d/m/Y H:i:s', strtotime($ficha['fecha_revision_admin'])) : date('d/m/Y H:i:s')) . '</span>
             </div>
         </div>';
         

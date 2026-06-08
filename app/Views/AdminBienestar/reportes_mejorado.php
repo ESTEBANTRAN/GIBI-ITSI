@@ -415,7 +415,6 @@ function generarReporte() {
         mostrarNotificacion('Reporte generado correctamente', 'success');
     })
     .catch(error => {
-        console.error('Error:', error);
         mostrarNotificacion('Error generando reporte: ' + error.message, 'error');
     })
     .finally(() => {
@@ -442,7 +441,6 @@ function previsualizarReporte() {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         mostrarNotificacion('Error de conexión', 'error');
     });
 }
@@ -547,7 +545,6 @@ function exportarReporteCompleto() {
         window.URL.revokeObjectURL(url);
     })
     .catch(error => {
-        console.error('Error:', error);
         mostrarNotificacion('Error exportando reporte completo', 'error');
     });
 }
@@ -571,7 +568,6 @@ function generarReportePDF() {
         window.URL.revokeObjectURL(url);
     })
     .catch(error => {
-        console.error('Error:', error);
         mostrarNotificacion('Error generando PDF ejecutivo', 'error');
     });
 }

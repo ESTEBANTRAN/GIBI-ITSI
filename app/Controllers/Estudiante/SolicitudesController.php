@@ -31,10 +31,25 @@ class SolicitudesController extends BaseController
 
         $categoriaModel = new CategoriaSolicitudAyudaModel();
         
+        $page = (int)($this->request->getGet('page') ?? 1);
+        $perPage = 15;
+        $offset = ($page - 1) * $perPage;
+        
+        $totalSolicitudes = $this->solicitudModel->where('id_estudiante', session('id'))->countAllResults();
+        $solicitudes = $this->solicitudModel->where('id_estudiante', session('id'))
+                                           ->orderBy('fecha_solicitud', 'DESC')
+                                           ->limit($perPage, $offset)
+                                           ->findAll();
+        $totalPages = max(1, ceil($totalSolicitudes / $perPage));
+        
         $data = [
             'estudiante' => $this->usuarioModel->find(session('id')),
-            'solicitudes' => $this->solicitudModel->where('id_estudiante', session('id'))->orderBy('fecha_solicitud', 'DESC')->findAll(),
-            'categorias' => $categoriaModel->getCategoriasActivas()
+            'solicitudes' => $solicitudes,
+            'categorias' => $categoriaModel->getCategoriasActivas(),
+            'current_page' => $page,
+            'total_pages' => $totalPages,
+            'per_page' => $perPage,
+            'total' => $totalSolicitudes
         ];
 
         return view('estudiante/solicitudes_ayuda', $data);

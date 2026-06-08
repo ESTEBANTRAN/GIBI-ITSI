@@ -1,4 +1,4 @@
-﻿<?= $this->extend('layouts/mainGlobalAdmin') ?>
+<?= $this->extend('layouts/mainGlobalAdmin') ?>
 
 <?= $this->section('content') ?>
 
@@ -418,7 +418,6 @@ $(document).ready(function() {
                         }
                     },
                     error: function(xhr, status, error) {
-                        console.error('Error AJAX:', error);
                         Swal.fire(
                             'Error de Conexión',
                             'No se pudo conectar con el servidor.',

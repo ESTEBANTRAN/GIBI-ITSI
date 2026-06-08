@@ -29,7 +29,7 @@ class UsuariosController extends BaseController
         }
         
         $page = $this->request->getGet('page') ?? 1;
-        $perPage = 30;
+        $perPage = 15;
         $search = $this->request->getGet('search') ?? '';
         
         // Si hay búsqueda, siempre ir a página 1 para mostrar todos los resultados

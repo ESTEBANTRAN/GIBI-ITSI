@@ -1,4 +1,4 @@
-﻿<?= $this->extend('layouts/mainGlobalAdmin') ?>
+<?= $this->extend('layouts/mainGlobalAdmin') ?>
 
 <?= $this->section('breadcrumb') ?>Gestión de Roles<?= $this->endSection() ?>
 
@@ -172,10 +172,43 @@
                                         </button>
                                     </td>
                                 </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+
+                <?php if (isset($total_pages) && $total_pages > 1): ?>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="text-muted">
+                            Mostrando <?= (($current_page - 1) * $per_page) + 1 ?> a <?= min($current_page * $per_page, $total) ?> de <?= $total ?> registros
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <nav aria-label="Navegación de roles">
+                            <ul class="pagination justify-content-end mb-0">
+                                <li class="page-item <?= $current_page <= 1 ? 'disabled' : '' ?>">
+                                    <a class="page-link" href="<?= base_url('global-admin/roles?page=' . ($current_page - 1) . (!empty($search) ? '&search=' . urlencode($search) : '')) ?>">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
+                                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                                <li class="page-item <?= $i == $current_page ? 'active' : '' ?>">
+                                    <a class="page-link" href="<?= base_url('global-admin/roles?page=' . $i . (!empty($search) ? '&search=' . urlencode($search) : '')) ?>"><?= $i ?></a>
+                                </li>
+                                <?php endfor; ?>
+                                <li class="page-item <?= $current_page >= $total_pages ? 'disabled' : '' ?>">
+                                    <a class="page-link" href="<?= base_url('global-admin/roles?page=' . ($current_page + 1) . (!empty($search) ? '&search=' . urlencode($search) : '')) ?>">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+                <?php endif; ?>
+
             </div>
         </div>
     </div>
@@ -300,7 +333,6 @@ document.getElementById('formCrearRol').addEventListener('submit', function(e) {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         alert('Error al crear rol');
     });
 });
@@ -323,7 +355,6 @@ function editarRol(id) {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             alert('Error al cargar datos del rol');
         });
 }
@@ -348,7 +379,6 @@ document.getElementById('formEditarRol').addEventListener('submit', function(e) 
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         alert('Error al actualizar rol');
     });
 });
@@ -414,7 +444,6 @@ function verPermisos(id) {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             document.getElementById('permisosContent').innerHTML = `
                 <div class="alert alert-danger">
                     <i class="bi bi-exclamation-triangle me-2"></i>
@@ -444,7 +473,6 @@ function eliminarRol(id) {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             alert('Error al eliminar rol');
         });
     }

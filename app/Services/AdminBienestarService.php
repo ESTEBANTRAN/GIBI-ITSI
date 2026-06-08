@@ -340,11 +340,11 @@ class AdminBienestarService
         }
 
         if (!empty($filtros['periodo_id'])) {
-            $builder->where('periodo_nombre', $filtros['periodo_id']);
+            $builder->where('periodo_id', $filtros['periodo_id']);
         }
 
         if (!empty($filtros['carrera_id'])) {
-            $builder->where('carrera_nombre LIKE', '%' . $filtros['carrera_id'] . '%');
+            $builder->where('estudiante_id IN (SELECT id FROM usuarios WHERE carrera_id = ' . (int)$filtros['carrera_id'] . ')');
         }
 
         if (!empty($filtros['busqueda'])) {
@@ -353,6 +353,14 @@ class AdminBienestarService
                 ->orLike('cedula', $filtros['busqueda'])
                 ->orLike('email', $filtros['busqueda'])
                 ->groupEnd();
+        }
+
+        if (isset($filtros['evaluacion']) && $filtros['evaluacion'] !== '') {
+            if ($filtros['evaluacion'] === 'con') {
+                $builder->where('revisada_por_admin', 1);
+            } elseif ($filtros['evaluacion'] === 'sin') {
+                $builder->where('revisada_por_admin', 0);
+            }
         }
 
         if (!empty($filtros['fecha_desde'])) {

@@ -13,10 +13,19 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Estilos personalizados - Añadir esta línea -->
-    <link rel="stylesheet" href="<?= base_url('sistema/assets/css/custom.css') ?>" />
+    <link rel="stylesheet" href="<?= base_url('sistema/assets/css/custom.css') ?>?v=<?= time() ?>" />
     <!-- jQuery (must be first) -->
     <script src="<?= base_url('sistema/assets/libs/jquery/dist/jquery.min.js') ?>"></script>
     <?= csrf_meta() ?>
+    <!-- FIX: Estilos inline para eliminar el gap del header -->
+    <style>
+        .app-header { background: transparent !important; padding: 0 !important; margin: 0 !important; top: 0 !important; }
+        #main-wrapper[data-layout=vertical][data-header-position=fixed] .app-header { position: fixed !important; top: 0 !important; z-index: 50 !important; }
+        .app-header .navbar { margin: 0 !important; border-radius: 0 !important; }
+        @media (min-width: 1200px) { #main-wrapper[data-layout=vertical][data-header-position=fixed] .app-header { width: calc(100% - 300px) !important; } }
+        #main-wrapper[data-layout=vertical][data-header-position=fixed] .body-wrapper > .container-fluid { padding-top: 70px !important; }
+        body > *:not(.page-wrapper):not(script):not(link):not(style) { display: none !important; }
+    </style>
 </head>
 
 <body>

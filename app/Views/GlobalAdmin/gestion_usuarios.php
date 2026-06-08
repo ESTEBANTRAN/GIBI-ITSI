@@ -1,4 +1,4 @@
-﻿<?= $this->extend('layouts/mainGlobalAdmin') ?>
+<?= $this->extend('layouts/mainGlobalAdmin') ?>
 
 <?= $this->section('breadcrumb') ?>Gestión de Usuarios<?= $this->endSection() ?>
 
@@ -603,7 +603,6 @@ document.getElementById('formCrearUsuario').addEventListener('submit', function(
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         alert('Error al crear usuario');
     });
 });
@@ -636,7 +635,6 @@ document.getElementById('formEditarUsuario').addEventListener('submit', function
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         alert('Error al actualizar usuario');
     });
 });
@@ -676,7 +674,6 @@ function editarUsuario(id) {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             alert('Error al obtener datos del usuario');
         });
 }
@@ -758,7 +755,6 @@ function verUsuario(id) {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             alert('Error al obtener datos del usuario');
         });
 }
@@ -783,7 +779,6 @@ function eliminarUsuario(id) {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             alert('Error al eliminar usuario');
         });
     }

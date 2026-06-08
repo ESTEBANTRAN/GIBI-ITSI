@@ -279,34 +279,34 @@
         </div>
         
         <!-- Paginación -->
-        <?php if ($pager['total'] > 0): ?>
+        <?php if (isset($paginacion) && $paginacion['total_registros'] > 0): ?>
             <div class="d-flex justify-content-between align-items-center mt-3">
                 <div class="text-muted">
-                    Mostrando <span class="fw-semibold"><?= (($pager['currentPage'] - 1) * $pager['perPage']) + 1 ?></span> a 
-                    <span class="fw-semibold"><?= min($pager['currentPage'] * $pager['perPage'], $pager['total']) ?></span> de 
-                    <span class="fw-semibold"><?= number_format($pager['total']) ?></span> registros
+                    Mostrando <span class="fw-semibold"><?= ($paginacion['offset'] + 1) ?></span> a 
+                    <span class="fw-semibold"><?= min($paginacion['offset'] + $paginacion['por_pagina'], $paginacion['total_registros']) ?></span> de 
+                    <span class="fw-semibold"><?= number_format($paginacion['total_registros']) ?></span> registros
                 </div>
                 <nav aria-label="Paginación de períodos">
                     <ul class="pagination pagination-sm mb-0">
-                        <?php if ($pager['currentPage'] > 1): ?>
+                        <?php if ($paginacion['pagina_actual'] > 1): ?>
                             <li class="page-item">
-                                <a class="page-link" href="?page=<?= $pager['currentPage'] - 1 ?><?= !empty($filtros) ? '&' . http_build_query($filtros) : '' ?>" aria-label="Anterior">
+                                <a class="page-link" href="?page=<?= $paginacion['pagina_actual'] - 1 ?>" aria-label="Anterior">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
                         <?php endif; ?>
                         
-                        <?php for ($i = 1; $i <= $pager['totalPages']; $i++): ?>
-                            <li class="page-item <?= $i == $pager['currentPage'] ? 'active' : '' ?>">
-                                <a class="page-link" href="?page=<?= $i ?><?= !empty($filtros) ? '&' . http_build_query($filtros) : '' ?>">
+                        <?php for ($i = 1; $i <= $paginacion['total_paginas']; $i++): ?>
+                            <li class="page-item <?= $i == $paginacion['pagina_actual'] ? 'active' : '' ?>">
+                                <a class="page-link" href="?page=<?= $i ?>">
                                     <?= $i ?>
                                 </a>
                             </li>
                         <?php endfor; ?>
                         
-                        <?php if ($pager['currentPage'] < $pager['totalPages']): ?>
+                        <?php if ($paginacion['pagina_actual'] < $paginacion['total_paginas']): ?>
                             <li class="page-item">
-                                <a class="page-link" href="?page=<?= $pager['currentPage'] + 1 ?><?= !empty($filtros) ? '&' . http_build_query($filtros) : '' ?>" aria-label="Siguiente">
+                                <a class="page-link" href="?page=<?= $paginacion['pagina_actual'] + 1 ?>" aria-label="Siguiente">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             </li>

@@ -2,6 +2,12 @@
 
 <?= $this->section('content') ?>
 
+<script>
+// Definir base URL dinámica para peticiones AJAX (para evitar problemas con Serveo/CORS)
+const SITE_ROOT = window.location.origin + (window.location.pathname.includes('/ITSI/public/') ? '/ITSI/public/' : '/');
+const ADMIN_BASE = SITE_ROOT + 'admin-bienestar/';
+</script>
+
 <!-- Page Header -->
 <div class="row">
     <div class="col-12">
@@ -83,10 +89,10 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="card-title mb-0">Lista de Estudiantes</h5>
         <div>
-            <button type="button" class="btn btn-outline-success btn-sm" onclick="window.location.href='<?= base_url('admin-bienestar/usuarios/exportar') ?>?formato=excel'">
+            <button type="button" class="btn btn-outline-success btn-sm" onclick="window.location.href=ADMIN_BASE + 'usuarios/exportar?formato=excel'">
                 <i class="bi bi-file-excel me-1"></i>Exportar Excel
             </button>
-            <button type="button" class="btn btn-outline-danger btn-sm" onclick="window.location.href='<?= base_url('admin-bienestar/usuarios/exportar') ?>?formato=pdf'">
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="window.location.href=ADMIN_BASE + 'usuarios/exportar?formato=pdf'">
                 <i class="bi bi-file-pdf me-1"></i>Exportar PDF
             </button>
         </div>
@@ -438,7 +444,7 @@ function verHistorialEstudiante(estudianteId) {
     document.getElementById('contenidoHistorial').style.display = 'none';
     
     // Cargar historial
-    fetch(`<?= base_url('admin-bienestar/historial-estudiante') ?>/${estudianteId}`)
+    fetch(ADMIN_BASE + 'historial-estudiante/' + estudianteId)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -448,7 +454,6 @@ function verHistorialEstudiante(estudianteId) {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             Swal.fire('Error', 'Error al cargar el historial del estudiante', 'error');
         })
         .finally(() => {

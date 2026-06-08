@@ -116,6 +116,7 @@ $routes->group('admin-bienestar', ['filter' => ['auth', 'role:2']], function($ro
     $routes->post('eliminar-beca', 'AdminBienestarController::eliminarBeca', ['filter' => ['auth', 'ratelimit:5,900']]);
     $routes->post('toggle-estado-beca', 'AdminBienestarController::toggleEstadoBeca');
     $routes->get('obtener-beca/(:num)', 'AdminBienestarController::obtenerBeca/$1');
+    $routes->get('obtener-becas', 'AdminBienestarController::obtenerBecas');
     $routes->get('exportar-becas', 'AdminBienestarController::exportarBecas');
     $routes->get('estadisticas-becas', 'AdminBienestarController::getEstadisticasBecas');
     $routes->post('configurar-documentos-beca', 'AdminBienestarController::configurarDocumentosBeca');
@@ -160,6 +161,8 @@ $routes->group('admin-bienestar', ['filter' => ['auth', 'role:2']], function($ro
     $routes->get('ver-ficha/(:num)', 'Admin\FichasController::verFicha/$1');
     $routes->post('aprobar-ficha/(:num)', 'AdminBienestarController::aprobarFicha/$1');
     $routes->post('rechazar-ficha/(:num)', 'AdminBienestarController::rechazarFicha/$1');
+    $routes->post('guardar-evaluacion', 'AdminBienestarController::guardarEvaluacionSocioeconomica', ['filter' => ['auth', 'ratelimit:30,900']]);
+    $routes->post('guardar-evaluacion-masiva', 'AdminBienestarController::guardarEvaluacionMasiva', ['filter' => ['auth', 'ratelimit:10,900']]);
     $routes->get('exportar-ficha-pdf/(:num)', 'AdminBienestarController::exportarFichaPDF/$1');
     $routes->post('exportarDatos', 'AdminBienestarController::exportarDatos');
     $routes->post('generarReporte', 'AdminBienestarController::generarReporte');
@@ -179,7 +182,7 @@ $routes->group('admin-bienestar', ['filter' => ['auth', 'role:2']], function($ro
     $routes->get('cuenta/exportarDatos', 'AdminBienestarController::exportarDatos');
 
     // ─── Reportes ──────────────────────────────────────────────────────────
-    $routes->get('obtener-estadisticas-becas', 'AdminBienestarController::obtenerEstadisticasBecas');
+    $routes->get('obtener-estadisticas-becas', 'AdminBienestarController::getEstadisticasBecas');
 });
 
 // Rutas de test/debug DESHABILITADAS en producción (comentadas)

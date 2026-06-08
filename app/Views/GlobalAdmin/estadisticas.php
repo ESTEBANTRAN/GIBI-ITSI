@@ -1,4 +1,4 @@
-﻿<?= $this->extend('layouts/mainGlobalAdmin') ?>
+<?= $this->extend('layouts/mainGlobalAdmin') ?>
 
 <?= $this->section('content') ?>
 <div class="page-wrapper">
@@ -345,11 +345,9 @@ function cargarEstadisticas() {
                     actualizarTablas(response.tablas);
                     actualizarKPIs(response.kpis);
             } else {
-                console.error('Error al cargar estadísticas:', response.error);
             }
         },
         error: function() {
-            console.error('Error de conexión al cargar estadísticas');
         }
     });
 }

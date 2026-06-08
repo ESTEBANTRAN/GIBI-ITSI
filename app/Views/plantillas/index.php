@@ -176,7 +176,6 @@ function eliminarPlantilla(archivo) {
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
                 Swal.fire('Error', 'Error de conexión', 'error');
             });
         }

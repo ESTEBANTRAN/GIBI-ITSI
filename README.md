@@ -1,13 +1,17 @@
-# 📚 ITSI - Sistema de Bienestar Estudiantil
+# 📚 GIBI-ITSI — Sistema de Gestión Integral de Bienestar Institucional
 
 ## 📋 Descripción General
 
-**ITSI** es un sistema integral de gestión de bienestar estudiantil desarrollado con **CodeIgniter 4**, diseñado para instituciones educativas. El sistema permite administrar fichas socioeconómicas, gestionar becas, procesar solicitudes de ayuda estudiantil y mantener un control completo sobre los períodos académicos.
+**GIBI-ITSI** es un sistema integral de gestión de bienestar estudiantil desarrollado con **CodeIgniter 4**, diseñado para el Instituto Tecnológico Superior. El sistema permite administrar fichas socioeconómicas, gestionar becas, procesar solicitudes de ayuda estudiantil, generar reportes analíticos y mantener un control completo sobre los períodos académicos.
 
-El sistema cuenta con tres niveles de acceso:
-- **Estudiantes**: Gestión de fichas socioeconómicas, solicitudes de becas y ayuda
-- **Administradores de Bienestar**: Gestión de fichas, becas, períodos y usuarios
-- **Super Administradores (GlobalAdmin)**: Control total del sistema, respaldos, logs y configuración
+### Niveles de Acceso
+
+| ID | Rol | Constante | Acceso |
+|----|-----|-----------|--------|
+| 1 | **Estudiante** | `ROLE_ESTUDIANTE` | `/estudiante/*` |
+| 2 | **Admin Bienestar** | `ROLE_ADMIN_BIENESTAR` | `/admin-bienestar/*` |
+| 3 | Docente | — | Limitado |
+| 4 | **Super Admin** | `ROLE_SUPER_ADMIN` | `/global-admin/*` |
 
 ---
 
@@ -25,15 +29,18 @@ El sistema cuenta con tres niveles de acceso:
 ### Frontend
 | Tecnología | Descripción |
 |-----------|-------------|
-| **Bootstrap** | Framework CSS responsive |
-| **JavaScript/jQuery** | Interactividad y AJAX |
+| **Bootstrap 5.3** | Framework CSS responsive |
+| **JavaScript / jQuery 3.7** | Interactividad y AJAX |
 | **Chart.js** | Gráficos y estadísticas visuales |
+| **SweetAlert2** | Diálogos y notificaciones interactivas |
+| **DataTables 1.13** | Tablas avanzadas con búsqueda y paginación |
+| **Bootstrap Icons** | Iconografía del sistema |
 
-### Servidor
+### Infraestructura
 | Componente | Descripción |
 |-----------|-------------|
-| **XAMPP** | Stack de desarrollo local |
-| **Apache** | Servidor web |
+| **XAMPP** | Stack de desarrollo local (Apache + MariaDB) |
+| **Serveo** | Túnel SSH para acceso remoto sin hosting |
 
 ---
 
@@ -42,102 +49,114 @@ El sistema cuenta con tres niveles de acceso:
 ```
 ITSI/
 ├── app/
-│   ├── Config/                    # Configuraciones del sistema
-│   │   ├── App.php               # Configuración principal de la aplicación
-│   │   ├── Database.php          # Configuración de base de datos
-│   │   ├── Routes.php            # Definición de todas las rutas
-│   │   ├── Filters.php           # Configuración de filtros (autenticación)
-│   │   ├── PlantillasPDF.php     # Configuración de plantillas PDF
+│   ├── Config/                         # Configuración del sistema (41 archivos)
+│   │   ├── App.php                     # Configuración principal
+│   │   ├── Constants.php               # Constantes de roles y sistema
+│   │   ├── Database.php                # Conexión a base de datos
+│   │   ├── Filters.php                 # Configuración de filtros HTTP
+│   │   ├── Routes.php                  # Definición de rutas (~29KB)
+│   │   ├── PlantillasPDF.php           # Plantillas para generación PDF
 │   │   └── ...
 │   │
-│   ├── Controllers/               # Controladores principales
-│   │   ├── AuthController.php            # Autenticación y login
-│   │   ├── AdminBienestarController.php  # Panel de Admin Bienestar (~4290 líneas)
-│   │   ├── EstudianteController.php      # Panel de estudiantes (~1911 líneas)
-│   │   ├── DashboardController.php       # Dashboard general
-│   │   ├── PerfilController.php          # Gestión de perfil de usuario
-│   │   ├── CuentaController.php          # Configuración de cuenta
-│   │   ├── PlantillasController.php      # Gestión de plantillas PDF/Word
-│   │   ├── GlobalAdmin/                  # Controladores del Super Admin
-│   │   │   └── GlobalAdminController.php # Panel Super Admin (~2303 líneas)
-│   │   └── ...
+│   ├── Controllers/                    # Controladores (15 archivos + 3 subdirectorios)
+│   │   ├── AuthController.php          # Autenticación, login, reCAPTCHA
+│   │   ├── AdminBienestarController.php # Panel Admin Bienestar (~200KB)
+│   │   ├── EstudianteController.php    # Panel de estudiantes
+│   │   ├── DashboardController.php     # Dashboards y estadísticas
+│   │   ├── DocumentoBecaController.php # Gestión de documentos de becas
+│   │   ├── SolicitudController.php     # Gestión de solicitudes
+│   │   ├── PlantillasController.php    # Plantillas PDF/Word
+│   │   ├── PerfilController.php        # Gestión de perfil
+│   │   ├── CuentaController.php        # Configuración de cuenta
+│   │   ├── Admin/                      # Sub-controladores Admin
+│   │   │   ├── DashboardController.php
+│   │   │   └── FichasController.php
+│   │   ├── Estudiante/                 # Sub-controladores Estudiante
+│   │   │   ├── BecasController.php
+│   │   │   ├── DocumentosController.php
+│   │   │   ├── FichasController.php
+│   │   │   ├── InformacionController.php
+│   │   │   ├── PerfilController.php
+│   │   │   └── SolicitudesController.php
+│   │   └── GlobalAdmin/               # Sub-controladores Super Admin
+│   │       ├── GlobalAdminController.php
+│   │       ├── UsuariosController.php
+│   │       ├── RolesController.php
+│   │       ├── BackupsController.php
+│   │       ├── LogsController.php
+│   │       └── EstadisticasController.php
 │   │
-│   ├── Models/                    # Modelos de datos
-│   │   ├── UsuarioModel.php              # Gestión de usuarios
-│   │   ├── BecaModel.php                 # Gestión de becas
-│   │   ├── SolicitudBecaModel.php        # Solicitudes de becas
-│   │   ├── FichaSocioeconomicaModel.php  # Fichas socioeconómicas
-│   │   ├── PeriodoAcademicoModel.php     # Períodos académicos
-│   │   ├── SolicitudAyudaModel.php       # Solicitudes de ayuda
-│   │   ├── NotificacionBecaModel.php     # Notificaciones de becas
-│   │   ├── CarreraModel.php              # Carreras académicas
-│   │   ├── RolModel.php                  # Roles de usuario
-│   │   ├── GlobalAdmin/                  # Modelos del Super Admin
-│   │   │   ├── UsuarioGlobalModel.php
-│   │   │   ├── RolModel.php
-│   │   │   ├── SistemaModel.php
-│   │   │   └── BackupModel.php
-│   │   └── ...
+│   ├── Models/                         # Modelos de datos (11 archivos)
+│   │   ├── UsuarioModel.php
+│   │   ├── FichaSocioeconomicaModel.php
+│   │   ├── BecaModel.php
+│   │   ├── SolicitudBecaModel.php
+│   │   ├── SolicitudBecaDocumentoModel.php
+│   │   ├── SolicitudAyudaModel.php
+│   │   ├── PeriodoAcademicoModel.php
+│   │   ├── PdfCodigoVerificacionModel.php
+│   │   ├── CategoriaSolicitudAyudaModel.php
+│   │   ├── RespuestaSolicitudModel.php
+│   │   └── GlobalAdmin/
+│   │       ├── UsuarioGlobalModel.php
+│   │       ├── RolModel.php
+│   │       ├── SistemaModel.php
+│   │       └── BackupModel.php
 │   │
-│   ├── Services/                  # Servicios de lógica de negocio
-│   │   ├── AdminBienestarService.php     # Servicios para Admin Bienestar
-│   │   ├── EstudianteBecasService.php    # Servicios de becas para estudiantes
-│   │   ├── PlantillaPDFService.php       # Generación de PDFs
-│   │   └── PlantillaWordService.php      # Generación de documentos Word
+│   ├── Services/                       # Lógica de negocio
+│   │   ├── AdminBienestarService.php   # Servicios administrativos (~33KB)
+│   │   ├── EstudianteBecasService.php  # Servicios de becas (~23KB)
+│   │   ├── PlantillaPDFService.php     # Generación de PDFs (~17KB)
+│   │   └── PlantillaWordService.php    # Generación de Word (~14KB)
 │   │
-│   ├── Filters/                   # Filtros de peticiones
-│   │   └── AuthFilter.php                # Filtro de autenticación
+│   ├── Filters/                        # Filtros HTTP de seguridad
+│   │   ├── AuthFilter.php              # Autenticación obligatoria
+│   │   ├── RoleFilter.php              # Verificación de rol
+│   │   ├── RateLimitFilter.php         # Limitación de peticiones
+│   │   ├── SecurityHeadersFilter.php   # Cabeceras de seguridad
+│   │   └── XssFilter.php              # Protección XSS
 │   │
-│   ├── Views/                     # Vistas del sistema
-│   │   ├── layouts/                      # Layouts principales
-│   │   │   ├── mainAdmin.php            # Layout Admin Bienestar
-│   │   │   ├── mainEstudiante.php       # Layout Estudiante  
-│   │   │   ├── mainGlobalAdmin.php      # Layout Super Admin
-│   │   │   └── mainSuperAdmin.php       # Layout Super Admin alternativo
-│   │   ├── AdminBienestar/              # Vistas del Admin (33 archivos)
-│   │   │   ├── dashboard.php
-│   │   │   ├── fichas_socioeconomicas.php
-│   │   │   ├── becas.php
-│   │   │   ├── solicitudes_becas.php
-│   │   │   ├── usuarios.php
-│   │   │   ├── gestion_periodos.php
-│   │   │   ├── configuracion_becas.php
-│   │   │   ├── reportes.php
-│   │   │   └── ...
-│   │   ├── estudiante/                  # Vistas del estudiante (19 archivos)
-│   │   │   ├── becas.php
-│   │   │   ├── ficha_socioeconomica.php
-│   │   │   ├── solicitudes_ayuda.php
-│   │   │   ├── documentos.php
-│   │   │   ├── perfil.php
-│   │   │   └── ...
-│   │   ├── GlobalAdmin/                 # Vistas del Super Admin (12 archivos)
-│   │   │   ├── dashboard.php
-│   │   │   ├── gestion_usuarios.php
-│   │   │   ├── gestion_roles.php
-│   │   │   ├── respaldos.php
-│   │   │   ├── logs.php
-│   │   │   └── ...
-│   │   ├── auth/                        # Vistas de autenticación
-│   │   │   └── login.php
-│   │   └── ...
+│   ├── Helpers/                        # Funciones auxiliares
+│   │   ├── EmailHelper.php             # Envío de correos (SMTP dinámico)
+│   │   ├── GoogleDriveHelper.php       # Respaldos en Google Drive
+│   │   └── RecaptchaHelper.php         # Validación reCAPTCHA v2
 │   │
-│   └── Helpers/                   # Funciones auxiliares
+│   └── Views/                          # Vistas del sistema (11 subdirectorios)
+│       ├── layouts/                    # Layouts principales
+│       │   ├── mainAdmin.php           # Layout Admin Bienestar
+│       │   ├── mainEstudiante.php      # Layout Estudiante
+│       │   └── mainGlobalAdmin.php     # Layout Super Admin
+│       ├── AdminBienestar/             # Vistas Admin (22 archivos)
+│       ├── estudiante/                 # Vistas Estudiante (8 archivos)
+│       ├── GlobalAdmin/                # Vistas Super Admin (11 archivos)
+│       ├── auth/                       # Login
+│       ├── partials/                   # Navbar, footer
+│       ├── perfil/                     # Perfil de usuario
+│       ├── cuenta/                     # Configuración de cuenta
+│       └── plantillas/                 # Plantillas PDF/Word
 │
-├── public/                        # Archivos públicos
-│   ├── index.php                 # Punto de entrada
-│   ├── login/                    # Assets del login
-│   ├── sistema/                  # Assets del sistema (CSS, JS, imágenes)
-│   └── uploads/                  # Archivos subidos por usuarios
+├── public/                             # Archivos públicos
+│   ├── index.php                       # Punto de entrada
+│   ├── login/                          # Assets del login
+│   ├── sistema/                        # Assets del sistema
+│   │   └── assets/
+│   │       ├── css/
+│   │       │   ├── styles.min.css      # CSS del template Modernize
+│   │       │   └── custom.css          # Personalizaciones
+│   │       ├── js/
+│   │       │   ├── app.min.js          # Lógica del sidebar
+│   │       │   └── sidebarmenu.js      # Menú del sidebar
+│   │       └── images/
+│   └── uploads/                        # Archivos subidos por usuarios
 │
-├── writable/                      # Archivos escribibles
+├── writable/                           # Archivos escribibles
 │   ├── cache/
 │   ├── logs/
 │   └── session/
 │
-├── bienestar_estudiantil_db.sql  # Dump completo de la base de datos
-├── composer.json                  # Dependencias PHP
-└── README.md                      # Esta documentación
+├── composer.json                       # Dependencias PHP
+├── serveo.txt                          # Guía de acceso por túnel Serveo
+└── README.md                           # Esta documentación
 ```
 
 ---
@@ -147,32 +166,29 @@ ITSI/
 ### Información General
 - **Nombre**: `bienestar_estudiantil_db`
 - **Motor**: MariaDB 10.4.32
-- **Charset**: utf8mb4
+- **Charset**: utf8mb4 / utf8mb4_unicode_ci
 
 ### Diagrama de Tablas Principales
 
 ```
 ┌─────────────────────┐     ┌─────────────────────┐
-│      usuarios       │     │        roles        │
+│      usuarios       │     │        roles         │
 ├─────────────────────┤     ├─────────────────────┤
 │ id (PK)             │────▶│ id (PK)             │
 │ rol_id (FK)         │     │ nombre              │
 │ carrera_id (FK)     │     │ descripcion         │
-│ nombre              │     │ permisos (JSON)     │
-│ apellido            │     │ estado              │
-│ cedula (UNIQUE)     │     └─────────────────────┘
-│ email (UNIQUE)      │
-│ password_hash       │     ┌─────────────────────┐
-│ telefono            │     │      carreras       │
-│ direccion           │     ├─────────────────────┤
-│ carrera             │────▶│ id (PK)             │
-│ semestre            │     │ nombre              │
-│ foto_perfil         │     │ codigo (UNIQUE)     │
-│ estado              │     │ semestres           │
-│ ultimo_acceso       │     │ activa              │
-│ intentos_fallidos   │     └─────────────────────┘
-│ bloqueado_hasta     │
-└─────────────────────┘
+│ nombre, apellido    │     │ permisos (JSON)     │
+│ cedula (UNIQUE)     │     │ estado              │
+│ email (UNIQUE)      │     └─────────────────────┘
+│ password_hash       │
+│ telefono, direccion │     ┌─────────────────────┐
+│ semestre            │     │      carreras       │
+│ foto_perfil         │     ├─────────────────────┤
+│ estado              │────▶│ id (PK)             │
+│ ultimo_acceso       │     │ nombre              │
+│ intentos_fallidos   │     │ codigo (UNIQUE)     │
+│ bloqueado_hasta     │     │ semestres, activa   │
+└─────────────────────┘     └─────────────────────┘
          │
          │ 1:N
          ▼
@@ -182,14 +198,14 @@ ITSI/
 │ id (PK)                    │     │ id (PK)                │
 │ estudiante_id (FK)         │────▶│ nombre                 │
 │ periodo_id (FK)            │     │ estado                 │
-│ json_data (JSON)           │     │ fecha_inicio           │
-│ estado                     │     │ fecha_fin              │
-│ revisada_por_admin         │     │ activo_fichas          │
-│ fecha_revision_admin       │     │ activo_becas           │
-│ observaciones_admin        │     │ limite_fichas          │
-│ puntaje_calculado          │     │ limite_becas           │
-│ relacionada_beca           │     │ vigente_estudiantes    │
-└────────────────────────────┘     └────────────────────────┘
+│ json_data (JSON)           │     │ fecha_inicio/fin       │
+│ estado                     │     │ activo_fichas/becas    │
+│ revisada_por_admin         │     │ limite_fichas/becas    │
+│ fecha_revision_admin       │     │ vigente_estudiantes    │
+│ observaciones_admin        │     └────────────────────────┘
+│ puntaje_calculado          │
+│ relacionada_beca           │
+└────────────────────────────┘
          │
          │ M:N (a través de solicitudes)
          ▼
@@ -197,57 +213,51 @@ ITSI/
 │        becas               │     │   solicitudes_becas    │
 ├────────────────────────────┤     ├────────────────────────┤
 │ id (PK)                    │◀────│ id (PK)                │
-│ nombre                     │     │ estudiante_id (FK)     │
-│ descripcion                │     │ beca_id (FK)           │
-│ requisitos                 │     │ periodo_id (FK)        │
-│ puntaje_minimo_requerido   │     │ estado                 │
-│ activa                     │     │ observaciones          │
-│ tipo_beca                  │     │ fecha_solicitud        │
-│ monto_beca                 │     │ fecha_revision         │
-│ cupos_disponibles          │     │ revisado_por           │
-│ estado                     │     │ motivo_rechazo         │
-│ periodo_vigente_id (FK)    │     │ documentos_revisados   │
+│ nombre, descripcion        │     │ estudiante_id (FK)     │
+│ requisitos                 │     │ beca_id (FK)           │
+│ puntaje_minimo_requerido   │     │ periodo_id (FK)        │
+│ tipo_beca                  │     │ estado                 │
+│ monto_beca                 │     │ observaciones          │
+│ cupos_disponibles          │     │ fecha_solicitud        │
+│ estado, activa             │     │ revisado_por           │
+│ periodo_vigente_id (FK)    │     │ motivo_rechazo         │
 │ documentos_requisitos      │     │ porcentaje_avance      │
 └────────────────────────────┘     └────────────────────────┘
 ```
 
-### Descripción de Tablas
+### Tablas del Sistema
 
 #### Tablas Principales
-
-| Tabla | Descripción | Registros |
-|-------|-------------|-----------|
-| `usuarios` | Almacena todos los usuarios del sistema (estudiantes, admins) | ~72 |
-| `roles` | Roles del sistema con permisos | 4 |
-| `carreras` | Carreras académicas disponibles | 11 |
-| `periodos_academicos` | Períodos académicos para fichas y becas | ~11 |
-| `fichas_socioeconomicas` | Fichas socioeconómicas de estudiantes | ~32 |
-| `becas` | Catálogo de becas disponibles | ~29 |
-| `solicitudes_becas` | Solicitudes de becas realizadas | ~41 |
-| `solicitudes_ayuda` | Solicitudes de ayuda estudiantil | ~27 |
+| Tabla | Descripción |
+|-------|-------------|
+| `usuarios` | Todos los usuarios del sistema (~503 estudiantes, 5 admins, 1 docente) |
+| `roles` | Roles del sistema (Estudiante, Admin Bienestar, Docente, Super Admin) |
+| `carreras` | Carreras académicas disponibles |
+| `periodos_academicos` | Períodos académicos para fichas y becas |
+| `fichas_socioeconomicas` | Fichas socioeconómicas con datos JSON flexibles |
+| `becas` | Catálogo de becas disponibles |
+| `solicitudes_becas` | Solicitudes de becas realizadas |
+| `solicitudes_ayuda` | Solicitudes de ayuda estudiantil |
+| `configuracion_sistema` | Configuración dinámica (SMTP, Google Drive, etc.) |
 
 #### Tablas de Soporte
-
 | Tabla | Descripción |
 |-------|-------------|
 | `becas_documentos_requisitos` | Documentos requeridos por cada beca |
-| `documentos_solicitud_becas` | Documentos subidos para solicitudes de beca |
-| `estudiantes_habilitacion_becas` | Estado de habilitación para solicitar becas |
-| `historial_estados_becas` | Historial de cambios de estado en solicitudes |
-| `notificaciones_becas` | Notificaciones relacionadas con becas |
-| `observaciones_fichas` | Observaciones administrativas en fichas |
+| `documentos_solicitud_becas` | Documentos subidos para solicitudes |
+| `estudiantes_habilitacion_becas` | Estado de habilitación para becas |
+| `historial_estados_becas` | Historial de cambios de estado |
+| `notificaciones_becas` | Notificaciones de becas |
+| `observaciones_fichas` | Observaciones administrativas |
 | `flujo_aprobacion_documentos` | Tracking del flujo de aprobación |
-| `categorias_solicitud_ayuda` | Categorías para solicitudes de ayuda |
-| `respuestas_solicitudes_ayuda` | Respuestas a solicitudes de ayuda |
+| `categorias_solicitud_ayuda` | Categorías de ayuda |
+| `respuestas_solicitudes_ayuda` | Respuestas a solicitudes |
 | `respuestas_predefinidas` | Plantillas de respuestas rápidas |
 | `citas` | Citas programadas con estudiantes |
 | `pdf_codigos_verificacion` | Códigos QR para verificación de PDFs |
-| `logs` | Logs de actividad del sistema |
-| `competencias` | Catálogo de competencias (HR) |
-| `categorias_evaluacion` | Categorías de evaluación (HR) |
+| `logs` | Bitácora de seguridad y auditoría |
 
-#### Vistas (Views)
-
+#### Vistas de Base de Datos
 | Vista | Descripción |
 |-------|-------------|
 | `v_becas_completas` | Becas con estadísticas de solicitudes |
@@ -259,348 +269,115 @@ ITSI/
 | `v_solicitudes_becas_detallada` | Vista detallada de solicitudes |
 
 #### Triggers
-
-| Trigger | Tabla | Descripción |
-|---------|-------|-------------|
-| `tr_ficha_completada_habilitar_becas` | `fichas_socioeconomicas` | Habilita solicitud de becas al aprobar ficha |
-| `validar_comentario_rechazo` | `fichas_socioeconomicas` | Obliga comentario al rechazar ficha |
-| `tr_actualizar_documentos_revisados` | `documentos_solicitud_becas` | Actualiza contadores al aprobar documentos |
-| `actualizar_porcentaje_avance_beca` | `solicitudes_becas_documentos` | Calcula avance de verificación |
+| Trigger | Descripción |
+|---------|-------------|
+| `tr_ficha_completada_habilitar_becas` | Habilita solicitud de becas al aprobar ficha |
+| `validar_comentario_rechazo` | Obliga comentario al rechazar ficha |
+| `tr_actualizar_documentos_revisados` | Actualiza contadores al aprobar documentos |
+| `actualizar_porcentaje_avance_beca` | Calcula avance de verificación |
 
 ### Estados del Sistema
 
-#### Estados de Fichas Socioeconómicas
-| Estado | Descripción |
-|--------|-------------|
-| `Borrador` | Ficha en edición, no enviada |
-| `Enviada` | Ficha enviada, pendiente de revisión |
-| `Revisada` | Ficha revisada, pendiente de decisión |
-| `Aprobada` | Ficha aprobada por administrador |
-| `Rechazada` | Ficha rechazada (requiere correcciones) |
+#### Fichas Socioeconómicas
+`Borrador` → `Enviada` → `Revisada` → `Aprobada` / `Rechazada`
 
-#### Estados de Solicitudes de Beca
-| Estado | Descripción |
-|--------|-------------|
-| `Postulada` | Solicitud enviada, pendiente de revisión |
-| `En Revisión` | Documentos siendo verificados |
-| `Aprobada` | Beca otorgada al estudiante |
-| `Rechazada` | Solicitud rechazada |
-| `Lista de Espera` | En espera de cupos disponibles |
+#### Solicitudes de Beca
+`Postulada` → `En Revisión` → `Aprobada` / `Rechazada` / `Lista de Espera`
 
-#### Estados de Solicitudes de Ayuda
-| Estado | Descripción |
-|--------|-------------|
-| `Pendiente` | Solicitud nueva sin atender |
-| `En Proceso` | Siendo atendida por administrador |
-| `Resuelta` | Problema resuelto |
-| `Cerrada` | Solicitud cerrada |
+#### Solicitudes de Ayuda
+`Pendiente` → `En Proceso` → `Resuelta` / `Cerrada`
 
----
-
-## 👥 Sistema de Roles
-
-### Roles Definidos
-
-| ID | Rol | Descripción | Acceso |
-|----|-----|-------------|--------|
-| 1 | Estudiante | Usuario estudiantil | `/estudiante/*` |
-| 2 | Admin Bienestar | Administrador del área | `/admin-bienestar/*` |
-| 3 | Docente | Usuario docente (limitado) | - |
-| 4 | Super Admin | Administrador global | `/global-admin/*` |
-
-### Permisos por Rol
-
-#### Estudiante (rol_id = 1)
-- ✅ Crear y editar fichas socioeconómicas
-- ✅ Solicitar becas disponibles
-- ✅ Crear solicitudes de ayuda
-- ✅ Subir documentos
-- ✅ Ver estado de solicitudes
-- ✅ Descargar PDFs de fichas
-- ✅ Gestionar perfil y cuenta
-
-#### Admin Bienestar (rol_id = 2)
-- ✅ Revisar fichas socioeconómicas
-- ✅ Aprobar/Rechazar fichas
-- ✅ Gestionar becas (CRUD)
-- ✅ Revisar solicitudes de becas
-- ✅ Aprobar/Rechazar documentos
-- ✅ Gestionar períodos académicos
-- ✅ Atender solicitudes de ayuda
-- ✅ Generar reportes
-- ✅ Exportar datos (PDF/CSV)
-- ✅ Gestionar usuarios (limitado)
-
-#### Super Admin (rol_id = 4)
-- ✅ Todos los permisos anteriores
-- ✅ Gestión completa de usuarios
-- ✅ Gestión de roles y permisos
-- ✅ Configuración del sistema
-- ✅ Respaldos de base de datos
-- ✅ Logs del sistema
-- ✅ Estadísticas globales
-- ✅ Acceso a todas las vistas
+#### Categorías Socioeconómicas (Evaluación Automática)
+| Categoría | Puntaje | Descripción |
+|-----------|---------|-------------|
+| **A** | ≥ 8.00 ó 3.00 | Menor nivel de recursos — prioridad alta |
+| **B** | ≥ 6.00 ó 2.00 | Nivel medio de recursos |
+| **C** | < 6.00 ó 1.00 | Mayor nivel de recursos |
 
 ---
 
 ## 🚀 Módulos del Sistema
 
-### 1. Módulo de Autenticación
-
-**Controlador**: `AuthController.php`
-
-Funcionalidades:
-- Login con cédula o email
-- Validación de credenciales
-- Gestión de sesiones
+### 1. Autenticación y Seguridad
+- Login con cédula o email + contraseña
+- **Google reCAPTCHA v2** para prevención de bots
 - Bloqueo por intentos fallidos (5 intentos = 30 min bloqueo)
-- Redirección según rol
+- **Rate Limiting** por IP
+- Cabeceras de seguridad HTTP (SecurityHeadersFilter)
+- Protección XSS (XssFilter)
+- Tokens CSRF en todas las peticiones POST/AJAX
+- Contraseñas hasheadas con bcrypt
 
-```php
-// Flujo de autenticación
-1. Usuario ingresa credenciales
-2. Se busca por cédula o email
-3. Se verifica password con bcrypt
-4. Se crea sesión con datos del usuario
-5. Se redirige según rol_id
-```
-
-### 2. Módulo de Fichas Socioeconómicas
-
-**Controladores**: 
-- `EstudianteController.php` (crear/editar)
-- `AdminBienestarController.php` (revisar/aprobar)
-
-**Modelo**: `FichaSocioeconomicaModel.php`
-
-Características:
-- Formulario dinámico con múltiples secciones
-- Almacenamiento en JSON flexible
-- Estados de flujo de trabajo
-- Trigger automático para habilitar becas
+### 2. Fichas Socioeconómicas
+- Formulario dinámico de múltiples secciones (datos JSON flexibles)
+- Flujo de trabajo con estados (Borrador → Aprobada)
+- **Evaluación socioeconómica automática masiva** con persistencia en BD
+- Clasificación por categorías A, B, C
 - Exportación a PDF con código QR de verificación
+- Trigger automático para habilitar becas al aprobar
 - Una ficha por estudiante por período
 
-Secciones de la ficha:
-1. Datos personales del estudiante
-2. Información de vivienda
-3. Situación económica familiar
-4. Composición familiar
-5. Información de salud
-6. Comentarios adicionales
+### 3. Gestión de Becas
+- CRUD completo de tipos de becas (Académica, Económica, Deportiva, Cultural, etc.)
+- Flujo de solicitud con verificación de documentos
+- Revisión individual de documentos con porcentaje de avance
+- Notificaciones automáticas por cambios de estado
+- Configuración de programas de becas por período
 
-### 3. Módulo de Becas
+### 4. Solicitudes de Ayuda
+- Categorías: Académicas, Económicas, Salud, Vivienda, Sociales, Técnicas
+- Niveles de prioridad: Baja, Media, Alta, Urgente
+- Sistema de respuestas con plantillas predefinidas
+- Historial de comunicación
 
-**Controlador**: `AdminBienestarController.php` (gestión)
-**Controlador**: `EstudianteController.php` (solicitud)
-**Servicio**: `EstudianteBecasService.php`
-
-**Modelos**:
-- `BecaModel.php`
-- `SolicitudBecaModel.php`
-- `SolicitudBecaDocumentoModel.php`
-- `BecaDocumentoRequisitoModel.php`
-
-Tipos de becas:
-- Académica
-- Económica
-- Deportiva
-- Cultural
-- Investigación
-- Otros
-
-Flujo de solicitud:
-```
-1. Estudiante tiene ficha aprobada
-2. Estudiante selecciona beca disponible
-3. Sistema verifica elegibilidad y cupos
-4. Se crean registros de documentos requeridos
-5. Estudiante sube documentos
-6. Admin revisa documentos uno por uno
-7. Admin aprueba/rechaza solicitud
-8. Sistema envía notificación
-```
-
-### 4. Módulo de Solicitudes de Ayuda
-
-**Controladores**:
-- `EstudianteController.php` (crear)
-- `AdminBienestarController.php` (gestionar)
-
-**Modelos**:
-- `SolicitudAyudaModel.php`
-- `CategoriaSolicitudAyudaModel.php`
-- `RespuestaSolicitudModel.php`
-
-Categorías:
-- Académicas
-- Económicas
-- Salud
-- Vivienda
-- Sociales
-- Técnicas
-- Otro Asunto
-
-Niveles de prioridad:
-- Baja (verde)
-- Media (amarillo)
-- Alta (naranja)
-- Urgente (rojo)
-
-### 5. Módulo de Períodos Académicos
-
-**Controlador**: `AdminBienestarController.php`
-**Modelo**: `PeriodoAcademicoModel.php`
-
-Características:
+### 5. Períodos Académicos
 - Definición de fechas de inicio/fin
-- Límites de fichas y becas por período
-- Activación/desactivación independiente para fichas y becas
-- Visibilidad para estudiantes configurable
-- Estadísticas por período
+- Límites configurables de fichas y becas
+- Activación independiente para fichas y becas
+- Visibilidad configurable para estudiantes
 
-### 6. Módulo de Reportes
+### 6. Reportes y Analítica
+- Dashboard con gráficos interactivos (Chart.js)
+- Estadísticas por estado, período, carrera
+- Exportación a **PDF** (TCPDF), **Excel/CSV** y **Word** (PHPWord)
+- Actualización automática cada 5 minutos
+- Gráficos exportables como PNG
 
-**Controlador**: `AdminBienestarController.php`
-**Servicio**: `AdminBienestarService.php`
+### 7. Información Estudiantil
+- Listado completo de estudiantes con estadísticas agregadas
+- Modal de historial completo (fichas, becas, ayudas, documentos)
+- Exportación de listados a Excel y PDF
+- Rutas AJAX dinámicas compatibles con túneles (Serveo)
 
-Reportes disponibles:
-- Estadísticas generales del sistema
-- Fichas por estado y período
-- Solicitudes de becas por estado
-- Becas por tipo y cupos
-- Usuarios por rol
-
-Formatos de exportación:
-- PDF (TCPDF)
-- Excel/CSV
-- Word (PHPWord)
-
-### 7. Módulo de Super Administrador (GlobalAdmin)
-
-**Controlador**: `GlobalAdmin/GlobalAdminController.php`
-
-**Modelos**:
-- `GlobalAdmin/UsuarioGlobalModel.php`
-- `GlobalAdmin/RolModel.php`
-- `GlobalAdmin/SistemaModel.php`
-- `GlobalAdmin/BackupModel.php`
-
-Funcionalidades:
+### 8. Super Administrador (GlobalAdmin)
 - Dashboard global con métricas KPI
 - Gestión completa de usuarios (CRUD)
 - Gestión de roles y permisos
-- Sistema de respaldos de BD
-- Visor de logs del sistema
-- Estadísticas avanzadas
-- Configuración del sistema
+- **Respaldos de BD** manuales con descarga SQL
+- Visor de logs de seguridad con filtros
+- **Configuración centralizada** del sistema (SMTP, Google Drive)
+- Estadísticas avanzadas con gráficos
+
+### 9. Generación de Documentos
+- **PDF**: Fichas socioeconómicas con sección de evaluación, código QR y diseño institucional
+- **Word**: Reportes exportables en formato .docx
+- Códigos de verificación almacenados en BD para validación de autenticidad
 
 ---
 
 ## 🔐 Seguridad
 
-### Autenticación
-- Contraseñas hasheadas con bcrypt (`password_hash`)
-- Bloqueo temporal por intentos fallidos
-- Sesiones manejadas por CodeIgniter
-
-### Autorización
-- Filtro de autenticación (`AuthFilter.php`)
-- Verificación de rol en cada controlador
-- Rutas protegidas por grupos
-
-### Validación
-- Validación de entrada en modelos
-- Reglas de validación personalizadas
-- Sanitización de datos
-
-### Protección de Documentos
-- Códigos QR de verificación en PDFs
-- Registro de generación de documentos
-- Verificación de autenticidad
-
----
-
-## 📡 API de Rutas Principales
-
-### Rutas Públicas
-```
-GET  /                          # Página de login
-GET  /login                     # Página de login
-POST /auth/attemptLogin         # Procesar login
-GET  /auth/logout               # Cerrar sesión
-```
-
-### Rutas de Estudiante
-```
-GET  /estudiante                        # Dashboard estudiante
-GET  /estudiante/ficha-socioeconomica   # Gestión de fichas
-POST /estudiante/crear-ficha            # Crear nueva ficha
-POST /estudiante/enviar-ficha           # Enviar ficha para revisión
-GET  /estudiante/ver-ficha/:id          # Ver ficha específica
-GET  /estudiante/exportar-ficha-pdf/:id # Descargar PDF
-
-GET  /estudiante/becas                  # Ver becas disponibles
-POST /estudiante/solicitar-beca         # Solicitar una beca
-GET  /estudiante/documentos-beca/:id    # Gestionar documentos
-
-GET  /estudiante/solicitudes-ayuda      # Ver solicitudes de ayuda
-POST /estudiante/crear-solicitud-ayuda  # Crear solicitud
-
-GET  /estudiante/perfil                 # Ver perfil
-POST /estudiante/actualizar-perfil      # Actualizar perfil
-POST /estudiante/cambiar-password       # Cambiar contraseña
-```
-
-### Rutas de Admin Bienestar
-```
-GET  /admin-bienestar/dashboard                  # Dashboard administrativo
-GET  /admin-bienestar/fichas-socioeconomicas     # Listar fichas
-POST /admin-bienestar/aprobar-ficha/:id          # Aprobar ficha
-POST /admin-bienestar/rechazar-ficha/:id         # Rechazar ficha
-
-GET  /admin-bienestar/becas                      # Listar becas
-POST /admin-bienestar/crear-beca                 # Crear beca
-POST /admin-bienestar/actualizar-beca            # Actualizar beca
-POST /admin-bienestar/eliminar-beca              # Eliminar beca
-
-GET  /admin-bienestar/solicitudes-becas          # Listar solicitudes
-GET  /admin-bienestar/revision-documentos/:id    # Revisar documentos
-POST /admin-bienestar/aprobar-solicitud-beca     # Aprobar solicitud
-POST /admin-bienestar/rechazar-solicitud-beca    # Rechazar solicitud
-
-GET  /admin-bienestar/gestion-periodos           # Gestionar períodos
-POST /admin-bienestar/crear-periodo              # Crear período
-POST /admin-bienestar/actualizar-periodo         # Actualizar período
-
-GET  /admin-bienestar/solicitudes-ayuda          # Listar solicitudes
-POST /admin-bienestar/responder-solicitud-ayuda  # Responder solicitud
-
-GET  /admin-bienestar/usuarios                   # Listar usuarios
-GET  /admin-bienestar/reportes                   # Generar reportes
-```
-
-### Rutas de Super Admin
-```
-GET  /global-admin/dashboard                # Dashboard global
-GET  /global-admin/usuarios                 # Gestión de usuarios
-POST /global-admin/crear-usuario            # Crear usuario
-POST /global-admin/actualizar-usuario       # Actualizar usuario
-POST /global-admin/eliminar-usuario         # Eliminar usuario
-
-GET  /global-admin/roles                    # Gestión de roles
-POST /global-admin/crear-rol                # Crear rol
-POST /global-admin/actualizar-rol           # Actualizar rol
-
-GET  /global-admin/respaldos                # Gestión de respaldos
-POST /global-admin/crear-respaldo           # Crear respaldo BD
-GET  /global-admin/descargar-respaldo/:id   # Descargar respaldo
-POST /global-admin/restaurar-respaldo       # Restaurar respaldo
-
-GET  /global-admin/logs                     # Ver logs del sistema
-GET  /global-admin/estadisticas             # Estadísticas globales
-GET  /global-admin/configuracion            # Configuración del sistema
-```
+| Capa | Implementación |
+|------|----------------|
+| **Autenticación** | Bcrypt + sesiones CI4 + reCAPTCHA v2 |
+| **Autorización** | `AuthFilter`, `RoleFilter` por rutas |
+| **Anti-Fuerza Bruta** | `RateLimitFilter` + bloqueo temporal |
+| **Cabeceras** | `SecurityHeadersFilter` (X-Frame-Options, CSP, etc.) |
+| **XSS** | `XssFilter` en entradas |
+| **CSRF** | Tokens en meta tags + inyección automática en AJAX |
+| **Documentos** | Códigos QR de verificación en PDFs |
+| **Auditoría** | Bitácora de seguridad en tabla `logs` |
+| **Email** | Configuración SMTP dinámica desde BD |
 
 ---
 
@@ -617,7 +394,7 @@ GET  /global-admin/configuracion            # Configuración del sistema
 1. **Clonar/Copiar el proyecto**
    ```bash
    cd C:\xampp\htdocs
-   # Copiar la carpeta ITSI
+   git clone <repositorio> ITSI
    ```
 
 2. **Instalar dependencias**
@@ -626,149 +403,182 @@ GET  /global-admin/configuracion            # Configuración del sistema
    composer install
    ```
 
-3. **Crear base de datos**
+3. **Crear e importar base de datos**
    ```sql
    CREATE DATABASE bienestar_estudiantil_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
    ```
-
-4. **Importar estructura y datos**
    ```bash
    mysql -u root bienestar_estudiantil_db < bienestar_estudiantil_db.sql
    ```
 
-5. **Configurar base de datos**
-   Editar `app/Config/Database.php`:
-   ```php
-   public array $default = [
-       'hostname' => 'localhost',
-       'username' => 'root',
-       'password' => '',
-       'database' => 'bienestar_estudiantil_db',
-       'DBDriver' => 'MySQLi',
-       'charset'  => 'utf8mb4',
-   ];
+4. **Configurar el entorno** — Editar `.env`:
+   ```ini
+   app.baseURL = 'http://localhost/ITSI/public/'
+   database.default.hostname = localhost
+   database.default.database = bienestar_estudiantil_db
+   database.default.username = root
+   database.default.password =
    ```
 
-6. **Configurar URL base**
-   Editar `app/Config/App.php`:
-   ```php
-   public string $baseURL = 'http://localhost/ITSI/public/';
-   ```
-
-7. **Permisos de escritura**
+5. **Permisos de escritura**
    ```bash
    chmod -R 755 writable/
    ```
 
-8. **Acceder al sistema**
+6. **Acceder al sistema**
    ```
    http://localhost/ITSI/public/
    ```
 
-### Usuarios de Prueba
+### Acceso Remoto (Serveo)
 
-| Rol | Email/Cédula | Contraseña |
-|-----|--------------|------------|
-| Admin Bienestar | test@mail.com | admin123 |
-| Estudiante | estudiante@testmail.com | estudiante123 |
-| Super Admin | superadmin@gmail.com | superadmin123 |
+El sistema puede exponerse a Internet mediante un túnel SSH con Serveo:
+
+```bash
+ssh -R bienestar-institucional-itsi:80:localhost:80 serveo.net
+```
+
+URL pública resultante:
+```
+https://bienestar-institucional-itsi.serveousercontent.com/ITSI/public/
+```
+
+### Credenciales de Prueba
+
+| Rol | Cédula | Contraseña |
+|-----|--------|------------|
+| **Admin Bienestar** | `0001` | `password` |
+| **Estudiante** | `0003` | `mmmm` |
+| **Super Admin** | `0004` | `password` |
 
 ---
 
-## 📊 Dashboards
+## 📡 Rutas Principales
 
-### Dashboard Estudiante
-- Resumen de fichas socioeconómicas
-- Estado de solicitudes de beca
-- Solicitudes de ayuda activas
-- Accesos directos a servicios
-- Notificaciones recientes
+### Públicas
+```
+GET  /                              # Login
+POST /auth/attemptLogin             # Procesar login (reCAPTCHA)
+GET  /auth/logout                   # Cerrar sesión
+```
 
-### Dashboard Admin Bienestar
-- Estadísticas de fichas por estado
-- Solicitudes pendientes de revisión
-- Becas activas y cupos disponibles
-- Gráficos de tendencias
-- Alertas del sistema
+### Estudiante (`/estudiante/*`)
+```
+GET  /estudiante                           # Dashboard
+GET  /estudiante/ficha-socioeconomica      # Gestión de fichas
+POST /estudiante/crear-ficha               # Crear ficha
+POST /estudiante/enviar-ficha              # Enviar para revisión
+GET  /estudiante/exportar-ficha-pdf/:id    # Descargar PDF
 
-### Dashboard Super Admin
-- KPIs globales del sistema
-- Usuarios por rol
-- Actividad reciente
-- Estado de respaldos
-- Métricas de rendimiento
-- Gráficos interactivos (Chart.js)
+GET  /estudiante/becas                     # Becas disponibles
+POST /estudiante/solicitar-beca            # Solicitar beca
+GET  /estudiante/documentos-beca/:id       # Gestionar documentos
+
+GET  /estudiante/solicitudes-ayuda         # Solicitudes de ayuda
+POST /estudiante/crear-solicitud-ayuda     # Crear solicitud
+
+GET  /estudiante/perfil                    # Perfil
+POST /estudiante/actualizar-perfil         # Actualizar perfil
+```
+
+### Admin Bienestar (`/admin-bienestar/*`)
+```
+GET  /admin-bienestar                              # Dashboard
+GET  /admin-bienestar/fichas-socioeconomicas       # Listar fichas
+POST /admin-bienestar/aprobar-ficha/:id            # Aprobar ficha
+POST /admin-bienestar/rechazar-ficha/:id           # Rechazar ficha
+POST /admin-bienestar/guardar-evaluacion-masiva    # Evaluación automática
+
+GET  /admin-bienestar/becas                        # Listar becas
+POST /admin-bienestar/crear-beca                   # Crear beca
+GET  /admin-bienestar/solicitudes-becas            # Solicitudes de becas
+GET  /admin-bienestar/revision-documentos/:id      # Revisar documentos
+
+GET  /admin-bienestar/gestion-periodos             # Períodos académicos
+GET  /admin-bienestar/solicitudes-ayuda            # Solicitudes de ayuda
+GET  /admin-bienestar/estudiantes                  # Información estudiantil
+GET  /admin-bienestar/reportes                     # Reportes y analítica
+```
+
+### Super Admin (`/global-admin/*`)
+```
+GET  /global-admin/dashboard              # Dashboard global
+GET  /global-admin/usuarios               # Gestión de usuarios
+GET  /global-admin/roles                  # Gestión de roles
+GET  /global-admin/respaldos              # Respaldos de BD
+GET  /global-admin/logs                   # Logs del sistema
+GET  /global-admin/estadisticas           # Estadísticas avanzadas
+GET  /global-admin/configuracion          # Configuración del sistema
+```
 
 ---
 
 ## 🔧 Mantenimiento
 
 ### Respaldos
-- Respaldos automáticos configurables
-- Respaldos manuales desde panel
+- Respaldos manuales desde panel Super Admin
 - Descarga de archivos SQL
-- Restauración desde panel
+- Integración con Google Drive (GoogleDriveHelper)
 
-### Logs
-- Registro de acciones críticas
-- Filtrado por fecha/tipo/usuario
+### Logs y Auditoría
+- Bitácora de seguridad con registro de acciones críticas
+- Filtrado por fecha, tipo y usuario
 - Exportación de logs
-- Limpieza automática
 
-### Monitoreo
-- Estadísticas en tiempo real
-- Métricas de uso
-- Alertas por límites
+### Configuración Centralizada
+- Tabla `configuracion_sistema` para parámetros dinámicos
+- SMTP configurable desde panel (EmailHelper)
+- Credenciales de Google Drive desde BD (GoogleDriveHelper)
 
 ---
 
-## 📝 Notas de Desarrollo
+## 📝 Convenciones de Código
 
-### Convenciones de Código
-- Nombres de clases: PascalCase
-- Nombres de métodos: camelCase
-- Nombres de tablas: snake_case
-- Variables: camelCase
+| Elemento | Convención |
+|----------|------------|
+| Clases | PascalCase |
+| Métodos | camelCase |
+| Tablas BD | snake_case |
+| Variables | camelCase |
+| Constantes | UPPER_SNAKE_CASE |
 
-### Estructura de Vistas
-- Layouts base en `/Views/layouts/`
-- Vistas específicas en carpetas por módulo
-- Parciales en subcarpetas `/partials/`
-
-### Servicios
-- Lógica de negocio compleja en `/Services/`
-- Reutilización entre controladores
-- Transacciones de base de datos
+### Arquitectura
+- **Layouts base** en `Views/layouts/`
+- **Vistas por módulo** en carpetas dedicadas
+- **Parciales reutilizables** en subcarpetas `partials/`
+- **Lógica de negocio** separada en `Services/`
+- **Helpers** para funcionalidades transversales (Email, reCAPTCHA, Google Drive)
+- **Filtros HTTP** en cascada para seguridad
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Problema: Error 500 al cargar
-**Solución**: Verificar permisos de `writable/` y revisar logs en `writable/logs/`
-
-### Problema: Login no funciona
-**Solución**: Verificar conexión a BD y que la tabla `usuarios` tenga datos
-
-### Problema: PDFs no se generan
-**Solución**: Verificar instalación de TCPDF (`composer require tecnickcom/tcpdf`)
-
-### Problema: Sesión se pierde
-**Solución**: Verificar configuración de sesiones en `app/Config/Session.php`
+| Problema | Solución |
+|----------|----------|
+| Error 500 | Verificar permisos de `writable/` y revisar `writable/logs/` |
+| Login no funciona | Verificar conexión a BD y que existan usuarios |
+| reCAPTCHA falla | Verificar claves de Google reCAPTCHA en configuración |
+| PDFs no se generan | Ejecutar `composer require tecnickcom/tcpdf` |
+| Sesión se pierde | Revisar `app/Config/Session.php` |
+| Datos no cargan vía Serveo | Las vistas usan rutas dinámicas (`SITE_ROOT`, `ADMIN_BASE`) para compatibilidad con túneles |
+| CORS / Mixed Content | Verificar que `app.baseURL` coincida con el dominio de acceso |
 
 ---
 
-## 📞 Contacto y Soporte
+## 📞 Información del Proyecto
 
-Este sistema fue desarrollado para gestión de bienestar estudiantil institucional.
-
-**Versión**: 1.0.0
-**Última actualización**: 2025-08-21
-**Framework**: CodeIgniter 4
-**Base de datos**: MariaDB 10.4.32
+| Campo | Valor |
+|-------|-------|
+| **Versión** | 2.0.0 |
+| **Última actualización** | 2026-06-08 |
+| **Framework** | CodeIgniter 4 |
+| **Base de datos** | MariaDB 10.4.32 |
+| **Template UI** | Modernize (Wrappixel) |
+| **Licencia** | MIT |
 
 ---
 
 ## 📜 Licencia
 
-MIT License - Ver archivo `LICENSE` para más detalles.
+MIT License — Ver archivo `LICENSE` para más detalles.

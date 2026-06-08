@@ -361,6 +361,79 @@
     </div>
 </div>
 
+<!-- Paginación -->
+<?php if (isset($paginacion) && $paginacion['total_paginas'] > 1): ?>
+<div class="card mt-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted">
+                Mostrando <?= ($paginacion['offset'] + 1) ?> a <?= min($paginacion['offset'] + $paginacion['por_pagina'], $paginacion['total_registros']) ?> 
+                de <?= $paginacion['total_registros'] ?> solicitudes
+            </div>
+            <nav aria-label="Paginación de solicitudes">
+                <ul class="pagination pagination-sm mb-0">
+                    <?php if ($paginacion['pagina_actual'] > 1): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?= $paginacion['pagina_actual'] - 1 ?>" aria-label="Anterior">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    <?php else: ?>
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo;</span>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php
+                    $inicio = max(1, $paginacion['pagina_actual'] - 2);
+                    $fin = min($paginacion['total_paginas'], $paginacion['pagina_actual'] + 2);
+
+                    if ($inicio > 1): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1">1</a>
+                        </li>
+                        <?php if ($inicio > 2): ?>
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        <?php endif; ?>
+                    <?php endif; ?>
+
+                    <?php for ($i = $inicio; $i <= $fin; $i++): ?>
+                        <li class="page-item <?= $i == $paginacion['pagina_actual'] ? 'active' : '' ?>">
+                            <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+                        </li>
+                    <?php endfor; ?>
+
+                    <?php if ($fin < $paginacion['total_paginas']): ?>
+                        <?php if ($fin < $paginacion['total_paginas'] - 1): ?>
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        <?php endif; ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?= $paginacion['total_paginas'] ?>"><?= $paginacion['total_paginas'] ?></a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php if ($paginacion['pagina_actual'] < $paginacion['total_paginas']): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?= $paginacion['pagina_actual'] + 1 ?>" aria-label="Siguiente">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    <?php else: ?>
+                        <li class="page-item disabled">
+                            <span class="page-link">&raquo;</span>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 <!-- Modal Crear Respuesta Predefinida -->
 <div class="modal fade" id="modalCrearRespuesta" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -685,7 +758,6 @@ function responderSolicitud(solicitudId) {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         mostrarNotificacion('Error cargando detalles de la solicitud', 'error');
     });
 }
@@ -848,7 +920,6 @@ function guardarRespuestaPredefinida() {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         Swal.fire({
             icon: 'error',
             title: 'Error del Sistema',
@@ -934,7 +1005,6 @@ function cargarRespuestasPredefinidas() {
         }
     })
     .catch(error => {
-        console.error('Error cargando respuestas predefinidas:', error);
     });
 }
 
@@ -1001,7 +1071,6 @@ function eliminarRespuestaPredefinida(respuestaId, contenedor) {
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
                 Swal.fire({
                     icon: 'error',
                     title: 'Error del Sistema',
@@ -1202,7 +1271,6 @@ function aplicarRespuestaRapida(solicitudesIds, datosRespuesta) {
         .catch(error => {
             procesadas++;
             errores++;
-            console.error(`Error procesando solicitud ${solicitudId}:`, error);
             erroresDetalle.push(`Solicitud ${solicitudId}: ${error.message}`);
             
             if (procesadas === solicitudesIds.length) {
@@ -1330,7 +1398,6 @@ function exportarSolicitudes() {
         });
     })
     .catch(error => {
-        console.error('Error en exportación:', error);
         
         Swal.fire({
             icon: 'error',
@@ -1428,7 +1495,6 @@ function verDetalleSolicitud(solicitudId) {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         mostrarNotificacion('Error cargando detalles de la solicitud', 'error');
     });
 }
@@ -1460,7 +1526,6 @@ function asignarSolicitud(solicitudId) {
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
                 mostrarNotificacion('Error de conexión', 'error');
             });
         }
@@ -1509,7 +1574,6 @@ function cambiarPrioridad(solicitudId) {
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
                 mostrarNotificacion('Error de conexión', 'error');
             });
         }
@@ -1548,7 +1612,6 @@ function cerrarSolicitud(solicitudId) {
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
                 mostrarNotificacion('Error de conexión', 'error');
             });
         }
@@ -1739,7 +1802,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof Chart !== 'undefined') {
         inicializarGraficosSolicitudes();
     } else {
-        console.error('Chart.js no está cargado');
     }
 });
 
@@ -2052,7 +2114,6 @@ function verHistorialSolicitudes(estudianteId, nombreEstudiante) {
     })
     .catch(error => {
         Swal.close();
-        console.error('Error:', error);
         mostrarNotificacion('Error cargando historial del estudiante', 'error');
     });
 }

@@ -821,7 +821,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof Chart !== 'undefined') {
         inicializarGraficosSolicitudesBecas();
     } else {
-        console.error('Chart.js no está cargado');
     }
 });
 </script>

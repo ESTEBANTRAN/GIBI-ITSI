@@ -303,7 +303,6 @@ function verBeca(id) {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             mostrarNotificacion('Error de conexión', 'error');
         });
 }
@@ -381,7 +380,6 @@ function editarBeca(id) {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             mostrarNotificacion('Error de conexión', 'error');
         });
 }
@@ -462,7 +460,6 @@ function toggleEstadoBeca(id, estadoActual) {
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
                 mostrarNotificacion('Error de conexión', 'error');
             });
         }
@@ -568,7 +565,6 @@ function crearBeca() {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         mostrarNotificacion('Error de conexión', 'error');
     });
 }
@@ -631,7 +627,6 @@ function actualizarBeca() {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         mostrarNotificacion('Error de conexión', 'error');
     });
 }
@@ -677,7 +672,6 @@ function eliminarBeca(id) {
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
                 mostrarNotificacion('Error de conexión', 'error');
             });
         }
@@ -704,7 +698,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof Chart !== 'undefined') {
         inicializarGraficos();
     } else {
-        console.error('Chart.js no está cargado');
     }
 });
 

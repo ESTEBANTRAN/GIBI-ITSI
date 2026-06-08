@@ -299,7 +299,6 @@ function subirDocumento() {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         mostrarNotificacion('Error de conexión', 'error');
     })
     .finally(() => {
@@ -331,7 +330,6 @@ function eliminarDocumento(documentoId) {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             mostrarNotificacion('Error de conexión', 'error');
         });
     }

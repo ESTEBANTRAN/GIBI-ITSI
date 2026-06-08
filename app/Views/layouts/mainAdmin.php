@@ -17,7 +17,7 @@
     <!-- ESTILOS -->
     <link rel="stylesheet" href="<?= base_url('sistema/assets/css/styles.min.css') ?>" />
     <!-- Estilos personalizados -->
-    <link rel="stylesheet" href="<?= base_url('sistema/assets/css/custom.css') ?>" />
+    <link rel="stylesheet" href="<?= base_url('sistema/assets/css/custom.css') ?>?v=<?= time() ?>" />
     <!-- jQuery (must be first) -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     
@@ -31,6 +31,39 @@
     <script>
     </script>
     <?= csrf_meta() ?>
+    <!-- FIX: Estilos inline para eliminar el gap del header (anti-caché) -->
+    <style>
+        /* Forzar header al tope absoluto */
+        .app-header {
+            background: transparent !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            top: 0 !important;
+        }
+        #main-wrapper[data-layout=vertical][data-header-position=fixed] .app-header {
+            position: fixed !important;
+            top: 0 !important;
+            z-index: 50 !important;
+        }
+        .app-header .navbar {
+            margin: 0 !important;
+            border-radius: 0 !important;
+        }
+        /* Compensar sidebar de 300px */
+        @media (min-width: 1200px) {
+            #main-wrapper[data-layout=vertical][data-header-position=fixed] .app-header {
+                width: calc(100% - 300px) !important;
+            }
+        }
+        /* Padding del contenido: solo altura del header */
+        #main-wrapper[data-layout=vertical][data-header-position=fixed] .body-wrapper > .container-fluid {
+            padding-top: 70px !important;
+        }
+        /* Prevenir que Serveo u otros inyecten espacio */
+        body > *:not(.page-wrapper):not(script):not(link):not(style) {
+            display: none !important;
+        }
+    </style>
 </head>
 
 <body>
@@ -79,7 +112,6 @@
     <!-- Debug: Verify jQuery is loaded -->
     <script>
         if (typeof $ === 'undefined') {
-            console.error('jQuery is not loaded!');
         } else {
         }
     </script>
@@ -123,13 +155,11 @@
     <script>
         // Verificar que jQuery esté disponible
         if (typeof $ === 'undefined') {
-            console.error('jQuery no está disponible');
         } else {
         }
         
         // Verificar que ApexCharts esté disponible
         if (typeof ApexCharts === 'undefined') {
-            console.error('ApexCharts no está disponible');
         } else {
         }
     </script>

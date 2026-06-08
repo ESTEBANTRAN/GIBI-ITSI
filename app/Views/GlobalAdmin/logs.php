@@ -1,4 +1,4 @@
-﻿<?= $this->extend('layouts/mainGlobalAdmin') ?>
+<?= $this->extend('layouts/mainGlobalAdmin') ?>
 
 <?= $this->section('content') ?>
 <div class="page-wrapper">
@@ -241,11 +241,9 @@ function cargarLogs(pagina = 1) {
                 mostrarLogs(response.logs);
                 mostrarPaginacion(response.paginacion);
             } else {
-                console.error('Error al cargar logs:', response.error);
             }
         },
         error: function() {
-            console.error('Error de conexión al cargar logs');
         }
     });
 }
@@ -343,7 +341,6 @@ function cargarEstadisticas() {
             }
         },
         error: function() {
-            console.error('Error al cargar estadísticas');
         }
     });
 }

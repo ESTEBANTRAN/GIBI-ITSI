@@ -1,4 +1,4 @@
-﻿<?= $this->extend('layouts/mainAdmin') ?>
+<?= $this->extend('layouts/mainAdmin') ?>
 
 <?= $this->section('content') ?>
 
@@ -205,7 +205,6 @@ function cambiarFoto(input) {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             mostrarNotificacion('Error al cambiar la foto', 'error');
         });
     }

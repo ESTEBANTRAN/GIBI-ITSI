@@ -1,4 +1,4 @@
-﻿<?= $this->extend('layouts/mainGlobalAdmin') ?>
+<?= $this->extend('layouts/mainGlobalAdmin') ?>
 
 <?= $this->section('content') ?>
 <div class="page-wrapper">
@@ -158,6 +158,20 @@
                                 </tbody>
                             </table>
                         </div>
+                        <!-- Pagination Info -->
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="text-muted" id="infoPaginacionRespaldos">
+                                    Mostrando 0 a 0 de 0 registros
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <nav aria-label="Navegación de respaldos">
+                                    <ul class="pagination justify-content-end mb-0" id="paginacionRespaldos">
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -232,29 +246,33 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 200);
 });
 
-function cargarRespaldos() {
+var paginaActualRespaldos = 1;
+
+function cargarRespaldos(pagina) {
+    if (pagina !== undefined) {
+        paginaActualRespaldos = pagina;
+    }
     $.ajax({
         url: '<?= base_url('global-admin/obtener-respaldos') ?>',
         type: 'GET',
+        data: { pagina: paginaActualRespaldos },
         cache: false,
         success: function(response) {
             if (response.success) {
-                mostrarRespaldos(response.respaldos);
+                mostrarRespaldos(response.respaldos, response.paginacion);
             } else {
-                console.error('Error al cargar respaldos:', response.error);
             }
         },
         error: function() {
-            console.error('Error de conexión al cargar respaldos');
         }
     });
 }
 
-function mostrarRespaldos(respaldos) {
+function mostrarRespaldos(respaldos, paginacion) {
     const tbody = $('#tbodyRespaldos');
     tbody.empty();
     
-    if (respaldos.length === 0) {
+    if (!respaldos || respaldos.length === 0) {
         tbody.append(`
             <tr>
                 <td colspan="6" class="text-center text-muted">
@@ -262,6 +280,8 @@ function mostrarRespaldos(respaldos) {
                 </td>
             </tr>
         `);
+        $('#infoPaginacionRespaldos').text('Mostrando 0 a 0 de 0 registros');
+        $('#paginacionRespaldos').empty();
         return;
     }
     
@@ -293,6 +313,53 @@ function mostrarRespaldos(respaldos) {
         `;
         tbody.append(row);
     });
+    
+    // Udpate pagination info
+    const desde = ((paginacion.pagina_actual - 1) * paginacion.por_pagina) + 1;
+    const hasta = Math.min(paginacion.pagina_actual * paginacion.por_pagina, paginacion.total);
+    $('#infoPaginacionRespaldos').text('Mostrando ' + desde + ' a ' + hasta + ' de ' + paginacion.total + ' registros');
+    
+    // Render pagination controls
+    mostrarPaginacionRespaldos(paginacion);
+}
+
+function mostrarPaginacionRespaldos(paginacion) {
+    const nav = $('#paginacionRespaldos');
+    nav.empty();
+    
+    if (paginacion.total_paginas <= 1) return;
+    
+    // Previous button
+    nav.append(`
+        <li class="page-item ${paginacion.pagina_actual <= 1 ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="cambiarPaginaRespaldos(${paginacion.pagina_actual - 1}); return false;">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+        </li>
+    `);
+    
+    for (var i = 1; i <= paginacion.total_paginas; i++) {
+        nav.append(`
+            <li class="page-item ${i === paginacion.pagina_actual ? 'active' : ''}">
+                <a class="page-link" href="#" onclick="cambiarPaginaRespaldos(${i}); return false;">${i}</a>
+            </li>
+        `);
+    }
+    
+    // Next button
+    nav.append(`
+        <li class="page-item ${paginacion.pagina_actual >= paginacion.total_paginas ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="cambiarPaginaRespaldos(${paginacion.pagina_actual + 1}); return false;">
+                <i class="bi bi-chevron-right"></i>
+            </a>
+        </li>
+    `);
+}
+
+function cambiarPaginaRespaldos(pagina) {
+    if (pagina < 1) return;
+    paginaActualRespaldos = pagina;
+    cargarRespaldos(pagina);
 }
 
 function cargarEstadisticas() {
@@ -309,7 +376,6 @@ function cargarEstadisticas() {
             }
         },
         error: function() {
-            console.error('Error al cargar estadísticas');
         }
     });
 }
@@ -641,7 +707,6 @@ function descargarArchivoConDialogo(url, filename = '') {
                 });
             })
             .catch(error => {
-                console.error('Error al descargar:', error);
                 
                 // Método 2: Fallback con elemento <a> directo
                 const link = document.createElement('a');

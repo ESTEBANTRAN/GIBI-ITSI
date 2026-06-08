@@ -241,6 +241,33 @@
                                 </tbody>
                             </table>
                         </div>
+                        
+                        <?php if (isset($total_pages_solicitudes) && $total_pages_solicitudes > 1): ?>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div>
+                                <small class="text-muted">
+                                    Mostrando <?= (($current_page_solicitudes - 1) * $per_page_solicitudes) + 1 ?> a 
+                                    <?= min($current_page_solicitudes * $per_page_solicitudes, $total_solicitudes) ?> 
+                                    de <?= $total_solicitudes ?> registros
+                                </small>
+                            </div>
+                            <nav>
+                                <ul class="pagination pagination-sm mb-0">
+                                    <li class="page-item <?= $current_page_solicitudes <= 1 ? 'disabled' : '' ?>">
+                                        <a class="page-link" href="?page_solicitudes=<?= $current_page_solicitudes - 1 ?>#solicitudes-section">Anterior</a>
+                                    </li>
+                                    <?php for ($i = 1; $i <= $total_pages_solicitudes; $i++): ?>
+                                    <li class="page-item <?= $i == $current_page_solicitudes ? 'active' : '' ?>">
+                                        <a class="page-link" href="?page_solicitudes=<?= $i ?>#solicitudes-section"><?= $i ?></a>
+                                    </li>
+                                    <?php endfor; ?>
+                                    <li class="page-item <?= $current_page_solicitudes >= $total_pages_solicitudes ? 'disabled' : '' ?>">
+                                        <a class="page-link" href="?page_solicitudes=<?= $current_page_solicitudes + 1 ?>#solicitudes-section">Siguiente</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                        <?php endif; ?>
                     <?php else: ?>
                         <div class="text-center py-4">
                             <i class="bi bi-inbox display-1 text-muted"></i>
@@ -537,7 +564,6 @@ function crearSolicitud() {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         mostrarNotificacion('Error de conexión', 'error');
     });
 }
@@ -734,7 +760,6 @@ function mostrarDocumentosRequeridos(becaId) {
                 documentosSection.style.display = 'none';
             }
         } catch (e) {
-            console.error('Error parseando documentos:', e);
             documentosSection.style.display = 'none';
         }
     } else {

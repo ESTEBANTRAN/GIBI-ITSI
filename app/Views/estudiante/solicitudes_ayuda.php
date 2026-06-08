@@ -1,4 +1,4 @@
-﻿<?= $this->extend('layouts/mainEstudiante') ?>
+<?= $this->extend('layouts/mainEstudiante') ?>
 
 <?= $this->section('breadcrumb') ?>Solicitudes de Ayuda<?= $this->endSection() ?>
 
@@ -143,6 +143,33 @@
                             </tbody>
                         </table>
                     </div>
+                    
+                    <?php if (isset($total_pages) && $total_pages > 1): ?>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <small class="text-muted">
+                                Mostrando <?= (($current_page - 1) * $per_page) + 1 ?> a 
+                                <?= min($current_page * $per_page, $total) ?> 
+                                de <?= $total ?> registros
+                            </small>
+                        </div>
+                        <nav>
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item <?= $current_page <= 1 ? 'disabled' : '' ?>">
+                                    <a class="page-link" href="?page=<?= $current_page - 1 ?>">Anterior</a>
+                                </li>
+                                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                                <li class="page-item <?= $i == $current_page ? 'active' : '' ?>">
+                                    <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+                                </li>
+                                <?php endfor; ?>
+                                <li class="page-item <?= $current_page >= $total_pages ? 'disabled' : '' ?>">
+                                    <a class="page-link" href="?page=<?= $current_page + 1 ?>">Siguiente</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <?php endif; ?>
                 <?php else: ?>
                     <div class="text-center py-4">
                         <i class="bi bi-question-circle fs-1 text-muted mb-3"></i>
@@ -508,7 +535,6 @@ document.getElementById('formNuevaSolicitud').addEventListener('submit', functio
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         Swal.fire({
             icon: 'error',
             title: 'Error de Conexión',
@@ -674,7 +700,6 @@ document.getElementById('formEditarSolicitud').addEventListener('submit', functi
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         Swal.fire({
             icon: 'error',
             title: 'Error de Conexión',
@@ -739,7 +764,6 @@ function cancelarSolicitud(id) {
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
                 Swal.fire({
                     icon: 'error',
                     title: 'Error de Conexión',

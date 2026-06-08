@@ -31,10 +31,23 @@ class FichasController extends BaseController
             return redirect()->to('/login');
         }
 
+        $page = (int)($this->request->getGet('page') ?? 1);
+        $perPage = 15;
+        $offset = ($page - 1) * $perPage;
+
+        $allFichas = $this->fichaModel->getFichasConPeriodo(session('id'));
+        $totalFichas = count($allFichas);
+        $fichas = array_slice($allFichas, $offset, $perPage);
+        $totalPages = max(1, ceil($totalFichas / $perPage));
+
         $data = [
             'estudiante' => $this->usuarioModel->find(session('id')),
-            'fichas' => $this->fichaModel->getFichasConPeriodo(session('id')),
-            'periodos' => $this->periodoModel->getPeriodosVigentesEstudiantes()
+            'fichas' => $fichas,
+            'periodos' => $this->periodoModel->getPeriodosVigentesEstudiantes(),
+            'current_page' => $page,
+            'total_pages' => $totalPages,
+            'per_page' => $perPage,
+            'total' => $totalFichas
         ];
 
         return view('estudiante/ficha_socioeconomica', $data);
@@ -60,7 +73,8 @@ class FichasController extends BaseController
         }
 
         // Verificar límite de fichas para el período
-        if (!$this->periodoModel->verificarLimiteFichas($periodo_id)) {
+        $limiteCheck = $this->periodoModel->verificarLimiteFichas($periodo_id);
+        if (is_array($limiteCheck) && !$limiteCheck['success']) {
             return $this->response->setJSON(['success' => false, 'error' => 'Se ha alcanzado el límite de fichas para este período']);
         }
 
@@ -136,46 +150,6 @@ class FichasController extends BaseController
             return $this->response->setJSON([
                 'success' => false, 
                 'error' => 'Error al crear ficha'
-            ]);
-        }
-    }
-
-    public function testCrearFicha()
-    {
-        if (!session('id') || session('rol_id') != ROLE_ESTUDIANTE) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        // Crear una ficha de prueba simple
-        $data = [
-            'estudiante_id' => session('id'),
-            'periodo_id' => 1, // Usar el primer período
-            'json_data' => json_encode([
-                'test' => 'Ficha de prueba',
-                'fecha_creacion' => date('Y-m-d H:i:s')
-            ]),
-            'estado' => 'Borrador'
-        ];
-
-        try {
-            $resultado = $this->fichaModel->insert($data);
-            if ($resultado) {
-                return $this->response->setJSON([
-                    'success' => true, 
-                    'message' => 'Ficha de prueba creada exitosamente con ID: ' . $resultado,
-                    'data' => $data
-                ]);
-            } else {
-                return $this->response->setJSON([
-                    'success' => false, 
-                    'error' => 'Error en inserción: ' . implode(', ', $this->fichaModel->errors())
-                ]);
-            }
-        } catch (\Exception $e) {
-            log_message('error', 'Error en testCrearFicha: ' . $e->getMessage());
-            return $this->response->setJSON([
-                'success' => false, 
-                'error' => 'Error del sistema'
             ]);
         }
     }

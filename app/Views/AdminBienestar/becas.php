@@ -176,10 +176,63 @@
                     </tr>
                 </thead>
                     <tbody id="tbodyBecas">
-                        <!-- Los datos se cargarán dinámicamente -->
+                    <?php if (!empty($becas)): ?>
+                        <?php foreach ($becas as $beca): ?>
+                        <tr>
+                            <td><?= $beca['id'] ?></td>
+                            <td><?= esc($beca['nombre']) ?></td>
+                            <td><span class="badge badge-info"><?= esc($beca['tipo_beca']) ?></span></td>
+                            <td><?= esc($beca['periodo_vigente_id'] ?? 'No asignado') ?></td>
+                            <td><?= $beca['monto_beca'] ? '$' . number_format($beca['monto_beca'], 2) : 'No especificado' ?></td>
+                            <td><?= $beca['cupos_disponibles'] ?? 'No especificado' ?></td>
+                            <td><span class="badge badge-<?= $beca['estado'] == 'Activa' ? 'success' : ($beca['estado'] == 'Inactiva' ? 'secondary' : 'danger') ?>"><?= esc($beca['estado']) ?></span></td>
+                            <td><?= $beca['fecha_creacion'] ?? '' ?></td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-sm btn-info" onclick="verBeca(<?= $beca['id'] ?>)" title="Ver detalles"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-primary" onclick="editarBeca(<?= $beca['id'] ?>)" title="Editar"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-warning" onclick="cambiarEstadoBeca(<?= $beca['id'] ?>)" title="Cambiar estado"><i class="fas fa-toggle-on"></i></button>
+                                    <button class="btn btn-sm btn-danger" onclick="eliminarBeca(<?= $beca['id'] ?>)" title="Eliminar"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr><td colspan="9" class="text-center">No se encontraron becas</td></tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <small class="text-muted" id="infoPaginacionBecas">
+                        Mostrando <?= (($current_page ?? 1) - 1) * ($per_page ?? 15) + 1 ?> a 
+                        <?= min(($current_page ?? 1) * ($per_page ?? 15), $total ?? 0) ?> 
+                        de <?= $total ?? 0 ?> registros
+                    </small>
+                </div>
+                <div class="col-md-6">
+                    <nav id="paginacionBecas">
+                    <?php if (isset($total_pages) && $total_pages > 1): ?>
+                        <ul class="pagination justify-content-end mb-0">
+                            <li class="page-item <?= ($current_page ?? 1) <= 1 ? 'disabled' : '' ?>">
+                                <a class="page-link" href="?page=<?= max(1, ($current_page ?? 1) - 1) ?>">Anterior</a>
+                            </li>
+                            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                                <?php if ($i >= ($current_page ?? 1) - 2 && $i <= ($current_page ?? 1) + 2): ?>
+                                <li class="page-item <?= $i == ($current_page ?? 1) ? 'active' : '' ?>">
+                                    <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+                                </li>
+                                <?php endif; ?>
+                            <?php endfor; ?>
+                            <li class="page-item <?= ($current_page ?? 1) >= $total_pages ? 'disabled' : '' ?>">
+                                <a class="page-link" href="?page=<?= min($total_pages, ($current_page ?? 1) + 1) ?>">Siguiente</a>
+                            </li>
+                        </ul>
+                    <?php endif; ?>
+                    </nav>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -424,8 +477,14 @@ $(document).ready(function() {
     });
 });
 
-function cargarBecas() {
+let paginaActualBecas = 1;
+
+function cargarBecas(pagina) {
+    pagina = pagina || paginaActualBecas;
+    paginaActualBecas = pagina;
+
     const filtros = {
+        page: pagina,
         estado: $('#filtroEstado').val(),
         tipo: $('#filtroTipo').val(),
         periodo: $('#filtroPeriodo').val(),
@@ -439,6 +498,7 @@ function cargarBecas() {
         success: function(response) {
             if (response.success) {
                 mostrarBecas(response.data);
+                mostrarPaginacionBecas(response.pagination);
             } else {
                 mostrarError('Error al cargar las becas: ' + response.message);
             }
@@ -447,6 +507,33 @@ function cargarBecas() {
             mostrarError('Error de conexión al cargar las becas');
         }
     });
+}
+
+function mostrarPaginacionBecas(pagination) {
+    if (!pagination || pagination.total_pages <= 1) {
+        $('#paginacionBecas').empty();
+        $('#infoPaginacionBecas').text('Mostrando ' + pagination.total + ' registros');
+        return;
+    }
+
+    const desde = ((pagination.current_page - 1) * pagination.per_page) + 1;
+    const hasta = Math.min(pagination.current_page * pagination.per_page, pagination.total);
+    $('#infoPaginacionBecas').text('Mostrando ' + desde + ' a ' + hasta + ' de ' + pagination.total + ' registros');
+
+    let html = '<ul class="pagination justify-content-end mb-0">';
+    html += '<li class="page-item ' + (pagination.current_page <= 1 ? 'disabled' : '') + '">';
+    html += '<a class="page-link" href="#" onclick="cargarBecas(' + (pagination.current_page - 1) + ')">Anterior</a></li>';
+
+    for (let i = Math.max(1, pagination.current_page - 2); i <= Math.min(pagination.total_pages, pagination.current_page + 2); i++) {
+        html += '<li class="page-item ' + (i == pagination.current_page ? 'active' : '') + '">';
+        html += '<a class="page-link" href="#" onclick="cargarBecas(' + i + ')">' + i + '</a></li>';
+    }
+
+    html += '<li class="page-item ' + (pagination.current_page >= pagination.total_pages ? 'disabled' : '') + '">';
+    html += '<a class="page-link" href="#" onclick="cargarBecas(' + (pagination.current_page + 1) + ')">Siguiente</a></li>';
+    html += '</ul>';
+
+    $('#paginacionBecas').html(html);
 }
 
 function mostrarBecas(becas) {

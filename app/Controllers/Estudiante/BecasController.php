@@ -54,6 +54,14 @@ class BecasController extends BaseController
             // Obtener estadísticas
             $estadisticas = $this->estudianteBecasService->getEstadisticasEstudiante($estudianteId);
 
+            // Paginación para solicitudes
+            $page = (int)($this->request->getGet('page_solicitudes') ?? 1);
+            $perPage = 15;
+            $offset = ($page - 1) * $perPage;
+            $totalSolicitudes = count($solicitudes);
+            $solicitudes = array_slice($solicitudes, $offset, $perPage);
+            $totalPagesSolicitudes = max(1, ceil($totalSolicitudes / $perPage));
+
             $data = [
                 'estudiante' => $this->usuarioModel->find($estudianteId),
                 'habilitacion' => $habilitacion,
@@ -62,7 +70,11 @@ class BecasController extends BaseController
                 'estadisticas' => $estadisticas,
                 'puede_solicitar' => $habilitacion['puede_solicitar'],
                 'motivo_deshabilitacion' => $habilitacion['puede_solicitar'] ? null : $habilitacion['motivo'],
-                'detalles_habilitacion' => $habilitacion['detalles'] ?? []
+                'detalles_habilitacion' => $habilitacion['detalles'] ?? [],
+                'current_page_solicitudes' => $page,
+                'total_pages_solicitudes' => $totalPagesSolicitudes,
+                'per_page_solicitudes' => $perPage,
+                'total_solicitudes' => $totalSolicitudes
             ];
 
             return view('estudiante/becas_mejorado', $data);
@@ -254,6 +266,11 @@ class BecasController extends BaseController
 
             $estudianteId = session('id');
             
+            // Paginación
+            $page = (int)($this->request->getGet('page') ?? 1);
+            $perPage = 15;
+            $offset = ($page - 1) * $perPage;
+
             // Verificar si el estudiante tiene una ficha socioeconómica aprobada
             $fichaModel = new \App\Models\FichaSocioeconomicaModel();
             $fichaAprobada = $fichaModel->where('estudiante_id', $estudianteId)
@@ -267,10 +284,14 @@ class BecasController extends BaseController
                 ]);
             }
 
-            // Obtener becas activas
+            // Obtener becas activas con paginación
             $becaModel = new \App\Models\BecaModel();
+            $totalBecas = $becaModel->where('estado', 'Activa')
+                                   ->where('activa', 1)
+                                   ->countAllResults();
             $becas = $becaModel->where('estado', 'Activa')
                               ->where('activa', 1)
+                              ->limit($perPage, $offset)
                               ->findAll();
 
             // Verificar si ya tiene solicitudes activas
@@ -295,9 +316,17 @@ class BecasController extends BaseController
                 }
             }
 
+            $totalPages = max(1, ceil($totalBecas / $perPage));
+
             return $this->response->setJSON([
                 'success' => true,
-                'data' => $becasDisponibles
+                'data' => $becasDisponibles,
+                'pagination' => [
+                    'current_page' => $page,
+                    'total_pages' => $totalPages,
+                    'per_page' => $perPage,
+                    'total' => $totalBecas
+                ]
             ]);
 
         } catch (\Exception $e) {

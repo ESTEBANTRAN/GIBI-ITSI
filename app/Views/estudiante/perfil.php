@@ -1,4 +1,4 @@
-﻿<?= $this->extend('layouts/mainEstudiante') ?>
+<?= $this->extend('layouts/mainEstudiante') ?>
 
 <?= $this->section('content') ?>
 <div class="page-wrapper">
@@ -396,7 +396,6 @@ document.getElementById('perfilForm').addEventListener('submit', function(e) {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         Swal.fire({
             icon: 'error',
             title: 'Error de conexión',

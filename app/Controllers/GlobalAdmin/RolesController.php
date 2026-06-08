@@ -26,6 +26,8 @@ class RolesController extends BaseController
         }
 
         $search = $this->request->getGet('search') ?? '';
+        $page = (int)($this->request->getGet('page') ?? 1);
+        $perPage = 15;
         
         if (!empty($search)) {
             $roles = $this->rolModel->buscarRoles($search);
@@ -33,10 +35,23 @@ class RolesController extends BaseController
             $roles = $this->rolModel->getRolesConUsuarios();
         }
 
+        $total = count($roles);
+        $totalPages = max(1, (int)ceil($total / $perPage));
+
+        if ($page < 1) $page = 1;
+        if ($page > $totalPages) $page = $totalPages;
+
+        $offset = ($page - 1) * $perPage;
+        $rolesPaginados = array_slice($roles, $offset, $perPage);
+
         $data = [
-            'roles' => $roles,
+            'roles' => $rolesPaginados,
             'search' => $search,
-            'estadisticas' => $this->rolModel->getEstadisticasRoles()
+            'estadisticas' => $this->rolModel->getEstadisticasRoles(),
+            'current_page' => $page,
+            'total_pages' => $totalPages,
+            'per_page' => $perPage,
+            'total' => $total
         ];
 
         return view('GlobalAdmin/gestion_roles', $data);

@@ -1,4 +1,4 @@
-﻿<?= $this->extend('layouts/mainAdmin') ?>
+<?= $this->extend('layouts/mainAdmin') ?>
 
 <?= $this->section('content') ?>
 
@@ -361,7 +361,6 @@ function actualizarDashboard() {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         mostrarNotificacion('Error de conexión', 'error');
     })
     .finally(() => {
@@ -471,7 +470,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .catch(error => {
-            console.error('Error al cargar estadísticas:', error);
         });
     
     // Cargar actividad reciente
@@ -483,7 +481,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .catch(error => {
-            console.error('Error al cargar actividad:', error);
         });
 });
 

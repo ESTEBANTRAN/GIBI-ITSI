@@ -156,8 +156,10 @@ class AdminBienestarController extends BaseController
             $resultado = $this->fichaModel->update($id, [
                 'estado' => 'Aprobada',
                 'fecha_revision' => date('Y-m-d H:i:s'),
-                'admin_revisor_id' => session('id'),
-                'observaciones' => 'Ficha aprobada por administrador'
+                'revisado_por' => session('id'),
+                'revisada_por_admin' => 1,
+                'fecha_revision_admin' => date('Y-m-d H:i:s'),
+                'observaciones_admin' => 'Ficha aprobada por administrador'
             ]);
 
             if ($resultado) {
@@ -212,8 +214,10 @@ class AdminBienestarController extends BaseController
             $resultado = $this->fichaModel->update($id, [
                 'estado' => 'Rechazada',
                 'fecha_revision' => date('Y-m-d H:i:s'),
-                'admin_revisor_id' => session('id'),
-                'observaciones' => 'Ficha rechazada: ' . $motivo
+                'revisado_por' => session('id'),
+                'revisada_por_admin' => 1,
+                'fecha_revision_admin' => date('Y-m-d H:i:s'),
+                'observaciones_admin' => 'Ficha rechazada: ' . $motivo
             ]);
 
             if ($resultado) {
@@ -232,6 +236,70 @@ class AdminBienestarController extends BaseController
             }
         } catch (\Exception $e) {
             log_message('error', 'Error rechazando ficha: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error del sistema']);
+        }
+    }
+
+    /**
+     * Guardar evaluación socioeconómica (auto-aprueba la ficha + habilita becas)
+     */
+    public function guardarEvaluacionSocioeconomica()
+    {
+        if (!$this->verificarPermisos()) {
+            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
+        }
+
+        try {
+            $ficha_id = $this->getPostInt('ficha_id');
+            $categoria = $this->getPostString('categoria');
+            $observaciones = $this->getPostString('observaciones');
+
+            if (!$ficha_id || !$categoria) {
+                return $this->response->setJSON(['success' => false, 'error' => 'Datos incompletos para la evaluación']);
+            }
+
+            $ficha = $this->fichaModel->find($ficha_id);
+            if (!$ficha) {
+                return $this->response->setJSON(['success' => false, 'error' => 'Ficha no encontrada']);
+            }
+
+            if (!in_array($ficha['estado'], ['Enviada', 'Revisada'])) {
+                return $this->response->setJSON(['success' => false, 'error' => 'La ficha no puede ser evaluada en su estado actual']);
+            }
+
+            if ($ficha['revisada_por_admin']) {
+                return $this->response->setJSON(['success' => false, 'error' => 'Esta ficha ya fue evaluada anteriormente']);
+            }
+
+            $puntaje = match ($categoria) {
+                'A' => 3.00,
+                'B' => 2.00,
+                'C' => 1.00,
+                default => 0.00
+            };
+
+            $adminId = session('id');
+            $now = date('Y-m-d H:i:s');
+
+            $this->fichaModel->update($ficha_id, [
+                'revisada_por_admin' => 1,
+                'fecha_revision_admin' => $now,
+                'puntaje_calculado' => $puntaje,
+                'observaciones_admin' => $observaciones,
+                'estado' => 'Aprobada',
+                'fecha_revision' => $now,
+                'revisado_por' => $adminId
+            ]);
+
+            $this->securityLogger->logAction($adminId, 'Evaluación Socioeconómica', 'fichas_socioeconomicas', $ficha_id, "Categoría: $categoria, Puntaje: $puntaje");
+
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Evaluación guardada y ficha aprobada exitosamente. El estudiante ahora puede solicitar becas.'
+            ]);
+
+        } catch (\Exception $e) {
+            log_message('error', 'Error en evaluación socioeconómica: ' . $e->getMessage());
             return $this->response->setJSON(['success' => false, 'error' => 'Error del sistema']);
         }
     }
@@ -291,7 +359,12 @@ class AdminBienestarController extends BaseController
         }
 
         try {
-            $becas = $this->becaModel->findAll();
+            $page = (int)($this->request->getGet('page') ?? 1);
+            $perPage = 15;
+            $offset = ($page - 1) * $perPage;
+
+            $total = $this->becaModel->countAllResults();
+            $becas = $this->becaModel->orderBy('id', 'DESC')->findAll($perPage, $offset);
             $tiposBeca = $this->db->table('becas')->select('tipo_beca')->distinct()->get()->getResultArray();
             $periodos = $this->periodoModel->findAll();
 
@@ -299,7 +372,11 @@ class AdminBienestarController extends BaseController
                 'becas' => $becas,
                 'tipos_beca' => $tiposBeca,
                 'periodos' => $periodos,
-                'usuario' => $this->getUsuarioActual()
+                'usuario' => $this->getUsuarioActual(),
+                'current_page' => $page,
+                'total_pages' => (int)ceil($total / $perPage),
+                'per_page' => $perPage,
+                'total' => $total
             ]);
         } catch (\Exception $e) {
             log_message('error', 'Error en becas: ' . $e->getMessage());
@@ -406,6 +483,53 @@ class AdminBienestarController extends BaseController
                 'success' => false, 
                 'error' => 'Error del sistema'
             ]);
+        }
+    }
+
+    /**
+     * Obtener todas las becas (AJAX con filtros y paginaci?n)
+     */
+    public function obtenerBecas()
+    {
+        if (!$this->verificarPermisos()) {
+            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
+        }
+
+        try {
+            $page = (int)($this->request->getGet('page') ?? 1);
+            $perPage = 15;
+            $offset = ($page - 1) * $perPage;
+
+            $builder = $this->db->table('becas b');
+            $builder->select('b.*, p.nombre as periodo_nombre');
+            $builder->join('periodos_academicos p', 'p.id = b.periodo_vigente_id', 'left');
+
+            $estado = $this->request->getGet('estado');
+            $tipo = $this->request->getGet('tipo');
+            $periodo = $this->request->getGet('periodo');
+            $buscar = $this->request->getGet('buscar');
+
+            if (!empty($estado)) $builder->where('b.estado', $estado);
+            if (!empty($tipo)) $builder->where('b.tipo_beca', $tipo);
+            if (!empty($periodo)) $builder->where('b.periodo_vigente_id', $periodo);
+            if (!empty($buscar)) $builder->like('b.nombre', $buscar);
+
+            $total = (clone $builder)->countAllResults(false);
+            $becas = $builder->orderBy('b.id', 'DESC')->limit($perPage, $offset)->get()->getResultArray();
+
+            return $this->response->setJSON([
+                'success' => true,
+                'data' => $becas,
+                'pagination' => [
+                    'current_page' => $page,
+                    'total_pages' => (int)ceil($total / $perPage),
+                    'per_page' => $perPage,
+                    'total' => $total
+                ]
+            ]);
+        } catch (\Exception $e) {
+            log_message('error', 'Error obteniendo becas: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'message' => 'Error al cargar las becas']);
         }
     }
 
@@ -698,7 +822,7 @@ class AdminBienestarController extends BaseController
                 'tipo_beca' => $this->request->getGet('tipo_beca'),
                 'beca_id' => $this->request->getGet('beca_id'),
                 'busqueda' => $this->request->getGet('busqueda'),
-                'per_page' => 30,
+                'per_page' => 15,
                 'page' => $this->request->getGet('page') ?? 1
             ];
 
@@ -765,7 +889,7 @@ class AdminBienestarController extends BaseController
 
         try {
             // Configuración de paginación
-            $porPagina = 10;
+            $porPagina = 15;
             $pagina = $this->request->getGet('page') ?? 1;
             $offset = ($pagina - 1) * $porPagina;
             
@@ -784,8 +908,8 @@ class AdminBienestarController extends BaseController
                 'periodos' => $periodos,
                 'usuario' => $this->getUsuarioActual(),
                 'paginacion' => [
-                    'pagina_actual' => $pagina,
-                    'total_paginas' => $totalPaginas,
+                    'pagina_actual' => (int)$pagina,
+                    'total_paginas' => (int)$totalPaginas,
                     'por_pagina' => $porPagina,
                     'total_registros' => $totalRegistros,
                     'offset' => $offset
@@ -818,14 +942,14 @@ class AdminBienestarController extends BaseController
 
         try {
             // Configuración de paginación
-            $porPagina = 10;
+            $porPagina = 15;
             $pagina = $this->request->getGet('page') ?? 1;
             $offset = ($pagina - 1) * $porPagina;
             
             // Usar Query Builder para evitar SQL injection
             $totalRegistros = $this->db->table('usuarios u')
                 ->join('carreras c', 'c.id = u.carrera_id', 'left')
-                ->where('u.rol_id', 1)
+                ->where('u.rol_id', ROLE_ESTUDIANTE)
                 ->countAllResults();
             $totalPaginas = ceil($totalRegistros / $porPagina);
             
@@ -833,7 +957,7 @@ class AdminBienestarController extends BaseController
             $estudiantes = $this->db->table('usuarios u')
                 ->select('u.*, c.nombre as carrera_nombre')
                 ->join('carreras c', 'c.id = u.carrera_id', 'left')
-                ->where('u.rol_id', 1)
+                ->where('u.rol_id', ROLE_ESTUDIANTE)
                 ->orderBy('u.created_at', 'DESC')
                 ->limit((int)$porPagina, (int)$offset)
                 ->get()
@@ -1828,7 +1952,7 @@ class AdminBienestarController extends BaseController
 
         try {
             // Configuración de paginación
-            $porPagina = 10;
+            $porPagina = 15;
             $pagina = $this->request->getGet('page') ?? 1;
             $offset = ($pagina - 1) * $porPagina;
             
@@ -2448,7 +2572,7 @@ class AdminBienestarController extends BaseController
 
         try {
             // Configuración de paginación
-            $porPagina = 10;
+            $porPagina = 15;
             $pagina = $this->request->getGet('page') ?? 1;
             $offset = ($pagina - 1) * $porPagina;
             
@@ -4678,6 +4802,126 @@ class AdminBienestarController extends BaseController
                 'success' => false,
                 'message' => 'Error del sistema al cargar el documento'
             ]);
+        }
+    }
+
+    /**
+     * Procesar evaluación automática masiva y guardar en base de datos
+     */
+    public function guardarEvaluacionMasiva()
+    {
+        if (!$this->verificarPermisos()) {
+            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
+        }
+
+        try {
+            $json = $this->request->getJSON();
+            if (!$json) {
+                return $this->response->setJSON(['success' => false, 'error' => 'Datos inválidos']);
+            }
+
+            $rangoAInicio = floatval($json->rangoAInicio ?? 100);
+            $rangoAFin = floatval($json->rangoAFin ?? 500);
+            $rangoBInicio = floatval($json->rangoBInicio ?? 501);
+            $rangoBFin = floatval($json->rangoBFin ?? 1000);
+            $rangoCInicio = floatval($json->rangoCInicio ?? 1001);
+            $rangoCFin = floatval($json->rangoCFin ?? 1500);
+
+            // Obtener estudiantes sin beca que no están evaluados
+            $sql = "
+                SELECT 
+                    fs.id,
+                    fs.estudiante_id,
+                    fs.periodo_id,
+                    fs.estado,
+                    fs.json_data,
+                    fs.revisada_por_admin
+                FROM fichas_socioeconomicas fs
+                INNER JOIN usuarios u ON u.id = fs.estudiante_id
+                WHERE u.rol_id = 1 
+                AND fs.estado IN ('Enviada', 'Revisada')
+                AND fs.revisada_por_admin = 0
+                AND NOT EXISTS (
+                    SELECT 1 FROM solicitudes_becas sb 
+                    WHERE sb.estudiante_id = fs.estudiante_id 
+                    AND sb.periodo_id = fs.periodo_id
+                    AND sb.estado IN ('Postulada', 'Aprobada', 'Lista de Espera')
+                )
+            ";
+            
+            $fichas = $this->db->query($sql)->getResultArray();
+            $adminId = session('id');
+            $now = date('Y-m-d H:i:s');
+            $countEvaluated = 0;
+
+            $this->db->transStart();
+
+            foreach ($fichas as $ficha) {
+                $datosFicha = json_decode($ficha['json_data'], true) ?: [];
+                $ingresosPadre = floatval($datosFicha['ingresos_padre'] ?? 0);
+                $ingresosMadre = floatval($datosFicha['ingresos_madre'] ?? 0);
+                $otrosIngresos = floatval($datosFicha['otros_ingresos'] ?? 0);
+                $totalIngresos = $ingresosPadre + $ingresosMadre + $otrosIngresos;
+
+                if ($totalIngresos === 0.0) {
+                    continue; // Saltar si no tiene ingresos especificados
+                }
+
+                $categoria = null;
+                $puntaje = 0.00;
+
+                if ($totalIngresos >= $rangoAInicio && $totalIngresos <= $rangoAFin) {
+                    $categoria = 'A';
+                    $puntaje = 3.00;
+                } elseif ($totalIngresos >= $rangoBInicio && $totalIngresos <= $rangoBFin) {
+                    $categoria = 'B';
+                    $puntaje = 2.00;
+                } elseif ($totalIngresos >= $rangoCInicio && $totalIngresos <= $rangoCFin) {
+                    $categoria = 'C';
+                    $puntaje = 1.00;
+                }
+
+                if ($categoria !== null) {
+                    $this->fichaModel->update($ficha['id'], [
+                        'revisada_por_admin' => 1,
+                        'fecha_revision_admin' => $now,
+                        'puntaje_calculado' => $puntaje,
+                        'observaciones_admin' => 'Evaluado automáticamente mediante el proceso masivo',
+                        'estado' => 'Aprobada',
+                        'fecha_revision' => $now,
+                        'revisado_por' => $adminId
+                    ]);
+
+                    $this->securityLogger->logAction(
+                        $adminId, 
+                        'Evaluación Socioeconómica Masiva', 
+                        'fichas_socioeconomicas', 
+                        $ficha['id'], 
+                        "Categoría: $categoria, Puntaje: $puntaje"
+                    );
+
+                    $countEvaluated++;
+                }
+            }
+
+            $this->db->transComplete();
+
+            if ($this->db->transStatus() === false) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'error' => 'Error al guardar la transacción de evaluación masiva'
+                ]);
+            }
+
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => "Proceso completado. Se evaluaron y aprobaron exitosamente {$countEvaluated} estudiantes.",
+                'evaluados' => $countEvaluated
+            ]);
+
+        } catch (\Exception $e) {
+            log_message('error', 'Error en evaluación masiva: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'error' => 'Error interno del servidor']);
         }
     }
 } 

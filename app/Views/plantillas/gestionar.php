@@ -165,7 +165,6 @@ document.getElementById('formSubirPlantilla').addEventListener('submit', functio
     })
     .catch(error => {
         progressBar.classList.add('d-none');
-        console.error('Error:', error);
         Swal.fire('Error', 'Error de conexión', 'error');
     });
 });
@@ -195,7 +194,6 @@ function eliminarPlantilla(archivo) {
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
                 Swal.fire('Error', 'Error de conexión', 'error');
             });
         }

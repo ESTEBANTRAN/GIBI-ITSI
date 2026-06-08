@@ -25,7 +25,21 @@ class DocumentosController extends BaseController
             return redirect()->to('/login');
         }
 
-        // Obtener todos los documentos del estudiante de sus solicitudes de becas
+        $page = (int)($this->request->getGet('page') ?? 1);
+        $perPage = 15;
+        $offset = ($page - 1) * $perPage;
+
+        // Count total
+        $totalDocumentos = $this->db->table('documentos_solicitud_becas dsb')
+            ->join('becas_documentos_requisitos bdr', 'bdr.id = dsb.documento_requerido_id')
+            ->join('solicitudes_becas sb', 'sb.id = dsb.solicitud_beca_id')
+            ->join('becas b', 'b.id = sb.beca_id')
+            ->join('periodos_academicos p', 'p.id = sb.periodo_id')
+            ->where('sb.estudiante_id', session('id'))
+            ->where('dsb.ruta_archivo IS NOT NULL')
+            ->countAllResults();
+
+        // Obtener documentos con paginación
         $documentos = $this->db->table('documentos_solicitud_becas dsb')
             ->select("dsb.*, bdr.nombre_documento, bdr.descripcion, sb.beca_id, b.nombre as nombre_beca, sb.periodo_id, p.nombre as periodo_nombre")
             ->join('becas_documentos_requisitos bdr', 'bdr.id = dsb.documento_requerido_id')
@@ -36,6 +50,7 @@ class DocumentosController extends BaseController
             ->where('dsb.ruta_archivo IS NOT NULL')
             ->orderBy('sb.periodo_id', 'DESC')
             ->orderBy('dsb.orden_revision', 'ASC')
+            ->limit($perPage, $offset)
             ->get()
             ->getResultArray();
 
@@ -51,9 +66,15 @@ class DocumentosController extends BaseController
         }
         unset($doc);
 
+        $totalPages = max(1, ceil($totalDocumentos / $perPage));
+
         $data = [
             'estudiante' => $this->usuarioModel->find(session('id')),
-            'documentos' => $documentos
+            'documentos' => $documentos,
+            'current_page' => $page,
+            'total_pages' => $totalPages,
+            'per_page' => $perPage,
+            'total' => $totalDocumentos
         ];
 
         return view('estudiante/documentos', $data);

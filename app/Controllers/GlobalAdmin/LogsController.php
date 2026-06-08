@@ -44,7 +44,7 @@ class LogsController extends BaseController
 
         try {
             $pagina = (int)($this->request->getGet('pagina') ?? 1);
-            $porPagina = 30;
+            $porPagina = 15;
             $offset = ($pagina - 1) * $porPagina;
 
             $builder = $this->db->table('logs l');

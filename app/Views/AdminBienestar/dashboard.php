@@ -518,7 +518,6 @@ function actualizarDashboard() {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             mostrarNotificacion('Error de conexión', 'error');
         })
         .finally(() => {

@@ -1,4 +1,4 @@
-﻿<?= $this->extend('layouts/mainEstudiante') ?>
+<?= $this->extend('layouts/mainEstudiante') ?>
 
 <?= $this->section('breadcrumb') ?>Ficha Socioeconómica<?= $this->endSection() ?>
 
@@ -105,6 +105,33 @@
                             </tbody>
                         </table>
                     </div>
+                    
+                    <?php if (isset($total_pages) && $total_pages > 1): ?>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <small class="text-muted">
+                                Mostrando <?= (($current_page - 1) * $per_page) + 1 ?> a 
+                                <?= min($current_page * $per_page, $total) ?> 
+                                de <?= $total ?> registros
+                            </small>
+                        </div>
+                        <nav>
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item <?= $current_page <= 1 ? 'disabled' : '' ?>">
+                                    <a class="page-link" href="?page=<?= $current_page - 1 ?>">Anterior</a>
+                                </li>
+                                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                                <li class="page-item <?= $i == $current_page ? 'active' : '' ?>">
+                                    <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+                                </li>
+                                <?php endfor; ?>
+                                <li class="page-item <?= $current_page >= $total_pages ? 'disabled' : '' ?>">
+                                    <a class="page-link" href="?page=<?= $current_page + 1 ?>">Siguiente</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <?php endif; ?>
                 <?php else: ?>
                     <div class="text-center py-4">
                         <i class="bi bi-file-earmark-text display-1 text-muted"></i>
@@ -1039,9 +1066,6 @@ function verFicha(id) {
         },
         error: function(xhr, status, error) {
             Swal.close();
-            console.error('Error AJAX:', error); // Debug
-            console.error('Status:', status); // Debug
-            console.error('Response:', xhr.responseText); // Debug
             
             // Si la respuesta es HTML (PDF), mostrar error específico
             if (xhr.responseText && xhr.responseText.includes('%PDF')) {
@@ -1095,7 +1119,6 @@ function editarFicha(id) {
         },
         error: function(xhr, status, error) {
             Swal.close();
-            console.error('Error AJAX editar:', error); // Debug
             Swal.fire({
                 icon: 'error',
                 title: 'Error de conexión',
@@ -1238,7 +1261,6 @@ function enviarFicha(id) {
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.error('Error AJAX envío:', error); // Debug
                     Swal.fire({
                         icon: 'error',
                         title: 'Error de conexión',
@@ -1264,7 +1286,6 @@ function crearFicha() {
     // Obtener el formulario
     const form = document.getElementById('formFichaSocioeconomica');
     if (!form) {
-        console.error('Formulario no encontrado');
         return;
     }
     
@@ -1319,7 +1340,6 @@ function crearFicha() {
             }
         },
         error: function(xhr, status, error) {
-            console.error('Error AJAX creación:', error); // Debug
             Swal.fire({
                 icon: 'error',
                 title: 'Error de conexión',
