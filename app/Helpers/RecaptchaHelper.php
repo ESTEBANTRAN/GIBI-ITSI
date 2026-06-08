@@ -44,11 +44,6 @@ class RecaptchaHelper
      */
     public static function validar(?string $recaptchaResponse): bool
     {
-        // En desarrollo, saltar validación real (claves de prueba siempre pasan)
-        if (ENVIRONMENT === 'development') {
-            log_message('warning', '[DEV MODE] reCAPTCHA validation skipped');
-            return true;
-        }
 
         if (empty($recaptchaResponse)) {
             return false;

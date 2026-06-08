@@ -276,8 +276,9 @@ class FichasController extends BaseController
         $filename = 'Ficha_Socioeconomica_' . $ficha['nombre_periodo'] . '.pdf';
         $filename = str_replace(' ', '_', $filename); // Reemplazar espacios con guiones bajos
         
-        // Salida del PDF como descarga
-        $pdf->Output($filename, 'D');
+        // Salida del PDF como descarga nativa en CI4
+        $pdfContent = $pdf->Output($filename, 'S');
+        return $this->response->download($filename, $pdfContent);
     }
 
     public function editarFicha($id)

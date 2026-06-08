@@ -11,7 +11,7 @@ Options -Indexes
 	Options +Followsymlinks
 	RewriteEngine On
 
-	# Configuración para proyecto en /ITSI/public
+	# En XAMPP la app está en /ITSI/public/ — ajustar RewriteBase al subdirectorio real
 	RewriteBase /ITSI/public/
 
 	# Redirect Trailing Slashes...

@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/mainEstudiante') ?>
+﻿<?= $this->extend('layouts/mainEstudiante') ?>
 
 <?= $this->section('styles') ?>
 <style>
@@ -264,7 +264,7 @@
                 <div class="col-md-8">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-2">
-                            <li class="breadcrumb-item"><a href="<?= base_url('index.php/estudiante') ?>"><i class="bi bi-house-door me-1"></i>Inicio</a></li>
+                            <li class="breadcrumb-item"><a href="<?= base_url('estudiante') ?>"><i class="bi bi-house-door me-1"></i>Inicio</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
                         </ol>
                     </nav>
@@ -365,7 +365,7 @@
                 </div>
                 <div class="row g-3">
                     <div class="col-md-3 col-6">
-                        <a href="<?= base_url('index.php/estudiante/ficha-socioeconomica') ?>" class="quick-action-card card border-0 shadow-sm text-center p-3 h-100 d-flex flex-column align-items-center justify-content-center">
+                        <a href="<?= base_url('estudiante/ficha-socioeconomica') ?>" class="quick-action-card card border-0 shadow-sm text-center p-3 h-100 d-flex flex-column align-items-center justify-content-center">
                             <div class="action-icon-wrapper bg-primary-subtle">
                                 <i class="bi bi-file-earmark-text text-primary"></i>
                             </div>
@@ -374,7 +374,7 @@
                         </a>
                     </div>
                     <div class="col-md-3 col-6">
-                        <a href="<?= base_url('index.php/estudiante/becas') ?>" class="quick-action-card card border-0 shadow-sm text-center p-3 h-100 d-flex flex-column align-items-center justify-content-center">
+                        <a href="<?= base_url('estudiante/becas') ?>" class="quick-action-card card border-0 shadow-sm text-center p-3 h-100 d-flex flex-column align-items-center justify-content-center">
                             <div class="action-icon-wrapper bg-success-subtle">
                                 <i class="bi bi-award text-success"></i>
                             </div>
@@ -383,7 +383,7 @@
                         </a>
                     </div>
                     <div class="col-md-3 col-6">
-                        <a href="<?= base_url('index.php/estudiante/solicitudes-ayuda') ?>" class="quick-action-card card border-0 shadow-sm text-center p-3 h-100 d-flex flex-column align-items-center justify-content-center">
+                        <a href="<?= base_url('estudiante/solicitudes-ayuda') ?>" class="quick-action-card card border-0 shadow-sm text-center p-3 h-100 d-flex flex-column align-items-center justify-content-center">
                             <div class="action-icon-wrapper bg-warning-subtle">
                                 <i class="bi bi-question-circle text-warning"></i>
                             </div>
@@ -392,7 +392,7 @@
                         </a>
                     </div>
                     <div class="col-md-3 col-6">
-                        <a href="<?= base_url('index.php/estudiante/documentos') ?>" class="quick-action-card card border-0 shadow-sm text-center p-3 h-100 d-flex flex-column align-items-center justify-content-center">
+                        <a href="<?= base_url('estudiante/documentos') ?>" class="quick-action-card card border-0 shadow-sm text-center p-3 h-100 d-flex flex-column align-items-center justify-content-center">
                             <div class="action-icon-wrapper bg-info-subtle">
                                 <i class="bi bi-folder text-info"></i>
                             </div>

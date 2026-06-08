@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/mainGlobalAdmin') ?>
+﻿<?= $this->extend('layouts/mainGlobalAdmin') ?>
 
 <?= $this->section('content') ?>
 
@@ -6,7 +6,7 @@
     <!-- Breadcrumb -->
     <div class="page-titles">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="<?= base_url('index.php/global-admin/dashboard') ?>">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="<?= base_url('global-admin/dashboard') ?>">Dashboard</a></li>
             <li class="breadcrumb-item active"><a href="javascript:void(0)">Super Administración</a></li>
         </ol>
     </div>
@@ -285,7 +285,7 @@
                                     <i class="ti ti-users fs-1 text-primary mb-3"></i>
                                     <h6>Gestión de Usuarios</h6>
                                     <p class="text-muted small">Administra usuarios, roles y permisos</p>
-                                    <a href="<?= base_url('index.php/global-admin/usuarios') ?>" class="btn btn-sm btn-outline-primary">Acceder</a>
+                                    <a href="<?= base_url('global-admin/usuarios') ?>" class="btn btn-sm btn-outline-primary">Acceder</a>
                                 </div>
                             </div>
                         </div>
@@ -295,7 +295,7 @@
                                     <i class="ti ti-shield-lock fs-1 text-success mb-3"></i>
                                     <h6>Gestión de Roles</h6>
                                     <p class="text-muted small">Configura roles y permisos del sistema</p>
-                                    <a href="<?= base_url('index.php/global-admin/roles') ?>" class="btn btn-sm btn-outline-success">Acceder</a>
+                                    <a href="<?= base_url('global-admin/roles') ?>" class="btn btn-sm btn-outline-success">Acceder</a>
                                 </div>
                             </div>
                         </div>
@@ -305,7 +305,7 @@
                                     <i class="ti ti-settings fs-1 text-warning mb-3"></i>
                                     <h6>Configuración</h6>
                                     <p class="text-muted small">Ajusta parámetros del sistema</p>
-                                    <a href="<?= base_url('index.php/global-admin/configuracion') ?>" class="btn btn-sm btn-outline-warning">Acceder</a>
+                                    <a href="<?= base_url('global-admin/configuracion') ?>" class="btn btn-sm btn-outline-warning">Acceder</a>
                                 </div>
                             </div>
                         </div>
@@ -315,7 +315,7 @@
                                     <i class="ti ti-database-check fs-1 text-danger mb-3"></i>
                                     <h6>Respaldos</h6>
                                     <p class="text-muted small">Gestiona respaldos de la base de datos</p>
-                                    <a href="<?= base_url('index.php/global-admin/respaldos') ?>" class="btn btn-sm btn-outline-danger">Acceder</a>
+                                    <a href="<?= base_url('global-admin/respaldos') ?>" class="btn btn-sm btn-outline-danger">Acceder</a>
                                 </div>
                             </div>
                         </div>
@@ -397,7 +397,7 @@ $(document).ready(function() {
                 });
 
                 $.ajax({
-                    url: '<?= base_url('index.php/global-admin/crear-respaldo') ?>',
+                    url: '<?= base_url('global-admin/crear-respaldo') ?>',
                     type: 'POST',
                     dataType: 'json',
                     success: function(response) {
@@ -452,7 +452,7 @@ $(document).ready(function() {
                 });
                 
                 // Descargar archivo
-                window.open('<?= base_url('index.php/global-admin/exportar-logs') ?>', '_blank');
+                window.open('<?= base_url('global-admin/exportar-logs') ?>', '_blank');
                 
                 // Cerrar loading
                 setTimeout(() => {

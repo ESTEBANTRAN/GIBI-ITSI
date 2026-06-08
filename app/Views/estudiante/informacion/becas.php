@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/mainEstudiante') ?>
+﻿<?= $this->extend('layouts/mainEstudiante') ?>
 
 <?= $this->section('content') ?>
 <div class="page-wrapper">
@@ -9,7 +9,7 @@
                     <h4 class="mb-0"><?= $titulo ?></h4>
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="<?= base_url('index.php/estudiante') ?>">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="<?= base_url('estudiante') ?>">Dashboard</a></li>
                             <li class="breadcrumb-item active">Información</li>
                             <li class="breadcrumb-item active">Becas</li>
                         </ol>

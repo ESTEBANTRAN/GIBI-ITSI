@@ -267,8 +267,9 @@ class AdminBienestarController extends BaseController
             $filename = 'Ficha_Socioeconomica_' . ($estudiante['nombre'] ?? '') . '_' . ($estudiante['apellido'] ?? '') . '_' . ($periodo['nombre'] ?? 'N/A') . '.pdf';
             $filename = str_replace(' ', '_', $filename); // Reemplazar espacios con guiones bajos
             
-            // Salida del PDF como descarga
-            $pdf->Output($filename, 'D');
+            // Salida del PDF como descarga nativa en CI4
+            $pdfContent = $pdf->Output($filename, 'S');
+            return $this->response->download($filename, $pdfContent);
             
         } catch (\Exception $e) {
             log_message('error', 'Error exportando ficha con plantilla: ' . $e->getMessage());
@@ -977,9 +978,9 @@ class AdminBienestarController extends BaseController
                 ->getResultArray();
 
             // Documentos de becas
-            $documentos = $this->db->table('solicitudes_becas_documentos sbd')
+            $documentos = $this->db->table('documentos_solicitud_becas sbd')
                 ->select('sbd.*, bdr.nombre_documento, b.nombre as nombre_beca')
-                ->join('becas_documentos_requisitos bdr', 'bdr.id = sbd.documento_requisito_id')
+                ->join('becas_documentos_requisitos bdr', 'bdr.id = sbd.documento_requerido_id')
                 ->join('solicitudes_becas sb', 'sb.id = sbd.solicitud_beca_id')
                 ->join('becas b', 'b.id = sb.beca_id')
                 ->where('sb.estudiante_id', $estudianteId)
@@ -4119,20 +4120,280 @@ class AdminBienestarController extends BaseController
 
         try {
             $formato = $this->request->getGet('formato') ?? 'excel';
-            $usuarios = $this->usuarioModel->getUsuariosConCarrera();
+            
+            // Obtener estudiantes del rol estudiante (rol_id = 1)
+            $usuarios = $this->db->table('usuarios u')
+                ->select('u.*, c.nombre as carrera_nombre')
+                ->join('carreras c', 'c.id = u.carrera_id', 'left')
+                ->where('u.rol_id', 1)
+                ->orderBy('u.created_at', 'DESC')
+                ->get()
+                ->getResultArray();
 
-            // Simular exportación
-            return $this->response->setJSON([
-                'success' => true,
-                'data' => $usuarios,
-                'formato' => $formato,
-                'message' => 'Datos preparados para exportación'
-            ]);
+            if (!empty($usuarios)) {
+                $ids = array_column($usuarios, 'id');
+                $counts = $this->db->query("
+                    SELECT u.id,
+                        COUNT(DISTINCT fs.id) as total_fichas,
+                        COUNT(DISTINCT sb.id) as total_becas,
+                        COUNT(DISTINCT sa.id) as total_ayudas
+                    FROM usuarios u
+                    LEFT JOIN fichas_socioeconomicas fs ON fs.estudiante_id = u.id
+                    LEFT JOIN solicitudes_becas sb ON sb.estudiante_id = u.id
+                    LEFT JOIN solicitudes_ayuda sa ON sa.id_estudiante = u.id
+                    WHERE u.id IN (" . implode(',', $ids) . ")
+                    GROUP BY u.id
+                ")->getResultArray();
+
+                $countsMap = [];
+                foreach ($counts as $row) {
+                    $countsMap[$row['id']] = $row;
+                }
+
+                foreach ($usuarios as &$est) {
+                    $c = $countsMap[$est['id']] ?? null;
+                    $est['total_fichas'] = $c ? (int)$c['total_fichas'] : 0;
+                    $est['total_becas'] = $c ? (int)$c['total_becas'] : 0;
+                    $est['total_ayudas'] = $c ? (int)$c['total_ayudas'] : 0;
+                }
+                unset($est);
+            }
+
+            if ($formato === 'excel') {
+                return $this->exportarUsuariosExcel($usuarios);
+            } else {
+                return $this->exportarUsuariosPDF($usuarios);
+            }
             
         } catch (\Exception $e) {
             log_message('error', 'Error exportando usuarios: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error del sistema']);
+            return redirect()->back()->with('error', 'Error del sistema al exportar usuarios');
         }
+    }
+
+    private function exportarUsuariosExcel($usuarios)
+    {
+        $filename = 'estudiantes_' . date('Y-m-d_H-i-s') . '.csv';
+        
+        $output = fopen('php://temp', 'r+');
+        fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF)); // BOM para UTF-8
+        
+        // Encabezados
+        fputcsv($output, [
+            'ID', 'Cédula', 'Nombres', 'Apellidos', 'Correo', 'Teléfono', 
+            'Carrera', 'Fecha Registro', 'Fichas', 'Becas', 'Ayudas'
+        ], ';');
+        
+        foreach ($usuarios as $u) {
+            fputcsv($output, [
+                $u['id'],
+                $u['cedula'] ?? '',
+                $u['nombre'] ?? '',
+                $u['apellido'] ?? '',
+                $u['email'] ?? '',
+                $u['telefono'] ?? '',
+                $u['carrera_nombre'] ?? 'Sin especificar',
+                date('d/m/Y', strtotime($u['created_at'])),
+                $u['total_fichas'] ?? 0,
+                $u['total_becas'] ?? 0,
+                $u['total_ayudas'] ?? 0
+            ], ';');
+        }
+        
+        rewind($output);
+        $csvContent = stream_get_contents($output);
+        fclose($output);
+        
+        return $this->response->download($filename, $csvContent)
+            ->setContentType('text/csv');
+    }
+
+    private function exportarUsuariosPDF($usuarios)
+    {
+        $filename = 'estudiantes_' . date('Y-m-d_H-i-s') . '.pdf';
+        
+        $pdf = new \TCPDF('L', 'mm', 'A4', true, 'UTF-8');
+        $pdf->SetCreator('ITSI - Sistema de Bienestar Estudiantil');
+        $pdf->SetAuthor('Administrador');
+        $pdf->SetTitle('Lista de Estudiantes');
+        
+        $pdf->AddPage();
+        
+        // Título
+        $pdf->SetFont('helvetica', 'B', 16);
+        $pdf->Cell(0, 10, 'REPORTE DE ESTUDIANTES', 0, 1, 'C');
+        $pdf->Ln(5);
+        
+        // Fecha del reporte
+        $pdf->SetFont('helvetica', '', 10);
+        $pdf->Cell(0, 10, 'Fecha: ' . date('d/m/Y H:i:s'), 0, 1, 'R');
+        $pdf->Ln(5);
+        
+        // Tabla
+        $pdf->SetFont('helvetica', 'B', 9);
+        $pdf->SetFillColor(240, 240, 240);
+        
+        $headers = ['Cédula', 'Estudiante', 'Correo', 'Carrera', 'Fichas', 'Becas', 'Ayudas'];
+        $widths = [30, 60, 60, 67, 20, 20, 20];
+        
+        foreach ($headers as $i => $header) {
+            $pdf->Cell($widths[$i], 7, $header, 1, 0, 'C', true);
+        }
+        $pdf->Ln();
+        
+        $pdf->SetFont('helvetica', '', 8);
+        foreach ($usuarios as $u) {
+            $nombreCompleto = ($u['nombre'] ?? '') . ' ' . ($u['apellido'] ?? '');
+            
+            $pdf->Cell($widths[0], 6, $u['cedula'] ?? '', 1, 0, 'C');
+            $pdf->Cell($widths[1], 6, $nombreCompleto, 1, 0, 'L');
+            $pdf->Cell($widths[2], 6, $u['email'] ?? '', 1, 0, 'L');
+            $pdf->Cell($widths[3], 6, $u['carrera_nombre'] ?? 'Sin especificar', 1, 0, 'L');
+            $pdf->Cell($widths[4], 6, $u['total_fichas'] ?? 0, 1, 0, 'C');
+            $pdf->Cell($widths[5], 6, $u['total_becas'] ?? 0, 1, 0, 'C');
+            $pdf->Cell($widths[6], 6, $u['total_ayudas'] ?? 0, 1, 0, 'C');
+            $pdf->Ln();
+        }
+        
+        $pdfContent = $pdf->Output($filename, 'S');
+        return $this->response->download($filename, $pdfContent);
+    }
+
+    public function generarConstancia()
+    {
+        if (!$this->verificarPermisos()) {
+            return redirect()->to('/login');
+        }
+
+        try {
+            $id = $this->request->getGet('id');
+            if (empty($id)) {
+                return redirect()->back()->with('error', 'ID de solicitud no proporcionado');
+            }
+
+            // Obtener detalles de la solicitud de beca
+            $solicitud = $this->db->table('solicitudes_becas sb')
+                ->select('sb.*, u.nombre, u.apellido, u.cedula, u.email, b.nombre as beca_nombre, b.tipo_beca, p.nombre as periodo_nombre')
+                ->join('usuarios u', 'u.id = sb.estudiante_id')
+                ->join('becas b', 'b.id = sb.beca_id')
+                ->join('periodos_academicos p', 'p.id = sb.periodo_id')
+                ->where('sb.id', $id)
+                ->get()
+                ->getRowArray();
+
+            if (!$solicitud) {
+                return redirect()->back()->with('error', 'Solicitud no encontrada');
+            }
+
+            if ($solicitud['estado'] !== 'Aprobada') {
+                return redirect()->back()->with('error', 'La constancia solo se puede generar para solicitudes aprobadas');
+            }
+
+            $filename = 'Constancia_Beca_' . $solicitud['cedula'] . '_' . date('Ymd') . '.pdf';
+
+            // Crear PDF
+            $pdf = new \TCPDF('P', 'mm', 'A4', true, 'UTF-8');
+            $pdf->SetCreator('ITSI - Sistema de Bienestar Estudiantil');
+            $pdf->SetAuthor('Bienestar Estudiantil ITSI');
+            $pdf->SetTitle('Constancia de Beca');
+            
+            // Quitar headers/footers por defecto para un estilo personalizado
+            $pdf->setPrintHeader(false);
+            $pdf->setPrintFooter(false);
+            
+            $pdf->AddPage();
+            
+            // Margen
+            $pdf->SetMargins(20, 20, 20);
+            
+            // Decoración - Línea superior elegante
+            $pdf->SetFillColor(102, 126, 234); // Color primario #667eea
+            $pdf->Rect(0, 0, 210, 10, 'F');
+            
+            $pdf->Ln(15);
+            
+            // Membrete / Encabezado
+            $pdf->SetFont('helvetica', 'B', 12);
+            $pdf->SetTextColor(74, 85, 104);
+            $pdf->Cell(0, 6, 'INSTITUTO SUPERIOR TECNOLÓGICO DE IMBABURA', 0, 1, 'C');
+            $pdf->SetFont('helvetica', '', 9);
+            $pdf->Cell(0, 4, 'DEPARTAMENTO DE BIENESTAR ESTUDIANTIL', 0, 1, 'C');
+            $pdf->Cell(0, 4, 'SISTEMA DE GESTIÓN GIBI-ITSI', 0, 1, 'C');
+            
+            // Línea divisoria
+            $pdf->Ln(5);
+            $pdf->SetDrawColor(226, 232, 240);
+            $pdf->Line(20, $pdf->GetY(), 190, $pdf->GetY());
+            $pdf->Ln(15);
+            
+            // Título de la Constancia
+            $pdf->SetFont('helvetica', 'B', 18);
+            $pdf->SetTextColor(26, 32, 44);
+            $pdf->Cell(0, 10, 'CERTIFICADO DE BECA ESTUDIANTIL', 0, 1, 'C');
+            $pdf->Ln(10);
+            
+            // Texto del cuerpo
+            $pdf->SetFont('helvetica', '', 11);
+            $pdf->SetTextColor(45, 55, 72);
+            
+            $nombreEstudiante = mb_strtoupper(($solicitud['nombre'] ?? '') . ' ' . ($solicitud['apellido'] ?? ''), 'UTF-8');
+            $cedulaEstudiante = $solicitud['cedula'] ?? '';
+            $becaNombre = $solicitud['beca_nombre'] ?? '';
+            $tipoBeca = $solicitud['tipo_beca'] ?? '';
+            $periodoNombre = $solicitud['periodo_nombre'] ?? '';
+            $fechaAprobacion = date('d/m/Y', strtotime($solicitud['updated_at'] ?? $solicitud['fecha_solicitud']));
+            
+            $htmlCuerpo = "El Departamento de Bienestar Estudiantil del <b>Instituto Superior Tecnológico de Imbabura (ITSI)</b>, por medio del presente documento:<br><br>" .
+                          "HACE CONSTAR que el/la estudiante <b>{$nombreEstudiante}</b>, portador/a del documento de identidad/cédula Nro. <b>{$cedulaEstudiante}</b>, " .
+                          "ha sido formalmente adjudicado/a con la <b>{$becaNombre}</b> (Tipo: {$tipoBeca}) para el período académico <b>{$periodoNombre}</b>.<br><br>" .
+                          "La solicitud correspondiente fue debidamente revisada y aprobada el día <b>{$fechaAprobacion}</b> al cumplir satisfactoriamente " .
+                          "con las condiciones socioeconómicas, académicas y reglamentarias exigidas por la institución para la asignación de este beneficio.<br><br>" .
+                          "Para constancia de lo actuado y a petición de la parte interesada, se extiende el presente certificado en la provincia de Imbabura, " .
+                          "el día <b>" . date('d') . "</b> de <b>" . $this->getNombreMes(date('n')) . "</b> del año <b>" . date('Y') . "</b>.";
+            
+            $pdf->writeHTML($htmlCuerpo, true, false, true, false, 'J');
+            $pdf->Ln(25);
+            
+            // Sección de firma
+            $pdf->SetFont('helvetica', '', 10);
+            $pdf->Cell(0, 5, 'Atentamente,', 0, 1, 'C');
+            $pdf->Ln(15);
+            
+            $pdf->SetFont('helvetica', 'B', 10);
+            $pdf->Cell(0, 5, 'DEPARTAMENTO DE BIENESTAR ESTUDIANTIL', 0, 1, 'C');
+            $pdf->SetFont('helvetica', '', 9);
+            $pdf->Cell(0, 5, 'Instituto Superior Tecnológico de Imbabura', 0, 1, 'C');
+            
+            // Código de verificación de seguridad en el pie de página
+            $codigoVerificacion = strtoupper(substr(md5($solicitud['id'] . '-' . $solicitud['cedula'] . '-itsi'), 0, 16));
+            
+            $pdf->SetY(-30);
+            $pdf->SetDrawColor(226, 232, 240);
+            $pdf->Line(20, $pdf->GetY(), 190, $pdf->GetY());
+            $pdf->Ln(2);
+            
+            $pdf->SetFont('helvetica', 'I', 7);
+            $pdf->SetTextColor(113, 128, 150);
+            $pdf->Cell(0, 4, 'Código de Verificación Único de Seguridad: ' . $codigoVerificacion, 0, 1, 'C');
+            $pdf->Cell(0, 4, 'Documento oficial generado de forma automática por la plataforma de Bienestar GIBI-ITSI.', 0, 1, 'C');
+            
+            $pdfContent = $pdf->Output($filename, 'S');
+            return $this->response->download($filename, $pdfContent);
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Error generando constancia de beca: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error del sistema al generar constancia');
+        }
+    }
+
+    private function getNombreMes($mesNum)
+    {
+        $meses = [
+            1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril',
+            5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto',
+            9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
+        ];
+        return $meses[$mesNum] ?? '';
     }
 
     /**

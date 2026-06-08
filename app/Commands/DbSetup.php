@@ -41,6 +41,30 @@ class DbSetup extends BaseCommand
             CLI::write('La tabla "configuracion_sistema" ya existe.', 'green');
         }
 
+        // 1b. Crear tabla respaldos si no existe
+        if (!$db->tableExists('respaldos')) {
+            CLI::write('Creando tabla "respaldos"...', 'yellow');
+            
+            $query = "
+                CREATE TABLE `respaldos` (
+                    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                    `nombre_archivo` VARCHAR(255) NOT NULL,
+                    `ruta_archivo` VARCHAR(255) NOT NULL,
+                    `tamano_bytes` BIGINT NOT NULL,
+                    `tipo` VARCHAR(50) DEFAULT 'manual',
+                    `estado` VARCHAR(50) DEFAULT 'completado',
+                    `descripcion` TEXT NULL,
+                    `creado_por` INT UNSIGNED NULL,
+                    `fecha_creacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            ";
+            
+            $db->query($query);
+            CLI::write('Tabla "respaldos" creada con éxito.', 'green');
+        } else {
+            CLI::write('La tabla "respaldos" ya existe.', 'green');
+        }
+
         // 2. Insertar configuraciones iniciales
         CLI::write('Insertando/actualizando configuraciones del sistema...', 'yellow');
         

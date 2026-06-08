@@ -69,18 +69,11 @@ class AuthController extends BaseController
         $password = $this->request->getPost('password');
 
         // ====== 4. Validar reCAPTCHA ======
-        // NOTA: En desarrollo se omite para pruebas automatizadas, pero se registra en log
-        if (ENVIRONMENT === 'development') {
-            log_message('warning', "[DEV MODE] Login sin verificar reCAPTCHA para: {$identifier}");
-        }
-
-        if (ENVIRONMENT !== 'development') {
-            $recaptchaResponse = $this->request->getPost('g-recaptcha-response');
-            if (!RecaptchaHelper::validar($recaptchaResponse)) {
-                return redirect()->back()->withInput()->with('error', 
-                    'Verificación de seguridad fallida. Por favor, complete el CAPTCHA nuevamente.'
-                );
-            }
+        $recaptchaResponse = $this->request->getPost('g-recaptcha-response');
+        if (!RecaptchaHelper::validar($recaptchaResponse)) {
+            return redirect()->back()->withInput()->with('error', 
+                'Verificación de seguridad fallida. Por favor, complete el CAPTCHA nuevamente.'
+            );
         }
 
         log_message('debug', 'AuthController::attemptLogin - Intentando login con identificador: ' . SecurityHelper::maskEmail($identifier));
@@ -105,29 +98,22 @@ class AuthController extends BaseController
         }
 
         // ====== 7. Verificar contraseña ======
-        // NOTA: En desarrollo se omite para pruebas automatizadas, pero se registra en log
-        if (ENVIRONMENT === 'development') {
-            log_message('warning', "[DEV MODE] Login sin verificar contraseña para: {$identifier}");
-        }
+        if (!password_verify($password, $user['password_hash'])) {
+            // Incrementar intentos fallidos
+            $rateLimiter->hit($ip);
+            $model->incrementarIntentosFallidos((int)$user['id']);
+            $securityLogger->logLoginFailed($identifier, 'Contraseña incorrecta');
 
-        if (ENVIRONMENT !== 'development') {
-            if (!password_verify($password, $user['password_hash'])) {
-                // Incrementar intentos fallidos
-                $rateLimiter->hit($ip);
-                $model->incrementarIntentosFallidos((int)$user['id']);
-                $securityLogger->logLoginFailed($identifier, 'Contraseña incorrecta');
-
-                // Verificar si se acaba de bloquear
-                $remainingAttempts = 5 - (int)($user['intentos_fallidos'] ?? 0) - 1;
-                if ($remainingAttempts <= 0) {
-                    $securityLogger->logAccountLocked($identifier, (int)$user['id']);
-                    return redirect()->back()->withInput()->with('error', 
-                        'Cuenta bloqueada por 30 minutos debido a múltiples intentos fallidos.'
-                    );
-                }
-
-                return redirect()->back()->withInput()->with('error', 'Credenciales incorrectas.');
+            // Verificar si se acaba de bloquear
+            $remainingAttempts = 5 - (int)($user['intentos_fallidos'] ?? 0) - 1;
+            if ($remainingAttempts <= 0) {
+                $securityLogger->logAccountLocked($identifier, (int)$user['id']);
+                return redirect()->back()->withInput()->with('error', 
+                    'Cuenta bloqueada por 30 minutos debido a múltiples intentos fallidos.'
+                );
             }
+
+            return redirect()->back()->withInput()->with('error', 'Credenciales incorrectas.');
         }
 
         log_message('debug', 'AuthController::attemptLogin - Credenciales correctas, configurando sesión');
@@ -200,7 +186,7 @@ class AuthController extends BaseController
         $sessionGuard = new SessionGuard();
         $sessionGuard->destroySession();
 
-        return redirect()->to('/login');
+        return redirect()->to('/');
     }
 
     // ========================================================================
@@ -235,14 +221,12 @@ class AuthController extends BaseController
             );
         }
 
-        // Validar reCAPTCHA (omitido en desarrollo para pruebas automatizadas)
-        if (ENVIRONMENT !== 'development') {
-            $recaptchaResponse = $this->request->getPost('g-recaptcha-response');
-            if (!RecaptchaHelper::validar($recaptchaResponse)) {
-                return redirect()->back()->withInput()->with('error', 
-                    'Verificación de seguridad fallida. Complete el CAPTCHA.'
-                );
-            }
+        // Validar reCAPTCHA
+        $recaptchaResponse = $this->request->getPost('g-recaptcha-response');
+        if (!RecaptchaHelper::validar($recaptchaResponse)) {
+            return redirect()->back()->withInput()->with('error', 
+                'Verificación de seguridad fallida. Complete el CAPTCHA.'
+            );
         }
 
         // Validar campos

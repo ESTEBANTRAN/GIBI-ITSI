@@ -16,7 +16,7 @@ class App extends BaseConfig
      *
      * E.g., http://example.com/
      */
-    public string $baseURL = 'http://localhost/ITSI/public/';
+    public string $baseURL = '';  // Se sobreescribe desde .env (app.baseURL)
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
@@ -29,7 +29,15 @@ class App extends BaseConfig
      *
      * @var list<string>
      */
-    public array $allowedHostnames = [];
+    public array $allowedHostnames = [
+        'serveo.net',
+        'serveousercontent.com',
+        'bienestar-institucional-itsi.serveousercontent.com',
+        'trycloudflare.com',
+        'loca.lt',
+        'localhost',
+        '127.0.0.1',
+    ];
 
     /**
      * --------------------------------------------------------------------------
@@ -40,7 +48,8 @@ class App extends BaseConfig
      * something else. If you have configured your web server to remove this file
      * from your site URIs, set this variable to an empty string.
      */
-    public string $indexPage = 'index.php';
+    // Vacío para URLs limpias (el .htaccess maneja el enrutamiento)
+    public string $indexPage = '';
 
     /**
      * --------------------------------------------------------------------------
@@ -157,7 +166,8 @@ class App extends BaseConfig
      * secure, the user will be redirected to a secure version of the page
      * and the HTTP Strict Transport Security (HSTS) header will be set.
      */
-    public bool $forceGlobalSecureRequests = false;
+    // true = fuerza HTTPS en producción (InfinityFree incluye SSL gratuito)
+    public bool $forceGlobalSecureRequests = true;
 
     /**
      * --------------------------------------------------------------------------
@@ -180,7 +190,13 @@ class App extends BaseConfig
      *
      * @var array<string, string>
      */
-    public array $proxyIPs = [];
+    // Confiar en el header X-Forwarded-For del túnel SSH / Serveo / Cloudflare.
+    // Usamos 0.0.0.0/0 porque el tunnel puede venir de cualquier IP.
+    // SOLO hacer esto en entornos controlados (localhost).
+    public array $proxyIPs = [
+        '127.0.0.1'       => 'X-Forwarded-For',
+        '0.0.0.0/0'       => 'X-Forwarded-For',
+    ];
 
     /**
      * --------------------------------------------------------------------------

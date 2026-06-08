@@ -569,11 +569,11 @@ function verFicha(id) {
     });
     
     // Obtener detalles de la ficha via AJAX
-    fetch(`<?= base_url('index.php/admin-bienestar/ver-ficha/') ?>${id}`)
+    fetch(`<?= base_url('admin-bienestar/ver-ficha/') ?>${id}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                const ficha = data.data;
+                const ficha = data.ficha || data.data;
                 mostrarDetallesFicha(ficha);
             } else {
                 Swal.fire('Error', data.error, 'error');
@@ -672,7 +672,7 @@ function aprobarFicha(id) {
     }).then((result) => {
         if (result.isConfirmed) {
             // Realizar petición AJAX para aprobar
-            fetch(`<?= base_url('index.php/admin-bienestar/aprobar-ficha') ?>/${id}`, {
+            fetch(`<?= base_url('admin-bienestar/aprobar-ficha') ?>/${id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -718,7 +718,7 @@ function rechazarFicha(id) {
             const formData = new FormData();
             formData.append('motivo', result.value);
             
-            fetch(`<?= base_url('index.php/admin-bienestar/rechazar-ficha') ?>/${id}`, {
+            fetch(`<?= base_url('admin-bienestar/rechazar-ficha') ?>/${id}`, {
                 method: 'POST',
                 body: formData
             })
@@ -752,7 +752,7 @@ function descargarFicha(id) {
     });
     
     // Realizar descarga
-    window.open(`<?= base_url('index.php/admin-bienestar/exportar-ficha-pdf/') ?>${id}`, '_blank');
+    window.open(`<?= base_url('admin-bienestar/exportar-ficha-pdf/') ?>${id}`, '_blank');
     
     // Cerrar indicador de carga después de un momento
     setTimeout(() => {
@@ -772,11 +772,11 @@ function verVistaPreviaFicha(id) {
     });
     
     // Obtener datos de la ficha para la vista previa
-    fetch(`<?= base_url('index.php/admin-bienestar/ver-ficha/') ?>${id}`)
+    fetch(`<?= base_url('admin-bienestar/ver-ficha/') ?>${id}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                const ficha = data.data;
+                const ficha = data.ficha || data.data;
                 mostrarVistaPreviaFicha(ficha);
             } else {
                 Swal.fire('Error', data.error, 'error');
@@ -897,11 +897,11 @@ function evaluacionSocioeconomica(id) {
     document.getElementById('contenidoEvaluacion').style.display = 'none';
     
     // Obtener datos de la ficha
-    fetch(`<?= base_url('index.php/admin-bienestar/ver-ficha/') ?>${id}`)
+    fetch(`<?= base_url('admin-bienestar/ver-ficha/') ?>${id}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                const ficha = data.data;
+                const ficha = data.ficha || data.data;
                 mostrarInfoEstudianteEvaluacion(ficha);
                 
                 // Cargar evaluación existente si existe
@@ -1151,7 +1151,7 @@ function cargarEstudiantesSinBeca() {
     `;
     
     // Obtener estudiantes sin beca desde el controlador
-    fetch('<?= base_url('index.php/admin-bienestar/estudiantes-sin-beca') ?>')
+    fetch('<?= base_url('admin-bienestar/estudiantes-sin-beca') ?>')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -1447,11 +1447,11 @@ function aplicarRangosPersonalizados() {
     
     // Recalcular si hay una ficha cargada
     if (fichaId) {
-        fetch(`<?= base_url('index.php/admin-bienestar/ver-ficha/') ?>${fichaId}`)
+        fetch(`<?= base_url('admin-bienestar/ver-ficha/') ?>${fichaId}`)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    calcularCategoriaAutomatica(data.data);
+                    calcularCategoriaAutomatica(data.ficha || data.data);
                 }
             });
     }
@@ -1478,11 +1478,11 @@ function restaurarRangosDefault() {
     const modal = document.getElementById('modalEvaluacionAutomatica');
     const fichaId = modal.getAttribute('data-ficha-id');
     if (fichaId) {
-        fetch(`<?= base_url('index.php/admin-bienestar/ver-ficha/') ?>${fichaId}`)
+        fetch(`<?= base_url('admin-bienestar/ver-ficha/') ?>${fichaId}`)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    calcularCategoriaAutomatica(data.data);
+                    calcularCategoriaAutomatica(data.ficha || data.data);
                 }
             });
     }
@@ -1519,7 +1519,7 @@ function restaurarRangosDefault() {
         });
         
         // Llamada AJAX para verificar
-        fetch('<?= base_url('index.php/verificar-codigo-pdf') ?>', {
+        fetch('<?= base_url('verificar-codigo-pdf') ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

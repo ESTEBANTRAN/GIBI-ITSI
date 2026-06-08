@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/mainGlobalAdmin') ?>
+﻿<?= $this->extend('layouts/mainGlobalAdmin') ?>
 
 <?= $this->section('content') ?>
 
@@ -9,7 +9,7 @@
             <h4 class="mb-1 fw-bold"><i class="bi bi-gear me-2 text-primary"></i>Configuración del Sistema</h4>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="<?= base_url('index.php/global-admin/dashboard') ?>">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="<?= base_url('global-admin/dashboard') ?>">Dashboard</a></li>
                     <li class="breadcrumb-item active">Configuración</li>
                 </ol>
             </nav>
@@ -293,7 +293,7 @@ function guardarConfiguracion(tipo) {
     });
 
     $.ajax({
-        url: '<?= base_url('index.php/global-admin/guardar-configuracion') ?>',
+        url: '<?= base_url('global-admin/guardar-configuracion') ?>',
         type: 'POST',
         data: formData,
         processData: false,

@@ -199,5 +199,14 @@ class Database extends Config
         if (ENVIRONMENT === 'testing') {
             $this->defaultGroup = 'tests';
         }
+
+        // Override defaults with .env values (PHP 8.2 compatible)
+        $this->default['hostname'] = env('database.default.hostname', $this->default['hostname']);
+        $this->default['username'] = env('database.default.username', $this->default['username']);
+        $this->default['password'] = env('database.default.password', $this->default['password']);
+        $this->default['database'] = env('database.default.database', $this->default['database']);
+        $this->default['DBDriver'] = env('database.default.DBDriver', $this->default['DBDriver']);
+        $this->default['DBDebug']  = (bool)env('database.default.DBDebug', $this->default['DBDebug']);
+        $this->default['port']     = (int)env('database.default.port', $this->default['port']);
     }
 }

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -146,7 +146,7 @@
                     <strong>Tiempo restante:</strong> Este enlace expira en <span id="countdown" class="fw-bold">10:00</span> minutos.
                 </div>
 
-                <form action="<?= base_url('index.php/auth/resetPassword') ?>" method="post" id="resetForm" autocomplete="off" novalidate>
+                <form action="<?= base_url('auth/resetPassword') ?>" method="post" id="resetForm" autocomplete="off" novalidate>
                     <?= csrf_field() ?>
                     <input type="hidden" name="reset_token" value="<?= esc($reset_token ?? '') ?>">
 

@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/mainGlobalAdmin') ?>
+﻿<?= $this->extend('layouts/mainGlobalAdmin') ?>
 
 <?= $this->section('content') ?>
 <div class="page-wrapper">
@@ -9,7 +9,7 @@
                     <h4 class="mb-0">Gestión de Respaldos</h4>
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="<?= base_url('index.php/global-admin/dashboard') ?>">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="<?= base_url('global-admin/dashboard') ?>">Dashboard</a></li>
                             <li class="breadcrumb-item active">Respaldos</li>
                         </ol>
                     </div>
@@ -234,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function cargarRespaldos() {
     $.ajax({
-        url: '<?= base_url('index.php/global-admin/obtener-respaldos') ?>',
+        url: '<?= base_url('global-admin/obtener-respaldos') ?>',
         type: 'GET',
         cache: false,
         success: function(response) {
@@ -297,7 +297,7 @@ function mostrarRespaldos(respaldos) {
 
 function cargarEstadisticas() {
     $.ajax({
-        url: '<?= base_url('index.php/global-admin/estadisticas-respaldos') ?>',
+        url: '<?= base_url('global-admin/estadisticas-respaldos') ?>',
         type: 'GET',
         cache: false,
         success: function(response) {
@@ -339,7 +339,7 @@ function crearRespaldo() {
             });
 
             $.ajax({
-                url: '<?= base_url('index.php/global-admin/crear-respaldo') ?>',
+                url: '<?= base_url('global-admin/crear-respaldo') ?>',
                 type: 'POST',
                 success: function(response) {
                                          if (response.success) {
@@ -402,7 +402,7 @@ function restaurarRespaldo(id = null) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: '<?= base_url('index.php/global-admin/restaurar-respaldo') ?>',
+                url: '<?= base_url('global-admin/restaurar-respaldo') ?>',
                 type: 'POST',
                 data: { id: id },
                 success: function(response) {
@@ -445,7 +445,7 @@ function descargarRespaldo(id = null) {
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                descargarArchivoConDialogo('<?= base_url('index.php/global-admin/descargar-respaldo') ?>/' + id);
+                descargarArchivoConDialogo('<?= base_url('global-admin/descargar-respaldo') ?>/' + id);
             } else if (result.isDenied) {
                 mostrarModalEnvioEmail(id);
             }
@@ -468,7 +468,7 @@ function eliminarRespaldo(id) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: '<?= base_url('index.php/global-admin/eliminar-respaldo') ?>',
+                url: '<?= base_url('global-admin/eliminar-respaldo') ?>',
                 type: 'POST',
                 data: { id: id },
                 success: function(response) {
@@ -508,7 +508,7 @@ function guardarConfiguracion() {
     const formData = new FormData($('#configuracionRespaldosForm')[0]);
     
     $.ajax({
-        url: '<?= base_url('index.php/global-admin/guardar-configuracion-respaldos') ?>',
+        url: '<?= base_url('global-admin/guardar-configuracion-respaldos') ?>',
         type: 'POST',
         data: formData,
         processData: false,
@@ -552,7 +552,7 @@ function limpiarRespaldos() {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: '<?= base_url('index.php/global-admin/limpiar-respaldos') ?>',
+                url: '<?= base_url('global-admin/limpiar-respaldos') ?>',
                 type: 'POST',
                 success: function(response) {
                     if (response.success) {
@@ -704,7 +704,7 @@ function configurarDriveMirror() {
         cancelButtonText: 'Entendido'
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = '<?= base_url('index.php/global-admin/configuracion') ?>';
+            window.location.href = '<?= base_url('global-admin/configuracion') ?>';
         }
     });
 }
@@ -751,7 +751,7 @@ function mostrarModalEnvioEmail(respaldoId, filename = '') {
             });
             
             $.ajax({
-                url: '<?= base_url('index.php/global-admin/enviar-respaldo-email') ?>',
+                url: '<?= base_url('global-admin/enviar-respaldo-email') ?>',
                 type: 'POST',
                 data: {
                     respaldo_id: respaldoId,

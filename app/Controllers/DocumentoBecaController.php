@@ -264,9 +264,9 @@ class DocumentoBecaController extends BaseController
             $estudianteId = session('id');
             
             $documentoModel = new SolicitudBecaDocumentoModel();
-            $documento = $documentoModel->select('solicitudes_becas_documentos.*, solicitudes_becas.estudiante_id')
-                                       ->join('solicitudes_becas', 'solicitudes_becas.id = solicitudes_becas_documentos.solicitud_beca_id')
-                                       ->where('solicitudes_becas_documentos.id', $id)
+            $documento = $documentoModel->select('documentos_solicitud_becas.*, solicitudes_becas.estudiante_id')
+                                       ->join('solicitudes_becas', 'solicitudes_becas.id = documentos_solicitud_becas.solicitud_beca_id')
+                                       ->where('documentos_solicitud_becas.id', $id)
                                        ->where('solicitudes_becas.estudiante_id', $estudianteId)
                                        ->first();
 
@@ -277,7 +277,7 @@ class DocumentoBecaController extends BaseController
                 ]);
             }
 
-            $rutaArchivo = $documento['ruta_archivo'];
+            $rutaArchivo = FCPATH . $documento['ruta_archivo'];
             
             if (!file_exists($rutaArchivo)) {
                 return $this->response->setJSON([
@@ -286,7 +286,7 @@ class DocumentoBecaController extends BaseController
                 ]);
             }
 
-            return $this->response->download($rutaArchivo, $documento['nombre_archivo']);
+            return $this->response->download($rutaArchivo, null)->setFileName($documento['nombre_archivo']);
 
         } catch (\Exception $e) {
             log_message('error', 'Error al descargar documento: ' . $e->getMessage());
@@ -518,7 +518,7 @@ class DocumentoBecaController extends BaseController
                 return redirect()->back()->with('error', 'Archivo no encontrado');
             }
 
-            return $this->response->download($rutaArchivo, $documento['nombre_archivo']);
+            return $this->response->download($rutaArchivo, null)->setFileName($documento['nombre_archivo']);
 
         } catch (\Exception $e) {
             log_message('error', 'Error descargando documento: ' . $e->getMessage());

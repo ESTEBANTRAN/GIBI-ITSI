@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/mainEstudiante') ?>
+﻿<?= $this->extend('layouts/mainEstudiante') ?>
 
 <?= $this->section('breadcrumb') ?>Ficha Socioeconómica<?= $this->endSection() ?>
 
@@ -801,7 +801,7 @@ $(document).ready(function() {
         formData.append('quien_emigrante', JSON.stringify(quienEmigrante));
         
         $.ajax({
-            url: '<?= base_url('index.php/estudiante/crear-ficha') ?>',
+            url: '<?= base_url('estudiante/crear-ficha') ?>',
             type: 'POST',
             data: formData,
             processData: false,
@@ -887,7 +887,7 @@ $(document).ready(function() {
         formData.append('quien_emigrante', JSON.stringify(quienEmigrante));
         
         $.ajax({
-            url: '<?= base_url('index.php/estudiante/actualizar-ficha') ?>',
+            url: '<?= base_url('estudiante/actualizar-ficha') ?>',
             type: 'POST',
             data: formData,
             processData: false,
@@ -1016,7 +1016,7 @@ function verFicha(id) {
     });
     
     $.ajax({
-        url: '<?= base_url('index.php/estudiante/ver-ficha/') ?>' + id,
+        url: '<?= base_url('estudiante/ver-ficha/') ?>' + id,
         type: 'GET',
         dataType: 'json',
         success: function(response) {
@@ -1075,7 +1075,7 @@ function editarFicha(id) {
     });
     
     $.ajax({
-        url: '<?= base_url('index.php/estudiante/editar-ficha/') ?>' + id,
+        url: '<?= base_url('estudiante/editar-ficha/') ?>' + id,
         type: 'GET',
         dataType: 'json',
         success: function(response) {
@@ -1215,7 +1215,7 @@ function enviarFicha(id) {
             });
             
             $.ajax({
-                url: '<?= base_url('index.php/estudiante/enviar-ficha') ?>',
+                url: '<?= base_url('estudiante/enviar-ficha') ?>',
                 type: 'POST',
                 data: { id: id },
                 dataType: 'json',
@@ -1294,7 +1294,7 @@ function crearFicha() {
     
     // Enviar petición AJAX
     $.ajax({
-        url: '<?= base_url('index.php/estudiante/crear-ficha') ?>',
+        url: '<?= base_url('estudiante/crear-ficha') ?>',
         type: 'POST',
         data: formData,
         processData: false,
@@ -1343,7 +1343,7 @@ function exportarFichaPDF(id) {
     });
     
     // Crear un enlace temporal para la descarga
-    const url = '<?= base_url('index.php/estudiante/exportar-ficha-pdf/') ?>' + id;
+    const url = '<?= base_url('estudiante/exportar-ficha-pdf/') ?>' + id;
     const link = document.createElement('a');
     link.href = url;
     link.download = 'Ficha_Socioeconomica.pdf';

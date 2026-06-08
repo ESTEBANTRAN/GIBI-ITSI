@@ -1,4 +1,4 @@
-<header class="app-header">
+﻿<header class="app-header">
     <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #00367c;">
         <a class="navbar-brand d-flex align-items-center" href="<?= base_url() ?>">
         </a>
@@ -34,37 +34,37 @@
                         <div class="message-body">
                             <?php if (session('rol_id') == 4): ?>
                                 <!-- Rutas específicas para Super Administrador -->
-                                <a href="<?= base_url('index.php/global-admin/perfil') ?>" class="d-flex align-items-center gap-2 dropdown-item">
+                                <a href="<?= base_url('global-admin/perfil') ?>" class="d-flex align-items-center gap-2 dropdown-item">
                                     <i class="ti ti-user fs-6"></i>
                                     <p class="mb-0 fs-3">Mi Perfil</p>
                                 </a>
-                                <a href="<?= base_url('index.php/global-admin/cuenta') ?>" class="d-flex align-items-center gap-2 dropdown-item">
+                                <a href="<?= base_url('global-admin/cuenta') ?>" class="d-flex align-items-center gap-2 dropdown-item">
                                     <i class="ti ti-settings fs-6"></i>
                                     <p class="mb-0 fs-3">Mi Cuenta</p>
                                 </a>
                             <?php elseif (session('rol_id') == 1): ?>
                                 <!-- Rutas específicas para Estudiante -->
-                                <a href="<?= base_url('index.php/estudiante/perfil') ?>" class="d-flex align-items-center gap-2 dropdown-item">
+                                <a href="<?= base_url('estudiante/perfil') ?>" class="d-flex align-items-center gap-2 dropdown-item">
                                     <i class="ti ti-user fs-6"></i>
                                     <p class="mb-0 fs-3">Mi Perfil</p>
                                 </a>
-                                <a href="<?= base_url('index.php/estudiante/cuenta') ?>" class="d-flex align-items-center gap-2 dropdown-item">
+                                <a href="<?= base_url('estudiante/cuenta') ?>" class="d-flex align-items-center gap-2 dropdown-item">
                                     <i class="ti ti-settings fs-6"></i>
                                     <p class="mb-0 fs-3">Mi Cuenta</p>
                                 </a>
                             <?php else: ?>
                                 <!-- Rutas específicas para Admin Bienestar (rol_id == 2) -->
-                                <a href="<?= base_url('index.php/admin-bienestar/perfil') ?>" class="d-flex align-items-center gap-2 dropdown-item">
+                                <a href="<?= base_url('admin-bienestar/perfil') ?>" class="d-flex align-items-center gap-2 dropdown-item">
                                     <i class="ti ti-user fs-6"></i>
                                     <p class="mb-0 fs-3">Mi Perfil</p>
                                 </a>
-                                <a href="<?= base_url('index.php/admin-bienestar/cuenta') ?>" class="d-flex align-items-center gap-2 dropdown-item">
+                                <a href="<?= base_url('admin-bienestar/cuenta') ?>" class="d-flex align-items-center gap-2 dropdown-item">
                                     <i class="ti ti-settings fs-6"></i>
                                     <p class="mb-0 fs-3">Mi Cuenta</p>
                                 </a>
                             <?php endif; ?>
                             <hr class="dropdown-divider">
-                            <a href="<?= base_url('index.php/auth/logout') ?>" class="btn btn-outline-danger mx-3 mt-2 d-block">
+                            <a href="<?= base_url('auth/logout') ?>" class="btn btn-outline-danger mx-3 mt-2 d-block">
                                 <i class="ti ti-logout me-1"></i>Cerrar sesión
                             </a>
                         </div>

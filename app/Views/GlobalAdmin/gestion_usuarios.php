@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/mainGlobalAdmin') ?>
+﻿<?= $this->extend('layouts/mainGlobalAdmin') ?>
 
 <?= $this->section('breadcrumb') ?>Gestión de Usuarios<?= $this->endSection() ?>
 
@@ -53,7 +53,7 @@
         <div class="alert alert-warning">
             <i class="bi bi-exclamation-triangle me-2"></i>
             <strong>No se encontraron resultados</strong> para "<?= htmlspecialchars($search) ?>". 
-            <a href="<?= base_url('index.php/global-admin/usuarios') ?>" class="alert-link">Ver todos los usuarios</a>
+            <a href="<?= base_url('global-admin/usuarios') ?>" class="alert-link">Ver todos los usuarios</a>
         </div>
     </div>
 </div>
@@ -65,7 +65,7 @@
         <div class="alert alert-info">
             <i class="bi bi-info-circle me-2"></i>
             <strong>Búsqueda activa:</strong> Se encontraron <?= $total ?> resultados para "<?= htmlspecialchars($search) ?>" pero no hay resultados en esta página. 
-            <a href="<?= base_url('index.php/global-admin/usuarios?search=' . urlencode($search) . '&page=1') ?>" class="alert-link">Ver todos los resultados</a>
+            <a href="<?= base_url('global-admin/usuarios?search=' . urlencode($search) . '&page=1') ?>" class="alert-link">Ver todos los resultados</a>
         </div>
     </div>
 </div>
@@ -77,7 +77,7 @@
         <div class="alert alert-success">
             <i class="bi bi-check-circle me-2"></i>
             <strong>Búsqueda exitosa:</strong> Se encontraron <?= $total ?> resultados para "<?= htmlspecialchars($search) ?>". 
-            <a href="<?= base_url('index.php/global-admin/usuarios') ?>" class="alert-link">Limpiar búsqueda</a>
+            <a href="<?= base_url('global-admin/usuarios') ?>" class="alert-link">Limpiar búsqueda</a>
         </div>
     </div>
 </div>
@@ -159,7 +159,7 @@
                     <i class="bi bi-table me-2"></i>Lista de Usuarios
                 </h5>
                 <div class="d-flex gap-2">
-                    <form class="d-flex" method="GET" action="<?= base_url('index.php/global-admin/usuarios') ?>">
+                    <form class="d-flex" method="GET" action="<?= base_url('global-admin/usuarios') ?>">
                         <div class="input-group" style="width: 300px;">
                             <input type="text" class="form-control" name="search" id="searchInput" 
                                    placeholder="Buscar usuarios..." 
@@ -247,7 +247,7 @@
                 <!-- Botón Anterior -->
                 <?php if ($current_page > 1): ?>
                     <li class="page-item">
-                        <a class="page-link" href="<?= base_url('index.php/global-admin/usuarios?page=' . ($current_page - 1) . (isset($search) && !empty($search) ? '&search=' . urlencode($search) : '')) ?>">
+                        <a class="page-link" href="<?= base_url('global-admin/usuarios?page=' . ($current_page - 1) . (isset($search) && !empty($search) ? '&search=' . urlencode($search) : '')) ?>">
                             <i class="bi bi-chevron-left"></i> Anterior
                         </a>
                     </li>
@@ -268,7 +268,7 @@
                 // Mostrar primera página si no está en el rango
                 if ($start_page > 1): ?>
                     <li class="page-item">
-                        <a class="page-link" href="<?= base_url('index.php/global-admin/usuarios?page=1' . $search_param) ?>">1</a>
+                        <a class="page-link" href="<?= base_url('global-admin/usuarios?page=1' . $search_param) ?>">1</a>
                     </li>
                     <?php if ($start_page > 2): ?>
                         <li class="page-item disabled">
@@ -279,7 +279,7 @@
 
                 <?php for ($i = $start_page; $i <= $end_page; $i++): ?>
                     <li class="page-item <?= $i == $current_page ? 'active' : '' ?>">
-                        <a class="page-link" href="<?= base_url('index.php/global-admin/usuarios?page=' . $i . $search_param) ?>"><?= $i ?></a>
+                        <a class="page-link" href="<?= base_url('global-admin/usuarios?page=' . $i . $search_param) ?>"><?= $i ?></a>
                     </li>
                 <?php endfor; ?>
 
@@ -291,14 +291,14 @@
                         </li>
                     <?php endif; ?>
                     <li class="page-item">
-                        <a class="page-link" href="<?= base_url('index.php/global-admin/usuarios?page=' . $total_pages . $search_param) ?>"><?= $total_pages ?></a>
+                        <a class="page-link" href="<?= base_url('global-admin/usuarios?page=' . $total_pages . $search_param) ?>"><?= $total_pages ?></a>
                     </li>
                 <?php endif; ?>
 
                 <!-- Botón Siguiente -->
                 <?php if ($current_page < $total_pages): ?>
                     <li class="page-item">
-                        <a class="page-link" href="<?= base_url('index.php/global-admin/usuarios?page=' . ($current_page + 1) . $search_param) ?>">
+                        <a class="page-link" href="<?= base_url('global-admin/usuarios?page=' . ($current_page + 1) . $search_param) ?>">
                             Siguiente <i class="bi bi-chevron-right"></i>
                         </a>
                     </li>
@@ -589,7 +589,7 @@ document.getElementById('formCrearUsuario').addEventListener('submit', function(
         return;
     }
     
-    fetch('<?= base_url('index.php/global-admin/crear-usuario') ?>', {
+    fetch('<?= base_url('global-admin/crear-usuario') ?>', {
         method: 'POST',
         body: formData
     })
@@ -622,7 +622,7 @@ document.getElementById('formEditarUsuario').addEventListener('submit', function
         return;
     }
     
-    fetch('<?= base_url('index.php/global-admin/actualizar-usuario') ?>', {
+    fetch('<?= base_url('global-admin/actualizar-usuario') ?>', {
         method: 'POST',
         body: formData
     })
@@ -644,7 +644,7 @@ document.getElementById('formEditarUsuario').addEventListener('submit', function
 // Editar usuario
 function editarUsuario(id) {
     // Obtener datos del usuario
-    fetch(`<?= base_url('index.php/global-admin/obtener-usuario') ?>/${id}`)
+    fetch(`<?= base_url('global-admin/obtener-usuario') ?>/${id}`)
         .then(response => {
             return response.json();
         })
@@ -684,7 +684,7 @@ function editarUsuario(id) {
 // Ver usuario
 function verUsuario(id) {
     // Obtener datos del usuario
-    fetch(`<?= base_url('index.php/global-admin/obtener-usuario') ?>/${id}`)
+    fetch(`<?= base_url('global-admin/obtener-usuario') ?>/${id}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -769,7 +769,7 @@ function eliminarUsuario(id) {
         const formData = new FormData();
         formData.append('id', id);
         
-        fetch('<?= base_url('index.php/global-admin/eliminar-usuario') ?>', {
+        fetch('<?= base_url('global-admin/eliminar-usuario') ?>', {
             method: 'POST',
             body: formData
         })
@@ -792,7 +792,7 @@ function eliminarUsuario(id) {
 // Exportar usuarios
 function exportarUsuarios() {
     // Redirigir a la exportación PDF
-    window.open('<?= base_url('index.php/global-admin/exportar-usuarios-pdf') ?>', '_blank');
+    window.open('<?= base_url('global-admin/exportar-usuarios-pdf') ?>', '_blank');
 }
 </script>
 <?= $this->endSection() ?> 

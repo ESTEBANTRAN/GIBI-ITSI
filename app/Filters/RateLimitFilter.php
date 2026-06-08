@@ -24,8 +24,8 @@ class RateLimitFilter implements FilterInterface
      */
     public function before(RequestInterface $request, $arguments = null)
     {
-        $maxAttempts = 10;
-        $decaySeconds = 900; // 15 minutos
+        $maxAttempts = 30;       // Aumentado para testing con túnel
+        $decaySeconds = 900;     // 15 minutos
 
         // Permitir personalización desde los argumentos del filtro
         if (!empty($arguments)) {
@@ -35,7 +35,12 @@ class RateLimitFilter implements FilterInterface
 
         $limiter = new RateLimiter($maxAttempts, $decaySeconds, 'http_rate');
         $ip = SecurityHelper::getClientIp();
-        $key = $ip . ':' . $request->getPath();
+
+        // IMPORTANTE: Con túnel (Serveo/Cloudflare) todos comparten la misma IP.
+        // Incluir un hash del User-Agent para diferenciar usuarios detrás del proxy.
+        // Esto NO es un fingerprint de seguridad, solo un discriminador de tráfico.
+        $uaHash = substr(md5($request->getUserAgent()->getAgentString()), 0, 8);
+        $key = $ip . ':' . $uaHash . ':' . $request->getPath();
 
         if ($limiter->tooManyAttempts($key)) {
             // Registrar en log de seguridad

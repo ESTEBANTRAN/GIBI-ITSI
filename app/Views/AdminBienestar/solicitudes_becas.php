@@ -402,7 +402,7 @@ function cambiarEstado(id, estado) {
     }).then(r => {
         if (!r.isConfirmed) return;
         $.ajax({
-            url: '<?= base_url('index.php/admin-bienestar/cambiar-estado-solicitud') ?>',
+            url: '<?= base_url('admin-bienestar/cambiar-estado-solicitud') ?>',
             type: 'POST',
             data: { id, estado },
             success: function(res) {
@@ -432,7 +432,7 @@ function mostrarModalRechazo(id) {
     }).then(r => {
         if (!r.isConfirmed) return;
         $.ajax({
-            url: '<?= base_url('index.php/admin-bienestar/cambiar-estado-solicitud') ?>',
+            url: '<?= base_url('admin-bienestar/cambiar-estado-solicitud') ?>',
             type: 'POST',
             data: { id, estado: 'Rechazada', motivo: r.value },
             success: function(res) {
@@ -448,11 +448,11 @@ function mostrarModalRechazo(id) {
 }
 
 function verSolicitud(id) {
-    window.location.href = '<?= base_url('index.php/admin-bienestar/solicitudes-becas') ?>?detalle=' + id;
+    window.location.href = '<?= base_url('admin-bienestar/detalle-solicitud-beca') ?>/' + id;
 }
 
 function generarConstancia(id) {
-    window.open('<?= base_url('index.php/admin-bienestar/generar-constancia') ?>?id=' + id, '_blank');
+    window.open('<?= base_url('admin-bienestar/generar-constancia') ?>?id=' + id, '_blank');
 }
 
 function exportarSolicitudes(f) {

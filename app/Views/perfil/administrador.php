@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/mainAdmin') ?>
+﻿<?= $this->extend('layouts/mainAdmin') ?>
 
 <?= $this->section('content') ?>
 
@@ -132,7 +132,7 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        <form id="formPerfil" action="<?= base_url('index.php/perfil/actualizar') ?>" method="post">
+                        <form id="formPerfil" action="<?= base_url('perfil/actualizar') ?>" method="post">
                             <?= csrf_field() ?>
                             
                             <div class="row">
@@ -268,7 +268,7 @@ function cambiarFoto(input) {
         const formData = new FormData();
         formData.append('foto', input.files[0]);
 
-        fetch('<?= base_url('index.php/perfil/cambiarFoto') ?>', {
+        fetch('<?= base_url('perfil/cambiarFoto') ?>', {
             method: 'POST',
             body: formData
         })

@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/mainAdmin') ?>
+﻿<?= $this->extend('layouts/mainAdmin') ?>
 
 <?= $this->section('content') ?>
 
@@ -10,7 +10,7 @@
                     <h4 class="mb-sm-0">Mi Cuenta</h4>
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="<?= base_url('index.php/admin-bienestar') ?>">Inicio</a></li>
+                            <li class="breadcrumb-item"><a href="<?= base_url('admin-bienestar') ?>">Inicio</a></li>
                             <li class="breadcrumb-item active">Mi Cuenta</li>
                         </ol>
                     </div>
@@ -84,7 +84,7 @@ $(document).ready(function() {
         }
         
         $.ajax({
-            url: '<?= base_url('index.php/admin-bienestar/cuenta/cambiarPassword') ?>',
+            url: '<?= base_url('admin-bienestar/cuenta/cambiarPassword') ?>',
             type: 'POST',
             data: $(this).serialize(),
             dataType: 'json',
@@ -114,7 +114,7 @@ function exportarDatos() {
         cancelButtonText: 'Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            window.open('<?= base_url('index.php/admin-bienestar/cuenta/exportarDatos') ?>', '_blank');
+            window.open('<?= base_url('admin-bienestar/cuenta/exportarDatos') ?>', '_blank');
         }
     });
 }
@@ -140,13 +140,13 @@ function eliminarCuenta() {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: '<?= base_url('index.php/admin-bienestar/cuenta/eliminarCuenta') ?>',
+                url: '<?= base_url('admin-bienestar/cuenta/eliminarCuenta') ?>',
                 type: 'POST',
                 dataType: 'json',
                 success: function(response) {
                     if (response.success) {
                         Swal.fire('Éxito', response.message, 'success').then(() => {
-                            window.location.href = '<?= base_url('index.php/auth/logout') ?>';
+                            window.location.href = '<?= base_url('auth/logout') ?>';
                         });
                     } else {
                         Swal.fire('Error', response.error, 'error');

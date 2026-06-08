@@ -83,10 +83,10 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="card-title mb-0">Lista de Estudiantes</h5>
         <div>
-            <button type="button" class="btn btn-outline-success btn-sm">
+            <button type="button" class="btn btn-outline-success btn-sm" onclick="window.location.href='<?= base_url('admin-bienestar/usuarios/exportar') ?>?formato=excel'">
                 <i class="bi bi-file-excel me-1"></i>Exportar Excel
             </button>
-            <button type="button" class="btn btn-outline-danger btn-sm">
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="window.location.href='<?= base_url('admin-bienestar/usuarios/exportar') ?>?formato=pdf'">
                 <i class="bi bi-file-pdf me-1"></i>Exportar PDF
             </button>
         </div>
@@ -438,7 +438,7 @@ function verHistorialEstudiante(estudianteId) {
     document.getElementById('contenidoHistorial').style.display = 'none';
     
     // Cargar historial
-    fetch(`<?= base_url('index.php/admin-bienestar/historial-estudiante') ?>/${estudianteId}`)
+    fetch(`<?= base_url('admin-bienestar/historial-estudiante') ?>/${estudianteId}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {

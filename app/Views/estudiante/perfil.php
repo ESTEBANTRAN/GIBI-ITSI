@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/mainEstudiante') ?>
+﻿<?= $this->extend('layouts/mainEstudiante') ?>
 
 <?= $this->section('content') ?>
 <div class="page-wrapper">
@@ -134,7 +134,7 @@
                                         <i class="ti ti-award text-primary" style="font-size: 2.5rem;"></i>
                                         <h6 class="card-title mt-2">Dependencia de Becas</h6>
                                         <p class="card-text small">Información sobre becas, ayudas económicas y programas de apoyo.</p>
-                                        <a href="<?= base_url('index.php/estudiante/informacion/becas') ?>" class="btn btn-primary btn-sm">
+                                        <a href="<?= base_url('estudiante/informacion/becas') ?>" class="btn btn-primary btn-sm">
                                             <i class="ti ti-arrow-right me-1"></i>Ver más
                                         </a>
                                     </div>
@@ -147,7 +147,7 @@
                                         <i class="ti ti-heart text-success" style="font-size: 2.5rem;"></i>
                                         <h6 class="card-title mt-2">Apoyo Psicológico</h6>
                                         <p class="card-text small">Servicios de atención psicológica y apoyo emocional.</p>
-                                        <a href="<?= base_url('index.php/estudiante/informacion/psicologia') ?>" class="btn btn-success btn-sm">
+                                        <a href="<?= base_url('estudiante/informacion/psicologia') ?>" class="btn btn-success btn-sm">
                                             <i class="ti ti-arrow-right me-1"></i>Ver más
                                         </a>
                                     </div>
@@ -160,7 +160,7 @@
                                         <i class="ti ti-heart-pulse text-danger" style="font-size: 2.5rem;"></i>
                                         <h6 class="card-title mt-2">Servicios de Salud</h6>
                                         <p class="card-text small">Atención médica, prevención y promoción de la salud.</p>
-                                        <a href="<?= base_url('index.php/estudiante/informacion/salud') ?>" class="btn btn-danger btn-sm">
+                                        <a href="<?= base_url('estudiante/informacion/salud') ?>" class="btn btn-danger btn-sm">
                                             <i class="ti ti-arrow-right me-1"></i>Ver más
                                         </a>
                                     </div>
@@ -173,7 +173,7 @@
                                         <i class="ti ti-people text-warning" style="font-size: 2.5rem;"></i>
                                         <h6 class="card-title mt-2">Trabajo Social</h6>
                                         <p class="card-text small">Apoyo socioeconómico y orientación social.</p>
-                                        <a href="<?= base_url('index.php/estudiante/informacion/trabajo-social') ?>" class="btn btn-warning btn-sm">
+                                        <a href="<?= base_url('estudiante/informacion/trabajo-social') ?>" class="btn btn-warning btn-sm">
                                             <i class="ti ti-arrow-right me-1"></i>Ver más
                                         </a>
                                     </div>
@@ -186,7 +186,7 @@
                                         <i class="ti ti-mortarboard text-info" style="font-size: 2.5rem;"></i>
                                         <h6 class="card-title mt-2">Orientación Académica</h6>
                                         <p class="card-text small">Asesoramiento académico y apoyo para el desarrollo estudiantil.</p>
-                                        <a href="<?= base_url('index.php/estudiante/informacion/orientacion-academica') ?>" class="btn btn-info btn-sm">
+                                        <a href="<?= base_url('estudiante/informacion/orientacion-academica') ?>" class="btn btn-info btn-sm">
                                             <i class="ti ti-arrow-right me-1"></i>Ver más
                                         </a>
                                     </div>
@@ -199,7 +199,7 @@
                                         <i class="ti ti-building text-secondary" style="font-size: 2.5rem;"></i>
                                         <h6 class="card-title mt-2">Unidad de Bienestar</h6>
                                         <p class="card-text small">Información general sobre la Unidad de Bienestar Institucional.</p>
-                                        <a href="<?= base_url('index.php/estudiante/informacion/servicios') ?>" class="btn btn-secondary btn-sm">
+                                        <a href="<?= base_url('estudiante/informacion/servicios') ?>" class="btn btn-secondary btn-sm">
                                             <i class="ti ti-arrow-right me-1"></i>Ver más
                                         </a>
                                     </div>
@@ -308,7 +308,7 @@ function cambiarFotoPerfil() {
     });
     
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', '<?= base_url('index.php/profile/cambiar-foto') ?>', true);
+    xhr.open('POST', '<?= base_url('profile/cambiar-foto') ?>', true);
     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     
     xhr.onload = function() {

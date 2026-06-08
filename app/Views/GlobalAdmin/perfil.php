@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/mainGlobalAdmin') ?>
+﻿<?= $this->extend('layouts/mainGlobalAdmin') ?>
 
 <?= $this->section('content') ?>
 <div class="page-wrapper">
@@ -151,7 +151,7 @@ function cambiarFotoPerfil() {
     });
     
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', '<?= base_url('index.php/profile/cambiar-foto') ?>', true);
+    xhr.open('POST', '<?= base_url('profile/cambiar-foto') ?>', true);
     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     
     xhr.onload = function() {

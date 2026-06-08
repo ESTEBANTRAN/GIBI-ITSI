@@ -852,5 +852,45 @@ class AdminBienestarService
         fclose($output);
         return $csv;
     }
+
+    /**
+     * Obtener datos completos de una ficha por ID (para AJAX).
+     * Incluye datos del estudiante, período y JSON data de la ficha.
+     *
+     * @param int|string $fichaId
+     * @return array|null
+     */
+    public function getFichaCompleta($fichaId): ?array
+    {
+        try {
+            $ficha = $this->db->table('fichas_socioeconomicas fs')
+                ->select('fs.*, u.nombre, u.apellido, u.cedula, u.email, u.telefono,
+                         c.nombre as carrera_nombre,
+                         p.nombre as nombre_periodo,
+                         p.nombre as periodo_nombre')
+                ->join('usuarios u', 'u.id = fs.estudiante_id', 'left')
+                ->join('carreras c', 'c.id = u.carrera_id', 'left')
+                ->join('periodos_academicos p', 'p.id = fs.periodo_id', 'left')
+                ->where('fs.id', (int)$fichaId)
+                ->get()
+                ->getRowArray();
+
+            if (!$ficha) {
+                return null;
+            }
+
+            // Decodificar json_data si existe
+            if (!empty($ficha['json_data'])) {
+                $ficha['datos_ficha'] = json_decode($ficha['json_data'], true) ?? [];
+            } else {
+                $ficha['datos_ficha'] = [];
+            }
+
+            return $ficha;
+        } catch (\Exception $e) {
+            log_message('error', 'AdminBienestarService::getFichaCompleta() error: ' . $e->getMessage());
+            return null;
+        }
+    }
 }
 

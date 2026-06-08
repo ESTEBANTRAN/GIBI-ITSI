@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/mainGlobalAdmin') ?>
+﻿<?= $this->extend('layouts/mainGlobalAdmin') ?>
 
 <?= $this->section('content') ?>
 <div class="page-wrapper">
@@ -9,7 +9,7 @@
                     <h4 class="mb-0">Logs del Sistema</h4>
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="<?= base_url('index.php/global-admin/dashboard') ?>">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="<?= base_url('global-admin/dashboard') ?>">Dashboard</a></li>
                             <li class="breadcrumb-item active">Logs</li>
                         </ol>
                     </div>
@@ -233,7 +233,7 @@ function cargarLogs(pagina = 1) {
     };
     
     $.ajax({
-        url: '<?= base_url('index.php/global-admin/obtener-logs') ?>',
+        url: '<?= base_url('global-admin/obtener-logs') ?>',
         type: 'GET',
         data: filtros,
         success: function(response) {
@@ -332,7 +332,7 @@ function mostrarPaginacion(paginacion) {
 
 function cargarEstadisticas() {
     $.ajax({
-        url: '<?= base_url('index.php/global-admin/estadisticas-logs') ?>',
+        url: '<?= base_url('global-admin/estadisticas-logs') ?>',
         type: 'GET',
         success: function(response) {
             if (response.success) {
@@ -399,7 +399,7 @@ function limpiarFiltros() {
 
 function verDetalleLog(id) {
     $.ajax({
-        url: '<?= base_url('index.php/global-admin/obtener-log') ?>/' + id,
+        url: '<?= base_url('global-admin/obtener-log') ?>/' + id,
         type: 'GET',
         success: function(response) {
             if (response.success) {
@@ -447,7 +447,7 @@ function eliminarLog(id) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: '<?= base_url('index.php/global-admin/eliminar-log') ?>',
+                url: '<?= base_url('global-admin/eliminar-log') ?>',
                 type: 'POST',
                 data: { id: id },
                 success: function(response) {
@@ -480,7 +480,7 @@ function limpiarLogs() {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: '<?= base_url('index.php/global-admin/limpiar-logs') ?>',
+                url: '<?= base_url('global-admin/limpiar-logs') ?>',
                 type: 'POST',
                 success: function(response) {
                     if (response.success) {
@@ -508,7 +508,7 @@ function exportarLogs() {
     
     // Crear URL con filtros
     const params = new URLSearchParams(filtros);
-    window.open('<?= base_url('index.php/global-admin/exportar-logs') ?>?' + params.toString(), '_blank');
+    window.open('<?= base_url('global-admin/exportar-logs') ?>?' + params.toString(), '_blank');
 }
 
 function actualizarLogs() {
@@ -532,7 +532,7 @@ function formatearFecha(fecha) {
 
 function cargarArchivosLog() {
     $.ajax({
-        url: '<?= base_url('index.php/global-admin/obtener-logs') ?>',
+        url: '<?= base_url('global-admin/obtener-logs') ?>',
         type: 'GET',
         success: function(response) {
             if (response.success && response.logs_archivos) {
@@ -566,7 +566,7 @@ function mostrarArchivosLog(archivos) {
 }
 
 function descargarLog(nombre) {
-    window.open('<?= base_url('index.php/global-admin/exportar-logs') ?>?archivo=' + nombre, '_blank');
+    window.open('<?= base_url('global-admin/exportar-logs') ?>?archivo=' + nombre, '_blank');
 }
 </script>
 <?= $this->endSection() ?> 

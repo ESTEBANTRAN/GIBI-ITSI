@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/mainEstudiante') ?>
+﻿<?= $this->extend('layouts/mainEstudiante') ?>
 
 <?= $this->section('breadcrumb') ?>Solicitudes de Ayuda<?= $this->endSection() ?>
 
@@ -472,7 +472,7 @@ document.getElementById('formNuevaSolicitud').addEventListener('submit', functio
         }
     });
     
-    fetch('<?= base_url('index.php/estudiante/crear-solicitud-ayuda') ?>', {
+    fetch('<?= base_url('estudiante/crear-solicitud-ayuda') ?>', {
         method: 'POST',
         body: formData
     })
@@ -643,7 +643,7 @@ document.getElementById('formEditarSolicitud').addEventListener('submit', functi
         }
     });
     
-    fetch('<?= base_url('index.php/estudiante/editar-solicitud-ayuda') ?>', {
+    fetch('<?= base_url('estudiante/editar-solicitud-ayuda') ?>', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -708,7 +708,7 @@ function cancelarSolicitud(id) {
                 }
             });
             
-            fetch('<?= base_url('index.php/estudiante/cancelar-solicitud-ayuda') ?>', {
+            fetch('<?= base_url('estudiante/cancelar-solicitud-ayuda') ?>', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -133,7 +133,7 @@
                 <div class="text-center">
                     <img src="<?= base_url('login/assets/img/logo_instituto.png') ?>" alt="Logo ITSI" class="mb-4" style="max-width: 200px;">
                 </div>
-                <form action="<?= base_url('index.php/auth/attemptLogin') ?>" method="post" id="loginForm" autocomplete="off" novalidate>
+                <form action="<?= base_url('auth/attemptLogin') ?>" method="post" id="loginForm" autocomplete="off" novalidate>
                     <?= csrf_field() ?>
                     <div class="form-floating mb-3">
                         <input type="text" class="form-control" id="identificador" name="identificador" placeholder="Cédula o Correo" required autofocus value="<?= old('identificador') ?>">
@@ -142,9 +142,14 @@
                             Este campo es obligatorio.
                         </div>
                     </div>
-                    <div class="form-floating mb-3">
+                    <div class="form-floating mb-3 position-relative">
                         <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required>
-                        <label for="password"><i class="bi bi-lock-fill me-2"></i>Contraseña</label>
+                        <label for="password" style="pointer-events: auto; width: 100%;">
+                            <i class="bi bi-lock-fill me-2"></i>Contraseña
+                            <span id="togglePassword" class="ms-2 text-muted" style="cursor: pointer; z-index: 100; position: relative; display: inline-block;">
+                                <i class="bi bi-eye-slash-fill" id="togglePasswordIcon"></i>
+                            </span>
+                        </label>
                         <div class="invalid-feedback">
                             La contraseña es obligatoria.
                         </div>
@@ -177,7 +182,7 @@
     </div>
     <script src="<?= base_url('login/assets/js/bootstrap.bundle.min.js') ?>"></script>
     <script>
-        let captchaCompleted = <?= ENVIRONMENT === 'development' ? 'true' : 'false' ?>;
+        let captchaCompleted = false;
 
         function onCaptchaSuccess(token) {
             captchaCompleted = true;
@@ -185,10 +190,29 @@
         }
 
         function onCaptchaExpired() {
-            <?php if (ENVIRONMENT !== 'development'): ?>
             captchaCompleted = false;
-            <?php endif; ?>
         }
+
+        // Toggle visibilidad de contraseña
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        const togglePasswordIcon = document.getElementById('togglePasswordIcon');
+
+        togglePassword.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            // Alternar icono
+            if (type === 'password') {
+                togglePasswordIcon.classList.remove('bi-eye-fill');
+                togglePasswordIcon.classList.add('bi-eye-slash-fill');
+            } else {
+                togglePasswordIcon.classList.remove('bi-eye-slash-fill');
+                togglePasswordIcon.classList.add('bi-eye-fill');
+            }
+        });
 
         // Validar formulario al enviar
         document.getElementById('loginForm').addEventListener('submit', function(e) {
@@ -199,12 +223,11 @@
                 isValid = false;
             }
 
-            // Validar reCAPTCHA                    <?php if (ENVIRONMENT !== 'development'): ?>
-                    if (!captchaCompleted) {
-                        document.getElementById('captchaError').style.display = 'block';
-                        isValid = false;
-                    }
-                    <?php endif; ?>
+            // Validar reCAPTCHA
+            if (!captchaCompleted) {
+                document.getElementById('captchaError').style.display = 'block';
+                isValid = false;
+            }
 
             if (!isValid) {
                 e.preventDefault();

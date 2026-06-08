@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/mainAdmin') ?>
+﻿<?= $this->extend('layouts/mainAdmin') ?>
 
 <?= $this->section('content') ?>
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -501,11 +501,11 @@ function rechazarFicha(id) {
 }
 
 function editarFicha(id) {
-    window.location.href = '<?= base_url('index.php/fichas/editar/') ?>' + id;
+    window.location.href = '<?= base_url('fichas/editar/') ?>' + id;
 }
 
 function revisarFicha(id) {
-    window.location.href = '<?= base_url('index.php/fichas/revisar/') ?>' + id;
+    window.location.href = '<?= base_url('fichas/revisar/') ?>' + id;
 }
 
 function limpiarFiltros() {

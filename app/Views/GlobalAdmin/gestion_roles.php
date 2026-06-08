@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/mainGlobalAdmin') ?>
+﻿<?= $this->extend('layouts/mainGlobalAdmin') ?>
 
 <?= $this->section('breadcrumb') ?>Gestión de Roles<?= $this->endSection() ?>
 
@@ -95,7 +95,7 @@
         <div class="alert alert-info">
             <i class="bi bi-search me-2"></i>
             <strong>Búsqueda activa:</strong> Mostrando resultados para "<?= htmlspecialchars($search) ?>"
-            <a href="<?= base_url('index.php/global-admin/roles') ?>" class="alert-link">Limpiar búsqueda</a>
+            <a href="<?= base_url('global-admin/roles') ?>" class="alert-link">Limpiar búsqueda</a>
         </div>
     </div>
 </div>
@@ -274,9 +274,9 @@
 function buscarRoles() {
     const searchTerm = document.getElementById('searchInput').value;
     if (searchTerm.trim()) {
-        window.location.href = '<?= base_url('index.php/global-admin/roles') ?>?search=' + encodeURIComponent(searchTerm);
+        window.location.href = '<?= base_url('global-admin/roles') ?>?search=' + encodeURIComponent(searchTerm);
     } else {
-        window.location.href = '<?= base_url('index.php/global-admin/roles') ?>';
+        window.location.href = '<?= base_url('global-admin/roles') ?>';
     }
 }
 
@@ -286,7 +286,7 @@ document.getElementById('formCrearRol').addEventListener('submit', function(e) {
     
     const formData = new FormData(this);
     
-    fetch('<?= base_url('index.php/global-admin/crear-rol') ?>', {
+    fetch('<?= base_url('global-admin/crear-rol') ?>', {
         method: 'POST',
         body: formData
     })
@@ -307,7 +307,7 @@ document.getElementById('formCrearRol').addEventListener('submit', function(e) {
 
 // Editar rol
 function editarRol(id) {
-    fetch('<?= base_url('index.php/global-admin/obtener-rol') ?>/' + id)
+    fetch('<?= base_url('global-admin/obtener-rol') ?>/' + id)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -334,7 +334,7 @@ document.getElementById('formEditarRol').addEventListener('submit', function(e) 
     
     const formData = new FormData(this);
     
-    fetch('<?= base_url('index.php/global-admin/actualizar-rol') ?>', {
+    fetch('<?= base_url('global-admin/actualizar-rol') ?>', {
         method: 'POST',
         body: formData
     })
@@ -364,7 +364,7 @@ function verPermisos(id) {
     `;
     modal.show();
     
-    fetch('<?= base_url('index.php/global-admin/permisos-rol') ?>/' + id)
+    fetch('<?= base_url('global-admin/permisos-rol') ?>/' + id)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -430,7 +430,7 @@ function eliminarRol(id) {
         const formData = new FormData();
         formData.append('id', id);
         
-        fetch('<?= base_url('index.php/global-admin/eliminar-rol') ?>', {
+        fetch('<?= base_url('global-admin/eliminar-rol') ?>', {
             method: 'POST',
             body: formData
         })

@@ -211,7 +211,7 @@
                                                 <?php endif; ?>
                                             </td>
                                             <td>
-                                                <strong>$<?= number_format($solicitud['monto_beca'], 0, ',', '.') ?></strong>
+                                                <strong>$<?= number_format((float)($solicitud['monto_beca'] ?? 0), 0, ',', '.') ?></strong>
                                             </td>
                                             <td>
                                                 <div class="btn-group btn-group-sm">
@@ -407,7 +407,7 @@
                                     <option value="<?= $beca['id'] ?>" 
                                             data-monto="<?= $beca['monto_beca'] ?>"
                                             data-periodo-id="<?= $beca['periodo_id'] ?? '' ?>">
-                                        <?= esc($beca['nombre']) ?> - $<?= number_format($beca['monto_beca'], 0, ',', '.') ?>
+                                        <?= esc($beca['nombre']) ?> - $<?= number_format((float)($beca['monto_beca'] ?? 0), 0, ',', '.') ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>

@@ -1,9 +1,16 @@
-RewriteEngine On
+<IfModule mod_rewrite.c>
+    RewriteEngine On
 
-# Redirect all requests to public folder
-RewriteCond %{REQUEST_URI} !^/ITSI/public/
-RewriteRule ^(.*)$ /ITSI/public/$1 [L,R=301]
+    # Redirige todo el tráfico a la carpeta public/ de CodeIgniter
+    # Esto permite que la raíz del dominio sirva la aplicación directamente.
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
 
-# If already in public folder, continue
-RewriteCond %{REQUEST_URI} ^/ITSI/public/
-RewriteRule ^(.*)$ public/index.php/$1 [L]
+# Bloquear acceso a archivos sensibles
+<FilesMatch "\.(env|gitignore|sql|lock|json|neon|dist)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/mainEstudiante') ?>
+﻿<?= $this->extend('layouts/mainEstudiante') ?>
 
 <?= $this->section('content') ?>
 
@@ -9,7 +9,7 @@
                 <h4 class="mb-1">Mi Cuenta</h4>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="<?= base_url('index.php/estudiante') ?>">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="<?= base_url('estudiante') ?>">Inicio</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Mi Cuenta</li>
                     </ol>
                 </nav>
@@ -111,7 +111,7 @@
                     </div>
                     <div class="card-body">
                         <p class="text-muted">Descarga toda tu información personal, fichas socioeconómicas, solicitudes y documentos en formato JSON.</p>
-                        <a href="<?= base_url('index.php/estudiante/exportar-datos') ?>" class="btn btn-info">
+                        <a href="<?= base_url('estudiante/exportar-datos') ?>" class="btn btn-info">
                             <i class="bi bi-download me-2"></i>Exportar Datos
                         </a>
                     </div>
@@ -160,7 +160,7 @@ $(document).ready(function() {
         }
         
         $.ajax({
-            url: '<?= base_url('index.php/estudiante/cambiar-password') ?>',
+            url: '<?= base_url('estudiante/cambiar-password') ?>',
             type: 'POST',
             data: $(this).serialize(),
             success: function(response) {
@@ -194,7 +194,7 @@ $(document).ready(function() {
         e.preventDefault();
         
         $.ajax({
-            url: '<?= base_url('index.php/estudiante/configurar-notificaciones') ?>',
+            url: '<?= base_url('estudiante/configurar-notificaciones') ?>',
             type: 'POST',
             data: $(this).serialize(),
             success: function(response) {
@@ -253,7 +253,7 @@ function confirmarEliminarCuenta() {
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: '<?= base_url('index.php/estudiante/eliminar-cuenta') ?>',
+                        url: '<?= base_url('estudiante/eliminar-cuenta') ?>',
                         type: 'POST',
                         data: { confirmacion: result.value },
                         success: function(response) {
@@ -263,7 +263,7 @@ function confirmarEliminarCuenta() {
                                     title: 'Cuenta eliminada',
                                     text: response.message
                                 }).then(() => {
-                                    window.location.href = '<?= base_url('index.php/login') ?>';
+                                    window.location.href = '<?= base_url('login') ?>';
                                 });
                             } else {
                                 Swal.fire({

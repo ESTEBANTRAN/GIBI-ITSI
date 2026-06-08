@@ -61,6 +61,19 @@ class BackupsController extends BaseController
         }
 
         try {
+            // -------------------------------------------------------
+            // VERIFICACIÓN: exec() puede estar deshabilitado en hosting
+            // compartido (InfinityFree, cPanel, etc.)
+            // -------------------------------------------------------
+            $disabledFunctions = array_map('trim', explode(',', ini_get('disable_functions')));
+            if (!function_exists('exec') || in_array('exec', $disabledFunctions)) {
+                log_message('warning', 'BackupsController::crearRespaldo - exec() está deshabilitado en este servidor.');
+                return $this->response->setJSON([
+                    'success' => false,
+                    'error'   => 'La función de respaldo automático no está disponible en este servidor de hosting. Por favor, descarga el respaldo manualmente desde phpMyAdmin (panel de InfinityFree → MySQL Databases → phpMyAdmin → Exportar).'
+                ]);
+            }
+
             $database = $this->db->database;
 
             // Crear nombre del archivo con fecha y hora
@@ -232,17 +245,7 @@ class BackupsController extends BaseController
                 return redirect()->back()->with('error', 'Archivo de respaldo no encontrado');
             }
             
-            // Configurar headers para descarga con diálogo de "Guardar como"
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename="' . $respaldo['nombre_archivo'] . '"; filename*=UTF-8\'\'' . urlencode($respaldo['nombre_archivo']));
-            header('Content-Length: ' . filesize($filepath));
-            header('Cache-Control: no-cache, must-revalidate, post-check=0, pre-check=0');
-            header('Pragma: no-cache');
-            header('Expires: 0');
-            
-            // Leer y enviar archivo
-            readfile($filepath);
-            exit;
+            return $this->response->download($filepath, null)->setFileName($respaldo['nombre_archivo']);
             
         } catch (\Exception $e) {
             log_message('error', 'Error al descargar backup: ' . $e->getMessage());
@@ -395,6 +398,17 @@ class BackupsController extends BaseController
             if (!is_dir(WRITEPATH . 'backups/')) {
                 mkdir(WRITEPATH . 'backups/', 0755, true);
             }
+            // -------------------------------------------------------
+            // VERIFICACIÓN: shell_exec() puede estar deshabilitado
+            // -------------------------------------------------------
+            $disabledFunctions = array_map('trim', explode(',', ini_get('disable_functions')));
+            if (!function_exists('shell_exec') || in_array('shell_exec', $disabledFunctions)) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'error'   => 'La función de respaldo no está disponible en este servidor. Usa phpMyAdmin para exportar la base de datos manualmente.'
+                ]);
+            }
+
             $mysqldump_path = 'C:\\xampp\\mysql\\bin\\mysqldump.exe';
             if (!file_exists($mysqldump_path)) {
                 $mysqldump_path = 'mysqldump';

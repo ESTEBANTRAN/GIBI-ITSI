@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/mainAdmin') ?>
+﻿<?= $this->extend('layouts/mainAdmin') ?>
 
 <?= $this->section('content') ?>
 
@@ -142,7 +142,7 @@
                         <h5 class="card-title">Formularios Socioeconómicos</h5>
                         <p class="card-text text-muted">Gestiona y revisa los formularios socioeconómicos de los estudiantes.</p>
                         <div class="d-grid">
-                            <a href="<?= base_url('index.php/fichas') ?>" class="btn btn-outline-primary">
+                            <a href="<?= base_url('fichas') ?>" class="btn btn-outline-primary">
                                 <i class="bi bi-eye me-1"></i>Ver Formularios
                             </a>
                         </div>
@@ -164,7 +164,7 @@
                         <h5 class="card-title">Solicitudes de Becas</h5>
                         <p class="card-text text-muted">Supervisa y gestiona el proceso de becas estudiantiles.</p>
                         <div class="d-grid">
-                            <a href="<?= base_url('index.php/solicitudes-becas') ?>" class="btn btn-outline-success">
+                            <a href="<?= base_url('solicitudes-becas') ?>" class="btn btn-outline-success">
                                 <i class="bi bi-eye me-1"></i>Ver Becas
                             </a>
                         </div>
@@ -186,7 +186,7 @@
                         <h5 class="card-title">Solicitudes de Ayuda</h5>
                         <p class="card-text text-muted">Atiende y resuelve solicitudes generadas por los estudiantes.</p>
                         <div class="d-grid">
-                            <a href="<?= base_url('index.php/solicitudes') ?>" class="btn btn-outline-warning">
+                            <a href="<?= base_url('solicitudes') ?>" class="btn btn-outline-warning">
                                 <i class="bi bi-eye me-1"></i>Ver Solicitudes
                             </a>
                         </div>
@@ -208,7 +208,7 @@
                         <h5 class="card-title">Gestión de Estudiantes</h5>
                         <p class="card-text text-muted">Administra la información y seguimiento de estudiantes.</p>
                         <div class="d-grid">
-                            <a href="<?= base_url('index.php/estudiantes') ?>" class="btn btn-outline-info">
+                            <a href="<?= base_url('estudiantes') ?>" class="btn btn-outline-info">
                                 <i class="bi bi-eye me-1"></i>Ver Estudiantes
                             </a>
                         </div>
@@ -259,7 +259,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="<?= base_url('index.php/reportes') ?>" class="btn btn-primary">
+                        <a href="<?= base_url('reportes') ?>" class="btn btn-primary">
                             <i class="bi bi-graph-up me-1"></i>Ir a Reportes
                         </a>
         </div>
@@ -341,7 +341,7 @@ function actualizarDashboard() {
     btnActualizar.disabled = true;
     
     // Hacer petición AJAX
-    fetch('<?= base_url('index.php/dashboard/actualizar') ?>', {
+    fetch('<?= base_url('dashboard/actualizar') ?>', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -463,7 +463,7 @@ function mostrarNotificacion(mensaje, tipo) {
 // Cargar estadísticas al cargar la página
 document.addEventListener('DOMContentLoaded', function() {
     // Cargar estadísticas iniciales
-    fetch('<?= base_url('index.php/dashboard/estadisticas') ?>')
+    fetch('<?= base_url('dashboard/estadisticas') ?>')
         .then(response => response.json())
         .then(data => {
             if (!data.error) {
@@ -475,7 +475,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     
     // Cargar actividad reciente
-    fetch('<?= base_url('index.php/dashboard/actividad') ?>')
+    fetch('<?= base_url('dashboard/actividad') ?>')
         .then(response => response.json())
         .then(data => {
             if (!data.error) {

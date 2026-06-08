@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/mainGlobalAdmin') ?>
+﻿<?= $this->extend('layouts/mainGlobalAdmin') ?>
 
 <?= $this->section('content') ?>
 <div class="page-wrapper">
@@ -9,7 +9,7 @@
                     <h4 class="mb-0">Estadísticas Globales</h4>
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="<?= base_url('index.php/global-admin/dashboard') ?>">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="<?= base_url('global-admin/dashboard') ?>">Dashboard</a></li>
                             <li class="breadcrumb-item active">Estadísticas</li>
                         </ol>
                     </div>
@@ -335,7 +335,7 @@ function cargarEstadisticas() {
     };
     
     $.ajax({
-        url: '<?= base_url('index.php/global-admin/obtener-estadisticas-globales') ?>',
+        url: '<?= base_url('global-admin/obtener-estadisticas-globales') ?>',
         type: 'GET',
         data: filtros,
         success: function(response) {

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -145,7 +145,7 @@
                     Si los datos coinciden, podrá establecer una nueva contraseña.
                 </p>
 
-                <form action="<?= base_url('index.php/auth/verifyIdentity') ?>" method="post" id="forgotForm" autocomplete="off" novalidate>
+                <form action="<?= base_url('auth/verifyIdentity') ?>" method="post" id="forgotForm" autocomplete="off" novalidate>
                     <?= csrf_field() ?>
 
                     <div class="form-floating mb-3">

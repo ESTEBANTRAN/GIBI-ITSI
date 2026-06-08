@@ -11,13 +11,13 @@ use CodeIgniter\Router\RouteCollection;
 // ============================================================================
 $routes->get('/', 'AuthController::index');
 $routes->get('/login', 'AuthController::index');
-$routes->post('auth/attemptLogin', 'AuthController::attemptLogin', ['filter' => ['csrf', 'ratelimit:10,900']]);
+$routes->post('auth/attemptLogin', 'AuthController::attemptLogin', ['filter' => ['ratelimit:10,900']]);
 
 // Rutas para recuperación de contraseña
 $routes->get('forgot-password', 'AuthController::forgotPassword');
-$routes->post('auth/verifyIdentity', 'AuthController::verifyIdentity', ['filter' => ['csrf', 'ratelimit:5,900']]);
+$routes->post('auth/verifyIdentity', 'AuthController::verifyIdentity', ['filter' => ['ratelimit:5,900']]);
 $routes->get('reset-password/(:alphanum)', 'AuthController::resetPasswordForm/$1');
-$routes->post('auth/resetPassword', 'AuthController::resetPassword', ['filter' => ['csrf', 'ratelimit:5,900']]);
+$routes->post('auth/resetPassword', 'AuthController::resetPassword', ['filter' => ['ratelimit:5,900']]);
 
 // Logout
 $routes->get('auth/logout', 'AuthController::logout');
@@ -123,6 +123,7 @@ $routes->group('admin-bienestar', ['filter' => ['auth', 'role:2']], function($ro
     // ─── Gestión de Solicitudes de Becas ───────────────────────────────────
     $routes->post('aprobar-solicitud-beca', 'AdminBienestarController::aprobarSolicitudBeca', ['filter' => ['auth', 'ratelimit:10,900']]);
     $routes->post('rechazar-solicitud-beca', 'AdminBienestarController::rechazarSolicitudBeca', ['filter' => ['auth', 'ratelimit:10,900']]);
+    $routes->get('generar-constancia', 'AdminBienestarController::generarConstancia');
 
     // ─── Revisión de Documentos ────────────────────────────────────────────
     $routes->get('revision-documentos/(:num)', 'AdminBienestarController::revisionDocumentos/$1');

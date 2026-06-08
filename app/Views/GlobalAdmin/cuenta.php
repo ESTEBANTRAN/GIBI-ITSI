@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/mainGlobalAdmin') ?>
+﻿<?= $this->extend('layouts/mainGlobalAdmin') ?>
 
 <?= $this->section('content') ?>
 
@@ -6,7 +6,7 @@
     <!-- Breadcrumb -->
     <div class="page-titles">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="<?= base_url('index.php/global-admin/dashboard') ?>">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="<?= base_url('global-admin/dashboard') ?>">Dashboard</a></li>
             <li class="breadcrumb-item active"><a href="javascript:void(0)">Mi Cuenta</a></li>
         </ol>
     </div>
@@ -34,7 +34,7 @@
                     </h4>
                 </div>
                 <div class="card-body">
-                    <form action="<?= base_url('index.php/global-admin/cuenta/cambiarPassword') ?>" method="post">
+                    <form action="<?= base_url('global-admin/cuenta/cambiarPassword') ?>" method="post">
                         <?= csrf_field() ?>
                         <div class="mb-3">
                             <label class="form-label">Contraseña Actual *</label>
@@ -65,7 +65,7 @@
                     </h4>
                 </div>
                 <div class="card-body">
-                    <form action="<?= base_url('index.php/global-admin/cuenta/configuracionNotificaciones') ?>" method="post">
+                    <form action="<?= base_url('global-admin/cuenta/configuracionNotificaciones') ?>" method="post">
                         <?= csrf_field() ?>
                         <div class="mb-3">
                             <div class="form-check">
@@ -120,7 +120,7 @@
                 </div>
                 <div class="card-body">
                     <p class="text-muted">Descarga todos tus datos personales en formato JSON o CSV.</p>
-                    <a href="<?= base_url('index.php/global-admin/cuenta/exportarDatos') ?>" class="btn btn-outline-primary">
+                    <a href="<?= base_url('global-admin/cuenta/exportarDatos') ?>" class="btn btn-outline-primary">
                         <i class="ti ti-download me-2"></i>Exportar Datos
                     </a>
                 </div>
@@ -166,7 +166,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <form action="<?= base_url('index.php/global-admin/cuenta/eliminarCuenta') ?>" method="post" style="display: inline;">
+                <form action="<?= base_url('global-admin/cuenta/eliminarCuenta') ?>" method="post" style="display: inline;">
                     <?= csrf_field() ?>
                     <button type="submit" class="btn btn-danger">
                         <i class="ti ti-trash me-2"></i>Eliminar Cuenta

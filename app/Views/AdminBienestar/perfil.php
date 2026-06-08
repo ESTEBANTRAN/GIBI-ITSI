@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/mainAdmin') ?>
+﻿<?= $this->extend('layouts/mainAdmin') ?>
 
 <?= $this->section('content') ?>
 <div class="page-wrapper">
@@ -149,7 +149,7 @@ function cambiarFotoPerfil() {
     });
     
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', '<?= base_url('index.php/admin-bienestar/perfil/cambiarFoto') ?>', true);
+    xhr.open('POST', '<?= base_url('admin-bienestar/perfil/cambiarFoto') ?>', true);
     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     
     xhr.onload = function() {
@@ -215,7 +215,7 @@ document.getElementById('perfilForm').addEventListener('submit', function(e) {
     });
     
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', '<?= base_url('index.php/admin-bienestar/perfil/actualizar') ?>', true);
+    xhr.open('POST', '<?= base_url('admin-bienestar/perfil/actualizar') ?>', true);
     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     
     xhr.onload = function() {

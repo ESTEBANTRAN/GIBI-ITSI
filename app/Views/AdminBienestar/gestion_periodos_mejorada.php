@@ -988,7 +988,7 @@ function limpiarFiltros() {
 }
 
 function exportarPeriodos() {
-    window.location.href = `<?= base_url('admin-bienestar/exportarPeriodos') ?>`;
+    window.location.href = `<?= base_url('admin-bienestar/exportar-periodos') ?>`;
 }
 
 function actualizarVista() {

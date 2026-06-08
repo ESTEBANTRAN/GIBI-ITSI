@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/mainEstudiante') ?>
+﻿<?= $this->extend('layouts/mainEstudiante') ?>
 
 <?= $this->section('styles') ?>
 <style>
@@ -348,7 +348,7 @@ $documentosRechazados = count(array_filter($documentos, fn($d) => $d['estado'] =
                                                 <i class="bi <?= $estadoIcon ?> me-1"></i><?= $documento['estado'] ?>
                                             </span>
                                         </td>
-                                        <td><small class="text-muted"><?= number_format($documento['tamano_archivo'] / 1024, 2) ?> MB</small></td>
+                                        <td><small class="text-muted"><?= number_format(($documento['tamano_archivo'] ?? 0) / 1024, 2) ?> MB</small></td>
                                         <td><small class="text-muted"><?= date('d/m/Y', strtotime($documento['fecha_subida'])) ?></small></td>
                                         <td>
                                             <button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="descargarDocumento(<?= $documento['id'] ?>)">
@@ -367,7 +367,7 @@ $documentosRechazados = count(array_filter($documentos, fn($d) => $d['estado'] =
                         <i class="bi bi-folder2-open empty-state-icon d-block text-muted mb-3"></i>
                         <h5 class="text-muted mb-2">No tienes documentos subidos</h5>
                         <p class="text-muted small mb-4">Los documentos aparecerán aquí cuando solicites una beca y subas los archivos requeridos.</p>
-                        <a href="<?= base_url('index.php/estudiante/becas') ?>" class="btn btn-primary rounded-pill px-4">
+                        <a href="<?= base_url('estudiante/becas') ?>" class="btn btn-primary rounded-pill px-4">
                             <i class="bi bi-award me-2"></i>Ver Becas Disponibles
                         </a>
                     </div>
@@ -383,7 +383,7 @@ $documentosRechazados = count(array_filter($documentos, fn($d) => $d['estado'] =
 <script>
 // Descargar documento
 function descargarDocumento(id) {
-    window.open('<?= base_url('index.php/estudiante/descargar-documento-beca') ?>/' + id, '_blank');
+    window.open('<?= base_url('estudiante/descargar-documento-beca') ?>/' + id, '_blank');
 }
 
 // Búsqueda en vivo de documentos

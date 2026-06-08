@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/mainAdmin') ?>
+﻿<?= $this->extend('layouts/mainAdmin') ?>
 
 <?= $this->section('content') ?>
 
@@ -22,7 +22,7 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        <form action="<?= base_url('index.php/cuenta/cambiarPassword') ?>" method="post">
+                        <form action="<?= base_url('cuenta/cambiarPassword') ?>" method="post">
                             <?= csrf_field() ?>
                             <div class="row">
                                 <div class="col-md-12">
@@ -64,7 +64,7 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        <form action="<?= base_url('index.php/cuenta/configuracionNotificaciones') ?>" method="post">
+                        <form action="<?= base_url('cuenta/configuracionNotificaciones') ?>" method="post">
                             <?= csrf_field() ?>
                             <div class="mb-3">
                                 <div class="form-check">
@@ -115,7 +115,7 @@
                             <i class="bi bi-info-circle me-2"></i>
                             <strong>Información incluida:</strong> Datos personales, información académica, historial de solicitudes y becas.
                         </div>
-                        <a href="<?= base_url('index.php/cuenta/exportarDatos') ?>" class="btn btn-outline-success">
+                        <a href="<?= base_url('cuenta/exportarDatos') ?>" class="btn btn-outline-success">
                             <i class="bi bi-download me-1"></i>Exportar Datos
                         </a>
                     </div>
@@ -245,7 +245,7 @@
             <div class="modal-body">
                 <p>¿Estás seguro de que quieres eliminar tu cuenta?</p>
                 <p class="text-danger"><strong>Esta acción no se puede deshacer.</strong></p>
-                <form action="<?= base_url('index.php/cuenta/eliminarCuenta') ?>" method="post" id="formEliminarCuenta">
+                <form action="<?= base_url('cuenta/eliminarCuenta') ?>" method="post" id="formEliminarCuenta">
                     <?= csrf_field() ?>
                     <div class="mb-3">
                         <label class="form-label">Confirma tu contraseña</label>
