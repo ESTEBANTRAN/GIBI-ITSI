@@ -1,4 +1,4 @@
-﻿<?= $this->extend('layouts/mainEstudiante') ?>
+<?= $this->extend('layouts/mainEstudiante') ?>
 
 <?= $this->section('content') ?>
 
@@ -117,23 +117,6 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Eliminar Cuenta -->
-            <div class="col-md-6 mb-4">
-                <div class="card border-danger">
-                    <div class="card-header bg-danger text-white">
-                        <h5 class="card-title mb-0">
-                            <i class="bi bi-exclamation-triangle me-2"></i>Zona de Peligro
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <p class="text-danger">Esta acción es irreversible. Se eliminarán todos tus datos del sistema.</p>
-                        <button type="button" class="btn btn-danger" onclick="confirmarEliminarCuenta()">
-                            <i class="bi bi-trash me-2"></i>Eliminar Mi Cuenta
-                        </button>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>
@@ -222,69 +205,5 @@ $(document).ready(function() {
         });
     });
 });
-
-function confirmarEliminarCuenta() {
-    Swal.fire({
-        title: '¿Estás seguro?',
-        text: "Esta acción eliminará permanentemente tu cuenta y todos tus datos. Esta acción no se puede deshacer.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Sí, eliminar mi cuenta',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            Swal.fire({
-                title: 'Confirmación final',
-                text: "Escribe 'ELIMINAR' para confirmar que quieres eliminar tu cuenta:",
-                input: 'text',
-                inputPlaceholder: 'ELIMINAR',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Eliminar cuenta',
-                cancelButtonText: 'Cancelar',
-                inputValidator: (value) => {
-                    if (value !== 'ELIMINAR') {
-                        return 'Debes escribir ELIMINAR para confirmar';
-                    }
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: '<?= base_url('estudiante/eliminar-cuenta') ?>',
-                        type: 'POST',
-                        data: { confirmacion: result.value },
-                        success: function(response) {
-                            if (response.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Cuenta eliminada',
-                                    text: response.message
-                                }).then(() => {
-                                    window.location.href = '<?= base_url('login') ?>';
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: response.error
-                                });
-                            }
-                        },
-                        error: function() {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'Error al eliminar la cuenta'
-                            });
-                        }
-                    });
-                }
-            });
-        }
-    });
-}
 </script>
 <?= $this->endSection() ?> 

@@ -199,17 +199,11 @@ class PerfilController extends BaseController
 
     public function eliminarCuenta()
     {
-        if (!session('id') || session('rol_id') != 1) {
-            return $this->response->setJSON(['success' => false, 'error' => 'No autorizado']);
-        }
-
-        try {
-            $this->usuarioModel->delete(session('id'));
-            session()->destroy();
-            return $this->response->setJSON(['success' => true, 'message' => 'Cuenta eliminada exitosamente']);
-        } catch (\Exception $e) {
-            log_message('error', 'Error al eliminar cuenta: ' . $e->getMessage());
-            return $this->response->setJSON(['success' => false, 'error' => 'Error al eliminar la cuenta']);
-        }
+        // DESHABILITADO: Los estudiantes no pueden eliminar su propia cuenta.
+        // Solo el Super Administrador (Global Admin) puede gestionar la eliminación de cuentas.
+        return $this->response->setJSON([
+            'success' => false, 
+            'error' => 'No tiene permisos para realizar esta acción. Contacte al administrador del sistema.'
+        ]);
     }
 }

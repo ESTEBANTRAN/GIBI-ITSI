@@ -24,7 +24,7 @@
         .app-header .navbar { margin: 0 !important; border-radius: 0 !important; }
         @media (min-width: 1200px) { #main-wrapper[data-layout=vertical][data-header-position=fixed] .app-header { width: calc(100% - 300px) !important; } }
         #main-wrapper[data-layout=vertical][data-header-position=fixed] .body-wrapper > .container-fluid { padding-top: 70px !important; }
-        body > *:not(.page-wrapper):not(script):not(link):not(style) { display: none !important; }
+        body > *:not(.page-wrapper):not(script):not(link):not(style):not(.swal2-container) { display: none !important; }
     </style>
 </head>
 
@@ -106,6 +106,29 @@
     
     <!-- Scripts específicos de la página -->
     <?= $this->renderSection('scripts') ?>
+    
+    <!-- Scroll Position Preservation -->
+    <script>
+    (function() {
+        var key = 'scrollPos_' + window.location.pathname;
+        if (!window.location.hash) {
+            var saved = sessionStorage.getItem(key);
+            if (saved) {
+                window.scrollTo(0, parseInt(saved, 10));
+            }
+        }
+        var timer;
+        window.addEventListener('scroll', function() {
+            clearTimeout(timer);
+            timer = setTimeout(function() {
+                sessionStorage.setItem(key, window.scrollY || document.documentElement.scrollTop);
+            }, 150);
+        });
+        window.addEventListener('beforeunload', function() {
+            sessionStorage.setItem(key, window.scrollY || document.documentElement.scrollTop);
+        });
+    })();
+    </script>
 </body>
 
 </html> 

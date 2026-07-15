@@ -1,4 +1,0 @@
-[   18578ms] [LOG] Creando nueva ficha... @ http://localhost/ITSI/public/index.php/estudiante/ficha-socioeconomica:2435
-[   18701ms] [ERROR] Failed to load resource: the server responded with a status of 403 (Forbidden) @ http://localhost/ITSI/public/index.php/estudiante/crear-ficha:0
-[   18702ms] [ERROR] Error AJAX creación: Forbidden @ http://localhost/ITSI/public/index.php/estudiante/ficha-socioeconomica:2496
-[   75898ms] [ERROR] Error: SyntaxError: Unexpected token '<', "<!-- app/V"... is not valid JSON @ http://localhost/ITSI/public/index.php/estudiante/solicitudes-ayuda:559

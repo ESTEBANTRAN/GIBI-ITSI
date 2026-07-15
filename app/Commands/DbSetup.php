@@ -72,7 +72,7 @@ class DbSetup extends BaseCommand
             // General
             [
                 'clave' => 'nombre_institucion',
-                'valor' => 'Instituto Tecnológico Superior de Informática',
+                'valor' => 'Instituto Tecnologico Superior Ibarra',
                 'descripcion' => 'Nombre oficial de la institución educativa',
                 'tipo' => 'text',
                 'categoria' => 'general'

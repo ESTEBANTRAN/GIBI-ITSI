@@ -1,8 +1,0 @@
-[     242ms] [LOG] CSS Styles URL: http://localhost/ITSI/public/sistema/assets/css/styles.min.css @ http://localhost/ITSI/public/index.php/admin-bienestar/fichas-socioeconomicas:37
-[     242ms] [LOG] CSS Custom URL: http://localhost/ITSI/public/sistema/assets/css/custom.css @ http://localhost/ITSI/public/index.php/admin-bienestar/fichas-socioeconomicas:38
-[     244ms] [LOG] Estadísticas: {total: 1, enviadas: 0, revisadas: 0, aprobadas: 0, rechazadas: 1} @ http://localhost/ITSI/public/index.php/admin-bienestar/fichas-socioeconomicas:1251
-[     244ms] [LOG] Total fichas cargadas: 1 @ http://localhost/ITSI/public/index.php/admin-bienestar/fichas-socioeconomicas:1252
-[     250ms] [LOG] jQuery version: 3.7.1 @ http://localhost/ITSI/public/index.php/admin-bienestar/fichas-socioeconomicas:2207
-[     250ms] [LOG] jQuery is properly loaded @ http://localhost/ITSI/public/index.php/admin-bienestar/fichas-socioeconomicas:2211
-[     251ms] [LOG] jQuery cargado correctamente @ http://localhost/ITSI/public/index.php/admin-bienestar/fichas-socioeconomicas:2252
-[     251ms] [LOG] ApexCharts cargado correctamente @ http://localhost/ITSI/public/index.php/admin-bienestar/fichas-socioeconomicas:2259

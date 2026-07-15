@@ -102,36 +102,9 @@ class CuentaController extends BaseController
 
     public function eliminarCuenta()
     {
-        if (!session('id')) {
-            return redirect()->to('/login');
-        }
-
-        $userId = session('id');
-        $password = $this->getPostString('password_confirmar');
-
-        if (empty($password)) {
-            return redirect()->back()->with('error', 'Debe confirmar su contraseña para eliminar la cuenta.');
-        }
-
-        // Obtener usuario actual
-        $usuario = $this->usuarioModel->find($userId);
-
-        if (!$usuario) {
-            return redirect()->back()->with('error', 'Usuario no encontrado.');
-        }
-
-        // Verificar contraseña
-        if (!password_verify($password, $usuario['password_hash'])) {
-            return redirect()->back()->with('error', 'La contraseña es incorrecta.');
-        }
-
-        // Eliminar cuenta (soft delete)
-        if ($this->usuarioModel->delete($userId)) {
-            session()->destroy();
-            return redirect()->to('/login')->with('success', 'Su cuenta ha sido eliminada exitosamente.');
-        } else {
-            return redirect()->back()->with('error', 'Error al eliminar la cuenta.');
-        }
+        // DESHABILITADO: Los usuarios no pueden eliminar su propia cuenta.
+        // Solo el Super Administrador (Global Admin) puede gestionar la eliminación de cuentas.
+        return redirect()->back()->with('error', 'No tiene permisos para realizar esta acción. Contacte al administrador del sistema.');
     }
 
     public function exportarDatos()

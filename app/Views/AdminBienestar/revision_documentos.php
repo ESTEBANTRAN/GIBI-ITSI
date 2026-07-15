@@ -114,9 +114,9 @@
                                                        class="btn btn-sm btn-outline-primary">
                                                         <i class="bi bi-eye me-1"></i>Ver
                                                     </a>
-                                                    <?php if (!empty($documento['tamaño_archivo'])): ?>
+                                                    <?php if (!empty($documento['tamano_archivo'])): ?>
                                                         <br><small class="text-muted">
-                                                            <?= number_format($documento['tamaño_archivo'] / 1024, 1) ?> KB
+                                                            <?= number_format($documento['tamano_archivo'] / 1024, 1) ?> KB
                                                         </small>
                                                     <?php endif; ?>
                                                 <?php elseif ($documento['estado'] === 'Pendiente'): ?>

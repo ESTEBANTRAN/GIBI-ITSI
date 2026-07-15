@@ -167,6 +167,32 @@ class BecasController extends BaseController
                 ->where('estudiante_id', session('id'))
                 ->update(['estado' => 'Rechazada', 'observaciones' => 'Cancelada por el estudiante']);
 
+            // Eliminar archivos físicos y limpiar registros de documentos asociados
+            $documentos = $this->db->table('documentos_solicitud_becas')
+                ->where('solicitud_beca_id', $id)
+                ->get()
+                ->getResultArray();
+
+            foreach ($documentos as $doc) {
+                if (!empty($doc['ruta_archivo']) && $doc['ruta_archivo'] !== '/temp/pendiente_subida.tmp') {
+                    $rutaArchivo = FCPATH . $doc['ruta_archivo'];
+                    if (file_exists($rutaArchivo)) {
+                        @unlink($rutaArchivo);
+                    }
+                }
+            }
+
+            $this->db->table('documentos_solicitud_becas')
+                ->where('solicitud_beca_id', $id)
+                ->update([
+                    'nombre_archivo' => 'pendiente_subida.tmp',
+                    'ruta_archivo' => '/temp/pendiente_subida.tmp',
+                    'estado' => 'Pendiente',
+                    'fecha_subida' => null,
+                    'tamano_archivo' => null,
+                    'tipo_mime' => null
+                ]);
+
             return $this->response->setJSON(['success' => true, 'message' => 'Solicitud cancelada exitosamente']);
         } catch (\Exception $e) {
             log_message('error', 'Error al cancelar solicitud: ' . $e->getMessage());

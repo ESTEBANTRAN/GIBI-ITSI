@@ -122,7 +122,7 @@ class PlantillaPDFService
             // Fallback si no hay imagen
             $pdf->SetTextColor(46, 134, 171); // Azul ITSI
             $pdf->SetFont('helvetica', 'B', 16);
-            $pdf->Cell(0, 10, 'ITSI - Instituto Superior Tecnológico Ibarra', 0, 1, 'C');
+            $pdf->Cell(0, 10, 'ITSI - Instituto Tecnologico Superior Ibarra', 0, 1, 'C');
             $pdf->SetFont('helvetica', 'B', 14);
             $pdf->Cell(0, 10, 'UNIDAD DE BIENESTAR INSTITUCIONAL', 0, 1, 'C');
             $pdf->SetTextColor(0, 0, 0); // Volver a negro
@@ -379,7 +379,7 @@ class PlantillaPDFService
             <div style="border-top: 2px solid #ddd; padding-top: 15px; margin-top: 20px;">
                 <div style="text-align: center; margin-bottom: 10px;">
                     <p style="margin: 5px 0; font-size: 10px; color: #666;">Documento generado automáticamente por el Sistema de Bienestar Estudiantil</p>
-                    <p style="margin: 5px 0; font-size: 10px; color: #666;">Instituto Tecnológico Superior de Ibarra - ' . date('Y') . '</p>
+                    <p style="margin: 5px 0; font-size: 10px; color: #666;">Instituto Tecnologico Superior Ibarra - ' . date('Y') . '</p>
                 </div>
                 <div style="text-align: center; background-color: #f8f9fa; padding: 10px; border: 1px solid #dee2e6; border-radius: 5px;">
                     <p style="margin: 0; font-size: 11px; color: #495057;"><strong>Código de Verificación:</strong></p>

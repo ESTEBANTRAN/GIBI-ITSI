@@ -1,4 +1,4 @@
-﻿<?= $this->extend('layouts/mainAdmin') ?>
+<?= $this->extend('layouts/mainAdmin') ?>
 
 <?= $this->section('content') ?>
 
@@ -206,70 +206,10 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Eliminar Cuenta -->
-                <div class="card border-danger">
-                    <div class="card-header bg-danger text-white">
-                        <h5 class="card-title mb-0">
-                            <i class="bi bi-trash me-2"></i>Zona de Peligro
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="alert alert-danger">
-                            <i class="bi bi-exclamation-triangle me-2"></i>
-                            <strong>¡Atención!</strong> Esta acción no se puede deshacer.
-                        </div>
-                        <p class="text-muted small">
-                            Al eliminar tu cuenta, perderás acceso a todos tus datos, solicitudes y becas.
-                        </p>
-                        <button class="btn btn-outline-danger btn-sm" onclick="confirmarEliminacion()">
-                            <i class="bi bi-trash me-1"></i>Eliminar Cuenta
-                        </button>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Modal de Confirmación para Eliminar Cuenta -->
-<div class="modal fade" id="eliminarCuentaModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">
-                    <i class="bi bi-exclamation-triangle me-2"></i>Confirmar Eliminación
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>¿Estás seguro de que quieres eliminar tu cuenta?</p>
-                <p class="text-danger"><strong>Esta acción no se puede deshacer.</strong></p>
-                <form action="<?= base_url('cuenta/eliminarCuenta') ?>" method="post" id="formEliminarCuenta">
-                    <?= csrf_field() ?>
-                    <div class="mb-3">
-                        <label class="form-label">Confirma tu contraseña</label>
-                        <input type="password" class="form-control" name="password_confirmar" required>
-                        <small class="text-muted">Debes escribir tu contraseña para confirmar</small>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" form="formEliminarCuenta" class="btn btn-danger">
-                    <i class="bi bi-trash me-1"></i>Eliminar Cuenta
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-function confirmarEliminacion() {
-    const modal = new bootstrap.Modal(document.getElementById('eliminarCuentaModal'));
-    modal.show();
-}
-</script>
 
 <style>
 .timeline {

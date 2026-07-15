@@ -1,6 +1,0 @@
-[     254ms] [LOG] CSS Styles URL: http://localhost/ITSI/public/sistema/assets/css/styles.min.css @ http://localhost/ITSI/public/index.php/admin-bienestar/dashboard:37
-[     254ms] [LOG] CSS Custom URL: http://localhost/ITSI/public/sistema/assets/css/custom.css @ http://localhost/ITSI/public/index.php/admin-bienestar/dashboard:38
-[     353ms] [LOG] jQuery version: 3.7.1 @ http://localhost/ITSI/public/index.php/admin-bienestar/dashboard:902
-[     353ms] [LOG] jQuery is properly loaded @ http://localhost/ITSI/public/index.php/admin-bienestar/dashboard:906
-[     354ms] [LOG] jQuery cargado correctamente @ http://localhost/ITSI/public/index.php/admin-bienestar/dashboard:947
-[     354ms] [LOG] ApexCharts cargado correctamente @ http://localhost/ITSI/public/index.php/admin-bienestar/dashboard:954

@@ -7,7 +7,7 @@
     <div class="col-12">
         <div class="page-title-box d-flex align-items-center justify-content-between">
             <div>
-                <h4 class="mb-0">🎓 Configurar Programas de Becas</h4>
+                <h4 class="mb-0">Configurar Programas de Becas</h4>
                 <p class="text-muted mb-0">Gestiona y configura los programas de becas disponibles</p>
             </div>
             <div class="page-title-right">
@@ -91,7 +91,7 @@
 <!-- Tabla de Becas -->
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="card-title mb-0">📋 Programas de Becas</h5>
+        <h5 class="card-title mb-0">Programas de Becas Disponibles</h5>
         <span class="badge bg-primary fs-6"><?= count($becas ?? []) ?> becas</span>
     </div>
     <div class="card-body">

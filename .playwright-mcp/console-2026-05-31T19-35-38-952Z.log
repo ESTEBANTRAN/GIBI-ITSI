@@ -1,8 +1,0 @@
-[     265ms] [LOG] CSS Styles URL: http://localhost/ITSI/public/sistema/assets/css/styles.min.css @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:32
-[     265ms] [LOG] CSS Custom URL: http://localhost/ITSI/public/sistema/assets/css/custom.css @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:33
-[     260ms] ReferenceError: $ is not defined
-    at http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:1574:1
-[     318ms] [LOG] jQuery version: 3.7.1 @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:2206
-[     318ms] [LOG] jQuery is properly loaded @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:2210
-[     318ms] [LOG] jQuery cargado correctamente @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:2251
-[     318ms] [LOG] ApexCharts cargado correctamente @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:2258

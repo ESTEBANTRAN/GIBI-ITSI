@@ -50,9 +50,10 @@ class FichaSocioeconomicaModel extends Model
 
     public function getFichaCompletaAdmin($id)
     {
-        return $this->select('fichas_socioeconomicas.*, usuarios.nombre, usuarios.apellido, usuarios.cedula, usuarios.email, periodos_academicos.nombre as nombre_periodo')
+        return $this->select('fichas_socioeconomicas.*, usuarios.nombre, usuarios.apellido, usuarios.cedula, usuarios.email, periodos_academicos.nombre as nombre_periodo, periodos_academicos.nombre as periodo_nombre, carreras.nombre as carrera_nombre')
                     ->join('usuarios', 'usuarios.id = fichas_socioeconomicas.estudiante_id')
                     ->join('periodos_academicos', 'periodos_academicos.id = fichas_socioeconomicas.periodo_id')
+                    ->join('carreras', 'carreras.id = usuarios.carrera_id', 'left')
                     ->where('fichas_socioeconomicas.id', $id)
                     ->first();
     }

@@ -36,10 +36,14 @@ class SolicitudesController extends BaseController
         $offset = ($page - 1) * $perPage;
         
         $totalSolicitudes = $this->solicitudModel->where('id_estudiante', session('id'))->countAllResults();
-        $solicitudes = $this->solicitudModel->where('id_estudiante', session('id'))
-                                           ->orderBy('fecha_solicitud', 'DESC')
-                                           ->limit($perPage, $offset)
-                                           ->findAll();
+        $solicitudes = $this->db->table('solicitudes_ayuda sa')
+                                ->select('sa.*, CONCAT(u.nombre, " ", u.apellido) as responsable_nombre')
+                                ->join('usuarios u', 'u.id = sa.id_responsable', 'left')
+                                ->where('sa.id_estudiante', session('id'))
+                                ->orderBy('sa.fecha_solicitud', 'DESC')
+                                ->limit($perPage, $offset)
+                                ->get()
+                                ->getResultArray();
         $totalPages = max(1, ceil($totalSolicitudes / $perPage));
         
         $data = [

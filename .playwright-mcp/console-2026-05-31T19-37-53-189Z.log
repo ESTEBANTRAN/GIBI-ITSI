@@ -1,8 +1,0 @@
-[     283ms] [LOG] CSS Styles URL: http://localhost/ITSI/public/sistema/assets/css/styles.min.css @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:37
-[     283ms] [LOG] CSS Custom URL: http://localhost/ITSI/public/sistema/assets/css/custom.css @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:38
-[     318ms] [LOG] jQuery version: 3.7.1 @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:1980
-[     318ms] [LOG] jQuery is properly loaded @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:1984
-[     319ms] [LOG] jQuery cargado correctamente @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:2025
-[     319ms] [LOG] ApexCharts cargado correctamente @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:2032
-[     356ms] [ERROR] Access to XMLHttpRequest at 'http://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json' from origin 'http://localhost' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: Redirect is not allowed for a preflight request. @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:0
-[     387ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json:0

@@ -130,7 +130,7 @@ class PlantillasPDF extends BaseConfig
     
     // Información institucional
     public $institucion = [
-        'nombre' => 'Instituto Tecnológico Superior de Ibarra',
+        'nombre' => 'Instituto Tecnologico Superior Ibarra',
         'unidad' => 'UNIDAD DE BIENESTAR INSTITUCIONAL',
         'direccion' => 'Ibarra, Ecuador',
         'telefono' => '+593 6 264 0000',

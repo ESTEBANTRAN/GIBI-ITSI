@@ -1813,7 +1813,7 @@ class AdminBienestarController extends BaseController
                 'updated_at' => date('Y-m-d H:i:s')
             ];
 
-            $this->periodoModel->update($input['periodo_id'], $datos);
+            $this->periodoModel->skipValidation(true)->update($input['periodo_id'], $datos);
 
             // Log de la acción
             $this->logAction('actualizar_periodo', 'periodos_academicos', $input['periodo_id'], $datos);
@@ -1861,7 +1861,7 @@ class AdminBienestarController extends BaseController
                 'updated_at' => date('Y-m-d H:i:s')
             ];
 
-            $this->periodoModel->update($input['periodo_id'], $datos);
+            $this->periodoModel->skipValidation(true)->update($input['periodo_id'], $datos);
 
             // Log de la acción
             $this->logAction('actualizar_limites_periodo', 'periodos_academicos', $input['periodo_id'], $datos);
@@ -1914,7 +1914,7 @@ class AdminBienestarController extends BaseController
                 'updated_at' => date('Y-m-d H:i:s')
             ];
 
-            $this->periodoModel->update($input['periodo_id'], $datos);
+            $this->periodoModel->skipValidation(true)->update($input['periodo_id'], $datos);
 
             // Log de la acción
             $this->logAction('toggle_configuracion_periodo', 'periodos_academicos', $input['periodo_id'], $datos);
@@ -2333,6 +2333,32 @@ class AdminBienestarController extends BaseController
                     'fecha_rechazo' => date('Y-m-d H:i:s'),
                     'rechazado_por' => session('id'),
                     'motivo_rechazo' => $motivoRechazo
+                ]);
+
+            // Eliminar archivos físicos y limpiar registros de documentos asociados
+            $documentos = $this->db->table('documentos_solicitud_becas')
+                ->where('solicitud_beca_id', $solicitudId)
+                ->get()
+                ->getResultArray();
+
+            foreach ($documentos as $doc) {
+                if (!empty($doc['ruta_archivo']) && $doc['ruta_archivo'] !== '/temp/pendiente_subida.tmp') {
+                    $rutaArchivo = FCPATH . $doc['ruta_archivo'];
+                    if (file_exists($rutaArchivo)) {
+                        @unlink($rutaArchivo);
+                    }
+                }
+            }
+
+            $this->db->table('documentos_solicitud_becas')
+                ->where('solicitud_beca_id', $solicitudId)
+                ->update([
+                    'nombre_archivo' => 'pendiente_subida.tmp',
+                    'ruta_archivo' => '/temp/pendiente_subida.tmp',
+                    'estado' => 'Pendiente',
+                    'fecha_subida' => null,
+                    'tamano_archivo' => null,
+                    'tipo_mime' => null
                 ]);
 
             // Notificar al estudiante
@@ -4439,7 +4465,7 @@ class AdminBienestarController extends BaseController
             // Membrete / Encabezado
             $pdf->SetFont('helvetica', 'B', 12);
             $pdf->SetTextColor(74, 85, 104);
-            $pdf->Cell(0, 6, 'INSTITUTO SUPERIOR TECNOLÓGICO DE IMBABURA', 0, 1, 'C');
+            $pdf->Cell(0, 6, 'INSTITUTO TECNOLÓGICO SUPERIOR IBARRA', 0, 1, 'C');
             $pdf->SetFont('helvetica', '', 9);
             $pdf->Cell(0, 4, 'DEPARTAMENTO DE BIENESTAR ESTUDIANTIL', 0, 1, 'C');
             $pdf->Cell(0, 4, 'SISTEMA DE GESTIÓN GIBI-ITSI', 0, 1, 'C');
@@ -4467,7 +4493,7 @@ class AdminBienestarController extends BaseController
             $periodoNombre = $solicitud['periodo_nombre'] ?? '';
             $fechaAprobacion = date('d/m/Y', strtotime($solicitud['updated_at'] ?? $solicitud['fecha_solicitud']));
             
-            $htmlCuerpo = "El Departamento de Bienestar Estudiantil del <b>Instituto Superior Tecnológico de Imbabura (ITSI)</b>, por medio del presente documento:<br><br>" .
+            $htmlCuerpo = "El Departamento de Bienestar Estudiantil del <b>Instituto Tecnológico Superior Ibarra (ITSI)</b>, por medio del presente documento:<br><br>" .
                           "HACE CONSTAR que el/la estudiante <b>{$nombreEstudiante}</b>, portador/a del documento de identidad/cédula Nro. <b>{$cedulaEstudiante}</b>, " .
                           "ha sido formalmente adjudicado/a con la <b>{$becaNombre}</b> (Tipo: {$tipoBeca}) para el período académico <b>{$periodoNombre}</b>.<br><br>" .
                           "La solicitud correspondiente fue debidamente revisada y aprobada el día <b>{$fechaAprobacion}</b> al cumplir satisfactoriamente " .
@@ -4486,7 +4512,7 @@ class AdminBienestarController extends BaseController
             $pdf->SetFont('helvetica', 'B', 10);
             $pdf->Cell(0, 5, 'DEPARTAMENTO DE BIENESTAR ESTUDIANTIL', 0, 1, 'C');
             $pdf->SetFont('helvetica', '', 9);
-            $pdf->Cell(0, 5, 'Instituto Superior Tecnológico de Imbabura', 0, 1, 'C');
+            $pdf->Cell(0, 5, 'Instituto Tecnológico Superior Ibarra', 0, 1, 'C');
             
             // Código de verificación de seguridad en el pie de página
             $codigoVerificacion = strtoupper(substr(md5($solicitud['id'] . '-' . $solicitud['cedula'] . '-itsi'), 0, 16));
@@ -4507,6 +4533,211 @@ class AdminBienestarController extends BaseController
         } catch (\Exception $e) {
             log_message('error', 'Error generando constancia de beca: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Error del sistema al generar constancia');
+        }
+    }
+
+    public function exportarSolicitudesBecas()
+    {
+        if (!$this->verificarPermisos()) {
+            return redirect()->to('/login');
+        }
+
+        try {
+            // Obtener parámetros de filtro
+            $filtros = [
+                'estado' => $this->request->getGet('estado'),
+                'periodo_id' => $this->request->getGet('periodo_id'),
+                'carrera_id' => $this->request->getGet('carrera_id'),
+                'tipo_beca' => $this->request->getGet('tipo_beca'),
+                'beca_id' => $this->request->getGet('beca_id'),
+                'busqueda' => $this->request->getGet('busqueda'),
+                'per_page' => null // Sin paginación para exportar
+            ];
+
+            $solicitudes = $this->adminService->getSolicitudesBecasConFiltros($filtros);
+            $formato = $this->request->getGet('formato') ?? 'excel';
+
+            if ($formato === 'excel' || $formato === 'csv') {
+                $filename = 'solicitudes_becas_' . date('Y-m-d_H-i-s') . '.csv';
+                
+                header('Content-Type: text/csv; charset=utf-8');
+                header('Content-Disposition: attachment; filename="' . $filename . '"');
+                
+                $output = fopen('php://output', 'w');
+                // BOM para UTF-8 en Excel
+                fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+                
+                // Encabezados
+                fputcsv($output, [
+                    'ID', 'Cédula', 'Estudiante', 'Beca', 'Tipo Beca', 'Período Académico', 'Carrera', 'Estado', 'Fecha Solicitud', 'Observaciones'
+                ], ';');
+                
+                // Datos
+                foreach ($solicitudes as $s) {
+                    fputcsv($output, [
+                        $s['id'],
+                        $s['cedula'] ?? '',
+                        ($s['nombre'] ?? '') . ' ' . ($s['apellido'] ?? ''),
+                        $s['beca_nombre'] ?? '',
+                        $s['tipo_beca'] ?? '',
+                        $s['periodo_nombre'] ?? '',
+                        $s['carrera_nombre'] ?? 'N/A',
+                        $s['estado'] ?? '',
+                        date('d/m/Y H:i', strtotime($s['fecha_solicitud'])),
+                        $s['observaciones'] ?? ''
+                    ], ';');
+                }
+                fclose($output);
+                exit;
+            } else if ($formato === 'pdf') {
+                // Configurar PDF en horizontal (Landscape)
+                $pdf = new \TCPDF('L', 'mm', 'A4', true, 'UTF-8');
+                $pdf->SetCreator('ITSI - Sistema de Bienestar Estudiantil');
+                $pdf->SetAuthor('Bienestar Estudiantil ITSI');
+                $pdf->SetTitle('Reporte de Solicitudes de Becas');
+                
+                $pdf->setPrintHeader(false);
+                $pdf->setPrintFooter(false);
+                
+                $pdf->AddPage();
+                
+                // Margen
+                $pdf->SetMargins(15, 15, 15);
+                
+                // Decoración - Línea superior elegante
+                $pdf->SetFillColor(26, 54, 93); // Color primario oscuro #1A365D
+                $pdf->Rect(0, 0, 297, 10, 'F');
+                
+                $pdf->Ln(12);
+                
+                // Encabezado institucional
+                $pdf->SetFont('helvetica', 'B', 14);
+                $pdf->SetTextColor(26, 54, 93);
+                $pdf->Cell(0, 6, 'INSTITUTO TECNOLÓGICO SUPERIOR IBARRA', 0, 1, 'C');
+                $pdf->SetFont('helvetica', '', 10);
+                $pdf->SetTextColor(74, 85, 104);
+                $pdf->Cell(0, 5, 'DEPARTAMENTO DE BIENESTAR ESTUDIANTIL', 0, 1, 'C');
+                $pdf->Cell(0, 4, 'REPORTE GENERAL DE SOLICITUDES DE BECAS', 0, 1, 'C');
+                
+                // Línea divisoria
+                $pdf->Ln(3);
+                $pdf->SetDrawColor(226, 232, 240);
+                $pdf->Line(15, $pdf->GetY(), 282, $pdf->GetY());
+                $pdf->Ln(6);
+                
+                // Recopilar filtros aplicados para la cabecera del reporte
+                $filtrosTexto = [];
+                if (!empty($filtros['estado'])) {
+                    $filtrosTexto[] = 'Estado: ' . $filtros['estado'];
+                }
+                if (!empty($filtros['periodo_id'])) {
+                    $periodo = $this->periodoModel->find($filtros['periodo_id']);
+                    $filtrosTexto[] = 'Período: ' . ($periodo['nombre'] ?? $filtros['periodo_id']);
+                }
+                if (!empty($filtros['tipo_beca'])) {
+                    $filtrosTexto[] = 'Tipo: ' . $filtros['tipo_beca'];
+                }
+                if (!empty($filtros['beca_id'])) {
+                    $beca = $this->becaModel->find($filtros['beca_id']);
+                    $filtrosTexto[] = 'Beca: ' . ($beca['nombre'] ?? $filtros['beca_id']);
+                }
+                if (!empty($filtros['busqueda'])) {
+                    $filtrosTexto[] = 'Búsqueda: "' . $filtros['busqueda'] . '"';
+                }
+                
+                $filtrosDisplay = empty($filtrosTexto) ? 'Ninguno (Todos los registros)' : implode(' | ', $filtrosTexto);
+                
+                // Caja de información del Reporte
+                $pdf->SetFont('helvetica', '', 9);
+                $pdf->SetFillColor(247, 250, 252);
+                $pdf->SetTextColor(45, 55, 72);
+                
+                $infoHtml = '
+                <table cellpadding="4" style="background-color: #F7FAFC; border: 1px solid #E2E8F0; width: 100%;">
+                    <tr>
+                        <td width="50%"><b>Fecha de Emisión:</b> ' . date('d/m/Y H:i:s') . '</td>
+                        <td width="50%" align="right"><b>Registros Encontrados:</b> ' . count($solicitudes) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><b>Filtros Aplicados:</b> ' . esc($filtrosDisplay) . '</td>
+                    </tr>
+                </table>';
+                $pdf->writeHTML($infoHtml, true, false, true, false, '');
+                $pdf->Ln(5);
+                
+                // Tabla de registros
+                $tableHtml = '
+                <table cellpadding="5" style="border-collapse: collapse; width: 100%;">
+                    <thead>
+                        <tr style="background-color: #1A365D; color: #FFFFFF; font-weight: bold; font-size: 9px;">
+                            <th width="5%" style="border: 1px solid #CBD5E0;" align="center">ID</th>
+                            <th width="12%" style="border: 1px solid #CBD5E0;">Cédula</th>
+                            <th width="20%" style="border: 1px solid #CBD5E0;">Estudiante</th>
+                            <th width="20%" style="border: 1px solid #CBD5E0;">Beca / Carrera</th>
+                            <th width="15%" style="border: 1px solid #CBD5E0;">Período / Tipo</th>
+                            <th width="13%" style="border: 1px solid #CBD5E0;" align="center">Estado</th>
+                            <th width="15%" style="border: 1px solid #CBD5E0;" align="center">Fecha Solicitud</th>
+                        </tr>
+                    </thead>
+                    <tbody style="font-size: 8.5px; color: #2D3748;">';
+                
+                if (empty($solicitudes)) {
+                    $tableHtml .= '<tr><td colspan="7" align="center" style="border: 1px solid #CBD5E0;">No se encontraron solicitudes para los criterios especificados.</td></tr>';
+                } else {
+                    $rowNum = 0;
+                    foreach ($solicitudes as $s) {
+                        $bg = ($rowNum % 2 === 0) ? '#FFFFFF' : '#F7FAFC';
+                        
+                        // Determinar color de badge por estado
+                        $colorEstado = '#4A5568'; // Gris por defecto
+                        if ($s['estado'] === 'Aprobada') {
+                            $colorEstado = '#38A169'; // Verde
+                        } else if ($s['estado'] === 'En Revisión') {
+                            $colorEstado = '#DD6B20'; // Naranja
+                        } else if ($s['estado'] === 'Rechazada') {
+                            $colorEstado = '#E53E3E'; // Rojo
+                        } else if ($s['estado'] === 'Pendiente') {
+                            $colorEstado = '#3182CE'; // Azul
+                        }
+                        
+                        $estadoBadge = '<span style="color: ' . $colorEstado . '; font-weight: bold;">' . esc($s['estado']) . '</span>';
+                        
+                        $fechaFmt = date('d/m/Y H:i', strtotime($s['fecha_solicitud']));
+                        
+                        $tableHtml .= '
+                        <tr style="background-color: ' . $bg . ';">
+                            <td width="5%" style="border: 1px solid #E2E8F0;" align="center">' . $s['id'] . '</td>
+                            <td width="12%" style="border: 1px solid #E2E8F0;">' . esc($s['cedula'] ?? '') . '</td>
+                            <td width="20%" style="border: 1px solid #E2E8F0;"><b>' . esc($s['nombre'] . ' ' . $s['apellido']) . '</b></td>
+                            <td width="20%" style="border: 1px solid #E2E8F0;">' . esc($s['beca_nombre']) . '<br><small style="color: #718096;">' . esc($s['carrera_nombre'] ?? 'Sin carrera') . '</small></td>
+                            <td width="15%" style="border: 1px solid #E2E8F0;">' . esc($s['periodo_nombre']) . '<br><small style="color: #718096;">' . esc($s['tipo_beca']) . '</small></td>
+                            <td width="13%" style="border: 1px solid #E2E8F0;" align="center">' . $estadoBadge . '</td>
+                            <td width="15%" style="border: 1px solid #E2E8F0;" align="center">' . $fechaFmt . '</td>
+                        </tr>';
+                        $rowNum++;
+                    }
+                }
+                
+                $tableHtml .= '
+                    </tbody>
+                </table>';
+                
+                $pdf->writeHTML($tableHtml, true, false, true, false, '');
+                
+                // Pie de página manual
+                $pdf->SetY(-15);
+                $pdf->SetFont('helvetica', 'I', 8);
+                $pdf->SetTextColor(113, 128, 150);
+                $pdf->Cell(135, 10, 'Generado automáticamente por el Sistema de Bienestar Estudiantil GIBI-ITSI', 0, 0, 'L');
+                $pdf->Cell(135, 10, 'Página ' . $pdf->getAliasNumPage() . ' de ' . $pdf->getAliasNbPages(), 0, 0, 'R');
+                
+                $filename = 'Reporte_Solicitudes_Becas_' . date('Ymd_His') . '.pdf';
+                $pdfContent = $pdf->Output($filename, 'S');
+                return $this->response->download($filename, $pdfContent);
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Error exportando solicitudes de becas: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error generando el reporte de exportación');
         }
     }
 
@@ -4682,7 +4913,7 @@ class AdminBienestarController extends BaseController
                     if ($ficha) {
                         return [
                             'tipo' => 'Ficha Socioeconómica',
-                            'estudiante' => $ficha['estudiante_nombre'] ?? 'N/A',
+                            'estudiante' => trim(($ficha['nombre'] ?? '') . ' ' . ($ficha['apellido'] ?? '')) ?: 'N/A',
                             'cedula' => $ficha['cedula'] ?? 'N/A',
                             'carrera' => $ficha['carrera_nombre'] ?? 'N/A',
                             'periodo' => $ficha['periodo_nombre'] ?? 'N/A',
@@ -4693,16 +4924,22 @@ class AdminBienestarController extends BaseController
                     break;
                     
                 case 'solicitud_beca':
-                    $becaModel = new \App\Models\BecaModel();
-                    $beca = $becaModel->find($idDocumento);
+                    $solicitud = $this->db->table('solicitudes_becas sb')
+                        ->select('sb.*, u.nombre, u.apellido, b.nombre as beca_nombre, b.tipo_beca')
+                        ->join('usuarios u', 'u.id = sb.estudiante_id')
+                        ->join('becas b', 'b.id = sb.beca_id')
+                        ->where('sb.id', $idDocumento)
+                        ->get()
+                        ->getRowArray();
                     
-                    if ($beca) {
+                    if ($solicitud) {
                         return [
                             'tipo' => 'Solicitud de Beca',
-                            'estudiante' => $beca['estudiante_nombre'] ?? 'N/A',
-                            'tipo_beca' => $beca['tipo_beca'] ?? 'N/A',
-                            'estado' => $beca['estado'] ?? 'N/A',
-                            'fecha_solicitud' => $beca['fecha_solicitud'] ?? 'N/A'
+                            'estudiante' => trim(($solicitud['nombre'] ?? '') . ' ' . ($solicitud['apellido'] ?? '')) ?: 'N/A',
+                            'beca' => $solicitud['beca_nombre'] ?? 'N/A',
+                            'tipo_beca' => $solicitud['tipo_beca'] ?? 'N/A',
+                            'estado' => $solicitud['estado'] ?? 'N/A',
+                            'fecha_solicitud' => $solicitud['fecha_solicitud'] ?? 'N/A'
                         ];
                     }
                     break;

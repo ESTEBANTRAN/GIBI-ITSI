@@ -1,6 +1,0 @@
-[     147ms] missing ) after argument list
-[     166ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/login:0
-[    1081ms] [ERROR] Framing 'https://www.google.com/' violates the following report-only Content Security Policy directive: "frame-ancestors 'self'". The violation has been logged, but no further action has been taken.
- @ :0
-[   25632ms] missing ) after argument list
-[   25649ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost/ITSI/public/index.php/login:0

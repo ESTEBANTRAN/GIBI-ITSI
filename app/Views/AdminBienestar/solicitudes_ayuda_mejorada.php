@@ -8,7 +8,7 @@
         <div class="col-12">
             <div class="page-title-box d-flex align-items-center justify-content-between">
                 <div>
-                    <h4 class="mb-0">💬 Solicitudes de Ayuda Estudiantil</h4>
+                    <h4 class="mb-0"> Solicitudes de Ayuda Estudiantil</h4>
                     <p class="text-muted mb-0">Gestiona y responde a las solicitudes de ayuda de los estudiantes</p>
                 </div>
                 <div class="page-title-right">

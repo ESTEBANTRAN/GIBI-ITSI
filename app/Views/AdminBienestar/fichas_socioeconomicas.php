@@ -120,11 +120,11 @@ if (!function_exists('obtenerBadgeCategoria')) {
 </div>
 
 <!-- Sección ESTUDIANTES BECADOS -->
-<div class="section-header mb-3">
+<div id="seccion-becados" class="section-header mb-3">
     <div class="d-flex align-items-center">
         <h4><i class="bi bi-award me-2"></i>ESTUDIANTES BECADOS</h4>
         <div class="section-stats ms-3">
-            <span class="stat-item">Total: <?= isset($paginacion['total_registros']) ? $paginacion['total_registros'] : count($fichas ?? []) ?></span>
+            <span class="stat-item">Total: <?= isset($paginacionBecados['total_registros']) ? $paginacionBecados['total_registros'] : count($fichasBecados ?? []) ?></span>
             <span class="stat-item">Enviadas: <?= isset($estadisticasBecados['enviadas']) ? $estadisticasBecados['enviadas'] : 0 ?></span>
             <span class="stat-item">Aprobadas: <?= isset($estadisticasBecados['aprobadas']) ? $estadisticasBecados['aprobadas'] : 0 ?></span>
             <span class="stat-item">Rechazadas: <?= isset($estadisticasBecados['rechazadas']) ? $estadisticasBecados['rechazadas'] : 0 ?></span>
@@ -152,7 +152,7 @@ if (!function_exists('obtenerBadgeCategoria')) {
                 </tr>
             </thead>
             <tbody>
-                <?php if (empty($fichas)): ?>
+                <?php if (empty($fichasBecados)): ?>
                 <tr>
                     <td colspan="8" class="empty-state">
                         <i class="bi bi-inbox"></i>
@@ -160,7 +160,7 @@ if (!function_exists('obtenerBadgeCategoria')) {
                     </td>
                 </tr>
                 <?php else: ?>
-                <?php foreach ($fichas as $ficha): ?>
+                <?php foreach ($fichasBecados as $ficha): ?>
                 <tr>
                     <td>
                         <div>
@@ -247,13 +247,88 @@ if (!function_exists('obtenerBadgeCategoria')) {
     </div>
 </div>
 
+<!-- Paginación Becados -->
+<?php if (isset($paginacionBecados) && $paginacionBecados['total_paginas'] > 1): ?>
+<?php
+// Build base query string preserving all params except page_becados
+$paramsBecados = $_GET;
+unset($paramsBecados['page_becados']);
+$qsBecados = http_build_query($paramsBecados);
+$sepBecados = $qsBecados ? '&' : '';
+?>
+<div class="card mt-3 mb-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted">
+                Mostrando <?= ($paginacionBecados['offset'] + 1) ?> a <?= min($paginacionBecados['offset'] + $paginacionBecados['por_pagina'], $paginacionBecados['total_registros']) ?> 
+                de <?= $paginacionBecados['total_registros'] ?> fichas becados
+            </div>
+            <nav aria-label="Paginación de fichas becados">
+                <ul class="pagination pagination-sm mb-0">
+                    <?php if ($paginacionBecados['pagina_actual'] > 1): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?<?= $qsBecados . $sepBecados ?>page_becados=<?= $paginacionBecados['pagina_actual'] - 1 ?>#seccion-becados" aria-label="Anterior">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    <?php else: ?>
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo;</span>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php
+                    $inicioBec = max(1, $paginacionBecados['pagina_actual'] - 2);
+                    $finBec = min($paginacionBecados['total_paginas'], $paginacionBecados['pagina_actual'] + 2);
+                    if ($inicioBec > 1): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?<?= $qsBecados . $sepBecados ?>page_becados=1#seccion-becados">1</a>
+                        </li>
+                        <?php if ($inicioBec > 2): ?>
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        <?php endif; ?>
+                    <?php endif; ?>
+
+                    <?php for ($i = $inicioBec; $i <= $finBec; $i++): ?>
+                        <li class="page-item <?= $i == $paginacionBecados['pagina_actual'] ? 'active' : '' ?>">
+                            <a class="page-link" href="?<?= $qsBecados . $sepBecados ?>page_becados=<?= $i ?>#seccion-becados"><?= $i ?></a>
+                        </li>
+                    <?php endfor; ?>
+
+                    <?php if ($finBec < $paginacionBecados['total_paginas']): ?>
+                        <?php if ($finBec < $paginacionBecados['total_paginas'] - 1): ?>
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        <?php endif; ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?<?= $qsBecados . $sepBecados ?>page_becados=<?= $paginacionBecados['total_paginas'] ?>#seccion-becados"><?= $paginacionBecados['total_paginas'] ?></a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php if ($paginacionBecados['pagina_actual'] < $paginacionBecados['total_paginas']): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?<?= $qsBecados . $sepBecados ?>page_becados=<?= $paginacionBecados['pagina_actual'] + 1 ?>#seccion-becados" aria-label="Siguiente">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    <?php else: ?>
+                        <li class="page-item disabled">
+                            <span class="page-link">&raquo;</span>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 <!-- Sección ESTUDIANTES -->
-<div class="section-header mb-3">
+<div id="seccion-estudiantes" class="section-header mb-3">
     <div class="d-flex align-items-center">
         <h4><i class="bi bi-people me-2"></i>ESTUDIANTES</h4>
         <div class="section-stats ms-3">
-            <span class="stat-item">Total: <?= isset($paginacion['total_registros']) ? $paginacion['total_registros'] : count($fichas ?? []) ?></span>
-            <span class="stat-item">Enviadas: <?= isset($estadisticasBecados['enviadas']) ? $estadisticasBecados['enviadas'] : 0 ?></span>
+            <span class="stat-item">Total: <?= isset($paginacionEstudiantes['total_registros']) ? $paginacionEstudiantes['total_registros'] : count($fichasEstudiantes ?? []) ?></span>
+            <span class="stat-item">Enviadas: <?= isset($estadisticasEstudiantes['enviadas']) ? $estadisticasEstudiantes['enviadas'] : 0 ?></span>
         </div>
     </div>
 </div>
@@ -298,7 +373,7 @@ if (!function_exists('obtenerBadgeCategoria')) {
                 </tr>
             </thead>
             <tbody>
-                <?php if (empty($fichas)): ?>
+                <?php if (empty($fichasEstudiantes)): ?>
                 <tr>
                     <td colspan="7" class="empty-state">
                         <i class="bi bi-inbox"></i>
@@ -306,7 +381,7 @@ if (!function_exists('obtenerBadgeCategoria')) {
                     </td>
                 </tr>
                 <?php else: ?>
-                <?php foreach ($fichas as $ficha): ?>
+                <?php foreach ($fichasEstudiantes as $ficha): ?>
                 <tr>
                     <td>
                         <div>
@@ -378,20 +453,26 @@ if (!function_exists('obtenerBadgeCategoria')) {
     </div>
 </div>
 
-<!-- Paginación -->
-<?php if (isset($paginacion) && $paginacion['total_paginas'] > 1): ?>
+<!-- Paginación Estudiantes -->
+<?php if (isset($paginacionEstudiantes) && $paginacionEstudiantes['total_paginas'] > 1): ?>
+<?php
+$paramsEst = $_GET;
+unset($paramsEst['page_estudiantes']);
+$qsEst = http_build_query($paramsEst);
+$sepEst = $qsEst ? '&' : '';
+?>
 <div class="card mt-3">
     <div class="card-body">
         <div class="d-flex justify-content-between align-items-center">
             <div class="text-muted">
-                Mostrando <?= ($paginacion['offset'] + 1) ?> a <?= min($paginacion['offset'] + $paginacion['por_pagina'], $paginacion['total_registros']) ?> 
-                de <?= $paginacion['total_registros'] ?> fichas
+                Mostrando <?= ($paginacionEstudiantes['offset'] + 1) ?> a <?= min($paginacionEstudiantes['offset'] + $paginacionEstudiantes['por_pagina'], $paginacionEstudiantes['total_registros']) ?> 
+                de <?= $paginacionEstudiantes['total_registros'] ?> fichas estudiantes
             </div>
-            <nav aria-label="Paginación de fichas">
+            <nav aria-label="Paginación de fichas estudiantes">
                 <ul class="pagination pagination-sm mb-0">
-                    <?php if ($paginacion['pagina_actual'] > 1): ?>
+                    <?php if ($paginacionEstudiantes['pagina_actual'] > 1): ?>
                         <li class="page-item">
-                            <a class="page-link" href="?page=<?= $paginacion['pagina_actual'] - 1 ?>" aria-label="Anterior">
+                            <a class="page-link" href="?<?= $qsEst . $sepEst ?>page_estudiantes=<?= $paginacionEstudiantes['pagina_actual'] - 1 ?>#seccion-estudiantes" aria-label="Anterior">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
@@ -402,40 +483,35 @@ if (!function_exists('obtenerBadgeCategoria')) {
                     <?php endif; ?>
 
                     <?php
-                    $inicio = max(1, $paginacion['pagina_actual'] - 2);
-                    $fin = min($paginacion['total_paginas'], $paginacion['pagina_actual'] + 2);
-
-                    if ($inicio > 1): ?>
+                    $inicioEst = max(1, $paginacionEstudiantes['pagina_actual'] - 2);
+                    $finEst = min($paginacionEstudiantes['total_paginas'], $paginacionEstudiantes['pagina_actual'] + 2);
+                    if ($inicioEst > 1): ?>
                         <li class="page-item">
-                            <a class="page-link" href="?page=1">1</a>
+                            <a class="page-link" href="?<?= $qsEst . $sepEst ?>page_estudiantes=1#seccion-estudiantes">1</a>
                         </li>
-                        <?php if ($inicio > 2): ?>
-                            <li class="page-item disabled">
-                                <span class="page-link">...</span>
-                            </li>
+                        <?php if ($inicioEst > 2): ?>
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
                         <?php endif; ?>
                     <?php endif; ?>
 
-                    <?php for ($i = $inicio; $i <= $fin; $i++): ?>
-                        <li class="page-item <?= $i == $paginacion['pagina_actual'] ? 'active' : '' ?>">
-                            <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+                    <?php for ($i = $inicioEst; $i <= $finEst; $i++): ?>
+                        <li class="page-item <?= $i == $paginacionEstudiantes['pagina_actual'] ? 'active' : '' ?>">
+                            <a class="page-link" href="?<?= $qsEst . $sepEst ?>page_estudiantes=<?= $i ?>#seccion-estudiantes"><?= $i ?></a>
                         </li>
                     <?php endfor; ?>
 
-                    <?php if ($fin < $paginacion['total_paginas']): ?>
-                        <?php if ($fin < $paginacion['total_paginas'] - 1): ?>
-                            <li class="page-item disabled">
-                                <span class="page-link">...</span>
-                            </li>
+                    <?php if ($finEst < $paginacionEstudiantes['total_paginas']): ?>
+                        <?php if ($finEst < $paginacionEstudiantes['total_paginas'] - 1): ?>
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
                         <?php endif; ?>
                         <li class="page-item">
-                            <a class="page-link" href="?page=<?= $paginacion['total_paginas'] ?>"><?= $paginacion['total_paginas'] ?></a>
+                            <a class="page-link" href="?<?= $qsEst . $sepEst ?>page_estudiantes=<?= $paginacionEstudiantes['total_paginas'] ?>#seccion-estudiantes"><?= $paginacionEstudiantes['total_paginas'] ?></a>
                         </li>
                     <?php endif; ?>
 
-                    <?php if ($paginacion['pagina_actual'] < $paginacion['total_paginas']): ?>
+                    <?php if ($paginacionEstudiantes['pagina_actual'] < $paginacionEstudiantes['total_paginas']): ?>
                         <li class="page-item">
-                            <a class="page-link" href="?page=<?= $paginacion['pagina_actual'] + 1 ?>" aria-label="Siguiente">
+                            <a class="page-link" href="?<?= $qsEst . $sepEst ?>page_estudiantes=<?= $paginacionEstudiantes['pagina_actual'] + 1 ?>#seccion-estudiantes" aria-label="Siguiente">
                                 <span aria-hidden="true">&raquo;</span>
                             </a>
                         </li>

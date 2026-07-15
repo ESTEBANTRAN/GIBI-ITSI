@@ -1,4 +1,4 @@
-﻿<?= $this->extend('layouts/mainAdmin') ?>
+<?= $this->extend('layouts/mainAdmin') ?>
 
 <?= $this->section('content') ?>
 
@@ -54,9 +54,6 @@
                             </button>
                             <button type="button" class="btn btn-outline-warning" onclick="configurarNotificaciones()">
                                 <i class="bi bi-bell"></i> Configurar Notificaciones
-                            </button>
-                            <button type="button" class="btn btn-outline-danger" onclick="eliminarCuenta()">
-                                <i class="bi bi-trash"></i> Eliminar Cuenta
                             </button>
                         </div>
                     </div>
@@ -124,39 +121,6 @@ function configurarNotificaciones() {
         title: 'Configurar Notificaciones',
         text: 'Esta función estará disponible próximamente',
         icon: 'info'
-    });
-}
-
-function eliminarCuenta() {
-    Swal.fire({
-        title: '¿Eliminar cuenta?',
-        text: 'Esta acción no se puede deshacer. Se eliminarán todos tus datos.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: '<?= base_url('admin-bienestar/cuenta/eliminarCuenta') ?>',
-                type: 'POST',
-                dataType: 'json',
-                success: function(response) {
-                    if (response.success) {
-                        Swal.fire('Éxito', response.message, 'success').then(() => {
-                            window.location.href = '<?= base_url('auth/logout') ?>';
-                        });
-                    } else {
-                        Swal.fire('Error', response.error, 'error');
-                    }
-                },
-                error: function() {
-                    Swal.fire('Error', 'Error de conexión', 'error');
-                }
-            });
-        }
     });
 }
 </script>

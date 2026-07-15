@@ -1,6 +1,0 @@
-[     268ms] [LOG] CSS Styles URL: http://localhost/ITSI/public/sistema/assets/css/styles.min.css @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:37
-[     268ms] [LOG] CSS Custom URL: http://localhost/ITSI/public/sistema/assets/css/custom.css @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:38
-[     301ms] [LOG] jQuery version: 3.7.1 @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:1979
-[     301ms] [LOG] jQuery is properly loaded @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:1983
-[     301ms] [LOG] jQuery cargado correctamente @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:2024
-[     301ms] [LOG] ApexCharts cargado correctamente @ http://localhost/ITSI/public/index.php/admin-bienestar/solicitudes-becas:2031

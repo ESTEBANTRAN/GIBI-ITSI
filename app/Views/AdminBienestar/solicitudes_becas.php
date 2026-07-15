@@ -456,7 +456,15 @@ function generarConstancia(id) {
 }
 
 function exportarSolicitudes(f) {
-    Swal.fire({ icon: 'info', title: 'Exportaci&oacute;n', text: 'La exportaci&oacute;n a ' + f.toUpperCase() + ' estar&aacute; disponible pr&oacute;ximamente' });
+    const form = document.getElementById('formFiltros');
+    let params = '';
+    if (form) {
+        const formData = new FormData(form);
+        const urlParams = new URLSearchParams(formData);
+        params = '&' + urlParams.toString();
+    }
+    const url = '<?= base_url('admin-bienestar/exportar-solicitudes-becas') ?>?formato=' + f + params;
+    window.open(url, '_blank');
 }
 
 function exportarGrafico(canvasId, nombre) {

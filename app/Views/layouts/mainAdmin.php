@@ -60,7 +60,7 @@
             padding-top: 70px !important;
         }
         /* Prevenir que Serveo u otros inyecten espacio */
-        body > *:not(.page-wrapper):not(script):not(link):not(style) {
+        body > *:not(.page-wrapper):not(script):not(link):not(style):not(.swal2-container) {
             display: none !important;
         }
     </style>
@@ -162,6 +162,34 @@
         if (typeof ApexCharts === 'undefined') {
         } else {
         }
+    </script>
+    
+    <!-- Scroll Position Preservation -->
+    <script>
+    (function() {
+        var key = 'scrollPos_' + window.location.pathname;
+        // Only restore scroll if no hash anchor (pagination already handles anchors)
+        if (!window.location.hash) {
+            var saved = sessionStorage.getItem(key);
+            if (saved) {
+                window.scrollTo(0, parseInt(saved, 10));
+            }
+        }
+        // Save scroll position on scroll (debounced)
+        var timer;
+        window.addEventListener('scroll', function() {
+            clearTimeout(timer);
+            timer = setTimeout(function() {
+                sessionStorage.setItem(key, window.scrollY || document.documentElement.scrollTop);
+            }, 150);
+        });
+        // Clear scroll on navigation to a different page
+        window.addEventListener('beforeunload', function() {
+            var nextPath = window.location.pathname;
+            // Only save if staying on same page (page param changes)
+            sessionStorage.setItem(key, window.scrollY || document.documentElement.scrollTop);
+        });
+    })();
     </script>
 </body>
 

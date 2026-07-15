@@ -308,22 +308,48 @@ class BackupsController extends BaseController
         }
 
         try {
+            $limiteFecha = date('Y-m-d H:i:s', strtotime('-30 days'));
+            
+            // 1. Obtener los respaldos de la base de datos antiguos
+            $respaldosAntiguos = $this->db->table('respaldos')
+                ->where('fecha_creacion <', $limiteFecha)
+                ->get()
+                ->getResultArray();
+            
+            $deletedDb = 0;
+            $filesDeleted = [];
+            
+            foreach ($respaldosAntiguos as $respaldo) {
+                $filepath = $respaldo['ruta_archivo'];
+                if (file_exists($filepath)) {
+                    if (@unlink($filepath)) {
+                        $filesDeleted[] = $filepath;
+                    }
+                }
+                $this->db->table('respaldos')->where('id', $respaldo['id'])->delete();
+                $deletedDb++;
+            }
+            
+            // 2. Limpiar archivos huérfanos viejos en el directorio de respaldos
             $backupDir = WRITEPATH . 'backups/';
             $files = glob($backupDir . '*.sql');
-            $deleted = 0;
+            $deletedOrphans = 0;
+            $limiteTimestamp = time() - (30 * 24 * 60 * 60); // 30 días
             
             foreach ($files as $file) {
-                if (unlink($file)) {
-                    $deleted++;
+                // Si el archivo no fue eliminado en el paso anterior y es viejo
+                if (!in_array($file, $filesDeleted) && filemtime($file) < $limiteTimestamp) {
+                    if (@unlink($file)) {
+                        $deletedOrphans++;
+                    }
                 }
             }
             
-            // Eliminar todos los registros de la base de datos
-            $this->db->table('respaldos')->emptyTable();
+            $totalDeleted = count($filesDeleted) + $deletedOrphans;
             
             return $this->response->setJSON([
                 'success' => true, 
-                'message' => "Se eliminaron {$deleted} respaldos antiguos y se limpió el registro"
+                'message' => "Se eliminaron {$totalDeleted} respaldos de más de un mes de antigüedad y se actualizaron {$deletedDb} registros."
             ]);
         } catch (\Exception $e) {
             log_message('error', 'Error al limpiar respaldos: ' . $e->getMessage());

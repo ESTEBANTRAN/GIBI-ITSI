@@ -1,4 +1,4 @@
-﻿<?= $this->extend('layouts/mainGlobalAdmin') ?>
+<?= $this->extend('layouts/mainGlobalAdmin') ?>
 
 <?= $this->section('content') ?>
 
@@ -39,7 +39,7 @@
                     <form id="formConfiguracionGeneral">
                         <div class="mb-3">
                             <label for="nombre_institucion" class="form-label fw-bold">Nombre de la Institución</label>
-                            <input type="text" class="form-control" id="nombre_institucion" name="nombre_institucion" value="<?= esc($configuracion['nombre_institucion'] ?? 'Instituto Tecnológico Superior de Informática') ?>" required>
+                            <input type="text" class="form-control" id="nombre_institucion" name="nombre_institucion" value="<?= esc($configuracion['nombre_institucion'] ?? 'Instituto Tecnologico Superior Ibarra') ?>" required>
                         </div>
                         <div class="mb-3">
                             <label for="email_contacto" class="form-label fw-bold">Email de Contacto</label>

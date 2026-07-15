@@ -281,7 +281,7 @@
                         </a>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <a href="<?= base_url('admin-bienestar/solicitudes') ?>" class="btn btn-outline-warning w-100">
+                        <a href="<?= base_url('admin-bienestar/solicitudes-ayuda') ?>" class="btn btn-outline-warning w-100">
                             <i class="bi bi-envelope me-2"></i>
                             Ver Solicitudes
                         </a>

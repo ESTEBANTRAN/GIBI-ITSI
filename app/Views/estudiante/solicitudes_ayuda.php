@@ -121,7 +121,11 @@
                                     </td>
                                     <td><?= date('d/m/Y H:i', strtotime($solicitud['fecha_solicitud'])) ?></td>
                                     <td>
-                                        <?= $solicitud['id_responsable'] ? 'Asignado' : 'Sin asignar' ?>
+                                        <?php if (!empty($solicitud['responsable_nombre'])): ?>
+                                            <span class="text-primary"><i class="bi bi-person-check me-1"></i><?= esc($solicitud['responsable_nombre']) ?></span>
+                                        <?php else: ?>
+                                            <span class="text-muted">Sin asignar</span>
+                                        <?php endif; ?>
                                     </td>
                                     <td>
                                         <div class="btn-group" role="group">
@@ -463,6 +467,9 @@
 
 <?= $this->section('scripts') ?>
 <script>
+// Datos de solicitudes para uso en JavaScript
+const solicitudesData = <?= json_encode($solicitudes ?? []) ?>;
+
 // Manejar cambio de categoría
 document.getElementById('categoriaSelect').addEventListener('change', function() {
     const asuntoPersonalizadoDiv = document.getElementById('asuntoPersonalizadoDiv');
@@ -548,44 +555,101 @@ document.getElementById('formNuevaSolicitud').addEventListener('submit', functio
 // Ver solicitud
 function verSolicitud(id) {
     const modal = new bootstrap.Modal(document.getElementById('modalVerSolicitud'));
-    document.getElementById('solicitudContent').innerHTML = `
+    const contenido = document.getElementById('solicitudContent');
+    contenido.innerHTML = `
         <div class="text-center">
-            <i class="bi bi-hourglass-split fs-1 text-muted mb-3"></i>
-            <p>Cargando detalles de la solicitud...</p>
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-2">Cargando detalles de la solicitud...</p>
         </div>
     `;
     modal.show();
     
-    // Simular carga de datos
-    setTimeout(() => {
-        document.getElementById('solicitudContent').innerHTML = `
-            <div class="row">
-                <div class="col-md-6">
-                    <h6>Información de la Solicitud</h6>
-                    <table class="table table-sm">
-                        <tr><td><strong>Asunto:</strong></td><td>Ayuda económica para materiales</td></tr>
-                        <tr><td><strong>Prioridad:</strong></td><td><span class="badge bg-warning">Media</span></td></tr>
-                        <tr><td><strong>Estado:</strong></td><td><span class="badge bg-info">En Proceso</span></td></tr>
-                        <tr><td><strong>Fecha Solicitud:</strong></td><td>01/10/2024</td></tr>
-                        <tr><td><strong>Responsable:</strong></td><td>Ana Gomez</td></tr>
-                    </table>
-                </div>
-                <div class="col-md-6">
-                    <h6>Descripción</h6>
-                    <div class="bg-light p-3 rounded">
-                        <p class="mb-0">Necesito ayuda para comprar materiales de estudio para este semestre. Mi situación económica es complicada.</p>
-                    </div>
+    // Buscar la solicitud en los datos reales
+    const solicitud = solicitudesData.find(s => s.id == id);
+    
+    if (!solicitud) {
+        contenido.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                No se encontró la solicitud.
+            </div>
+        `;
+        return;
+    }
+    
+    // Determinar clases de badge
+    let prioridadClass = 'bg-secondary';
+    switch(solicitud.prioridad) {
+        case 'Baja': prioridadClass = 'bg-secondary'; break;
+        case 'Media': prioridadClass = 'bg-warning'; break;
+        case 'Alta': prioridadClass = 'bg-danger'; break;
+        case 'Urgente': prioridadClass = 'bg-dark'; break;
+    }
+    
+    let estadoClass = 'bg-secondary';
+    switch(solicitud.estado) {
+        case 'Pendiente': estadoClass = 'bg-warning'; break;
+        case 'En Proceso': estadoClass = 'bg-info'; break;
+        case 'Resuelta': estadoClass = 'bg-success'; break;
+        case 'Cerrada': estadoClass = 'bg-secondary'; break;
+    }
+    
+    const fechaSolicitud = solicitud.fecha_solicitud 
+        ? new Date(solicitud.fecha_solicitud).toLocaleDateString('es-EC', { year: 'numeric', month: '2-digit', day: '2-digit' })
+        : 'N/A';
+    
+    const responsableNombre = solicitud.responsable_nombre || 'Sin asignar';
+    
+    // Construir HTML con datos reales
+    let html = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Información de la Solicitud</h6>
+                <table class="table table-sm">
+                    <tr><td><strong>Asunto:</strong></td><td>${solicitud.asunto || 'N/A'}</td></tr>
+                    <tr><td><strong>Prioridad:</strong></td><td><span class="badge ${prioridadClass}">${solicitud.prioridad || 'N/A'}</span></td></tr>
+                    <tr><td><strong>Estado:</strong></td><td><span class="badge ${estadoClass}">${solicitud.estado || 'N/A'}</span></td></tr>
+                    <tr><td><strong>Fecha Solicitud:</strong></td><td>${fechaSolicitud}</td></tr>
+                    <tr><td><strong>Responsable:</strong></td><td>${responsableNombre}</td></tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h6>Descripción</h6>
+                <div class="bg-light p-3 rounded">
+                    <p class="mb-0">${solicitud.descripcion || 'Sin descripción'}</p>
                 </div>
             </div>
+        </div>
+    `;
+    
+    // Mostrar comentarios de resolución si existen
+    if (solicitud.comentarios_resolucion) {
+        html += `
             <div class="mt-3">
-                <h6>Respuestas</h6>
+                <h6>Respuesta del Responsable</h6>
                 <div class="bg-light p-3 rounded">
-                    <p class="mb-0"><strong>Ana Gomez:</strong> Hemos recibido tu solicitud y está siendo procesada. Te contactaremos pronto.</p>
-                    <small class="text-muted">15/10/2024 14:30</small>
+                    <p class="mb-0"><strong>${responsableNombre}:</strong> ${solicitud.comentarios_resolucion}</p>
+                    ${solicitud.fecha_respuesta ? `<small class="text-muted">${new Date(solicitud.fecha_respuesta).toLocaleDateString('es-EC', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</small>` : ''}
                 </div>
             </div>
         `;
-    }, 1000);
+    }
+    
+    // Mostrar asunto personalizado si existe
+    if (solicitud.asunto_personalizado) {
+        html += `
+            <div class="mt-3">
+                <h6>Asunto Personalizado</h6>
+                <div class="bg-light p-3 rounded">
+                    <p class="mb-0">${solicitud.asunto_personalizado}</p>
+                </div>
+            </div>
+        `;
+    }
+    
+    contenido.innerHTML = html;
 }
 
 // Manejar cambio de categoría en modal de edición
@@ -611,7 +675,7 @@ document.getElementById('editCategoriaSelect').addEventListener('change', functi
 // Editar solicitud
 function editarSolicitud(id) {
     // Buscar la solicitud en el array de solicitudes
-    const solicitud = <?= json_encode($solicitudes) ?>.find(s => s.id == id);
+    const solicitud = solicitudesData.find(s => s.id == id);
     if (!solicitud) {
         Swal.fire({
             icon: 'error',

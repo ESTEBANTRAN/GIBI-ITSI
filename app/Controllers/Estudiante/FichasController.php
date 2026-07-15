@@ -40,10 +40,13 @@ class FichasController extends BaseController
         $fichas = array_slice($allFichas, $offset, $perPage);
         $totalPages = max(1, ceil($totalFichas / $perPage));
 
+        $carreras = $this->db->table('carreras')->where('activa', 1)->orderBy('nombre', 'ASC')->get()->getResultArray();
+
         $data = [
             'estudiante' => $this->usuarioModel->find(session('id')),
             'fichas' => $fichas,
             'periodos' => $this->periodoModel->getPeriodosVigentesEstudiantes(),
+            'carreras' => $carreras,
             'current_page' => $page,
             'total_pages' => $totalPages,
             'per_page' => $perPage,

@@ -40,7 +40,6 @@
 | Componente | Descripción |
 |-----------|-------------|
 | **XAMPP** | Stack de desarrollo local (Apache + MariaDB) |
-| **Serveo** | Túnel SSH para acceso remoto sin hosting |
 
 ---
 
@@ -155,7 +154,6 @@ ITSI/
 │   └── session/
 │
 ├── composer.json                       # Dependencias PHP
-├── serveo.txt                          # Guía de acceso por túnel Serveo
 └── README.md                           # Esta documentación
 ```
 
@@ -347,7 +345,7 @@ ITSI/
 - Listado completo de estudiantes con estadísticas agregadas
 - Modal de historial completo (fichas, becas, ayudas, documentos)
 - Exportación de listados a Excel y PDF
-- Rutas AJAX dinámicas compatibles con túneles (Serveo)
+- Rutas AJAX dinámicas
 
 ### 8. Super Administrador (GlobalAdmin)
 - Dashboard global con métricas KPI
@@ -430,18 +428,7 @@ ITSI/
    http://localhost/ITSI/public/
    ```
 
-### Acceso Remoto (Serveo)
 
-El sistema puede exponerse a Internet mediante un túnel SSH con Serveo:
-
-```bash
-ssh -R bienestar-institucional-itsi:80:localhost:80 serveo.net
-```
-
-URL pública resultante:
-```
-https://bienestar-institucional-itsi.serveousercontent.com/ITSI/public/
-```
 
 ### Credenciales de Prueba
 
@@ -561,7 +548,7 @@ GET  /global-admin/configuracion          # Configuración del sistema
 | reCAPTCHA falla | Verificar claves de Google reCAPTCHA en configuración |
 | PDFs no se generan | Ejecutar `composer require tecnickcom/tcpdf` |
 | Sesión se pierde | Revisar `app/Config/Session.php` |
-| Datos no cargan vía Serveo | Las vistas usan rutas dinámicas (`SITE_ROOT`, `ADMIN_BASE`) para compatibilidad con túneles |
+| Datos no cargan correctamente | Las vistas usan rutas dinámicas (`SITE_ROOT`, `ADMIN_BASE`) |
 | CORS / Mixed Content | Verificar que `app.baseURL` coincida con el dominio de acceso |
 
 ---

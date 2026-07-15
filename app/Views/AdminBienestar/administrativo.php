@@ -9,7 +9,7 @@
             <div class="col-12">
                 <div class="page-title-box d-flex align-items-center justify-content-between">
                     <div>
-                        <h4 class="mb-0">Panel de Administración - Bienestar Estudiantil</h4>
+                        <h4 class="mb-0">Panel de Administración - Bienestar Institucional</h4>
                         <p class="text-muted mb-0">Bienvenido/a, <?= session('nombre') ?? 'Administrador' ?></p>
                     </div>
                     <div class="page-title-right">
@@ -142,7 +142,7 @@
                         <h5 class="card-title">Formularios Socioeconómicos</h5>
                         <p class="card-text text-muted">Gestiona y revisa los formularios socioeconómicos de los estudiantes.</p>
                         <div class="d-grid">
-                            <a href="<?= base_url('fichas') ?>" class="btn btn-outline-primary">
+                            <a href="<?= base_url('admin-bienestar/fichas-socioeconomicas') ?>" class="btn btn-outline-primary">
                                 <i class="bi bi-eye me-1"></i>Ver Formularios
                             </a>
                         </div>
@@ -164,7 +164,7 @@
                         <h5 class="card-title">Solicitudes de Becas</h5>
                         <p class="card-text text-muted">Supervisa y gestiona el proceso de becas estudiantiles.</p>
                         <div class="d-grid">
-                            <a href="<?= base_url('solicitudes-becas') ?>" class="btn btn-outline-success">
+                            <a href="<?= base_url('admin-bienestar/solicitudes-becas') ?>" class="btn btn-outline-success">
                                 <i class="bi bi-eye me-1"></i>Ver Becas
                             </a>
                         </div>
@@ -186,7 +186,7 @@
                         <h5 class="card-title">Solicitudes de Ayuda</h5>
                         <p class="card-text text-muted">Atiende y resuelve solicitudes generadas por los estudiantes.</p>
                         <div class="d-grid">
-                            <a href="<?= base_url('solicitudes') ?>" class="btn btn-outline-warning">
+                            <a href="<?= base_url('admin-bienestar/solicitudes-ayuda') ?>" class="btn btn-outline-warning">
                                 <i class="bi bi-eye me-1"></i>Ver Solicitudes
                             </a>
                         </div>
@@ -208,7 +208,7 @@
                         <h5 class="card-title">Gestión de Estudiantes</h5>
                         <p class="card-text text-muted">Administra la información y seguimiento de estudiantes.</p>
                         <div class="d-grid">
-                            <a href="<?= base_url('estudiantes') ?>" class="btn btn-outline-info">
+                            <a href="<?= base_url('admin-bienestar/estudiantes') ?>" class="btn btn-outline-info">
                                 <i class="bi bi-eye me-1"></i>Ver Estudiantes
                             </a>
                         </div>
@@ -259,7 +259,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="<?= base_url('reportes') ?>" class="btn btn-primary">
+                        <a href="<?= base_url('admin-bienestar/reportes') ?>" class="btn btn-primary">
                             <i class="bi bi-graph-up me-1"></i>Ir a Reportes
                         </a>
         </div>

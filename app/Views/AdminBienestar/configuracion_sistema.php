@@ -35,7 +35,7 @@
                     <form id="formConfiguracionGeneral">
                         <div class="form-group">
                             <label for="nombre_institucion" class="font-weight-bold">Nombre de la Institución</label>
-                            <input type="text" class="form-control border-left-info" id="nombre_institucion" name="nombre_institucion" value="<?= esc($configuracion['nombre_institucion'] ?? 'Instituto Tecnológico Superior de Informática') ?>" required>
+                            <input type="text" class="form-control border-left-info" id="nombre_institucion" name="nombre_institucion" value="<?= esc($configuracion['nombre_institucion'] ?? 'Instituto Tecnologico Superior Ibarra') ?>" required>
                         </div>
                         <div class="form-group">
                             <label for="email_contacto" class="font-weight-bold">Email de Contacto</label>

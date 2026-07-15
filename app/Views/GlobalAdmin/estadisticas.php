@@ -582,7 +582,12 @@ function inicializarGraficos() {
 }
 
 function formatearFecha(fecha) {
-    return new Date(fecha).toLocaleString('es-EC');
+    if (!fecha || fecha === '0000-00-00 00:00:00') return 'N/A';
+    const date = new Date(fecha);
+    if (isNaN(date.getTime()) || date.getFullYear() < 2000) {
+        return 'N/A';
+    }
+    return date.toLocaleString('es-EC');
 }
 
 // Cambiar período automáticamente

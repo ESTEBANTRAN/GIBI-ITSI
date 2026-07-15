@@ -8,7 +8,7 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h2 class="mb-1">💰 Sistema de Becas</h2>
+                    <h2 class="mb-1">Sistema de Becas</h2>
                     <p class="text-muted mb-0">Gestiona tus solicitudes de becas y oportunidades disponibles</p>
                 </div>
                 <div class="d-flex gap-2">
@@ -136,10 +136,6 @@
                         <i class="bi bi-list-check me-2"></i>Mis Solicitudes de Becas
                     </h5>
                     <div class="d-flex gap-2">
-                        <!-- Botón de prueba temporal -->
-                        <button class="btn btn-outline-warning btn-sm" onclick="probarFuncion()" title="Probar función subirDocumentos">
-                            <i class="bi bi-bug"></i> Probar Función
-                        </button>
                     </div>
                 </div>
                 <div class="card-body">
@@ -170,8 +166,11 @@
                                                 <?php
                                                 $badgeClass = match($solicitud['estado']) {
                                                     'Pendiente' => 'bg-warning',
+                                                    'Postulada' => 'bg-warning text-dark',
+                                                    'En Revisión' => 'bg-info',
                                                     'Aprobada' => 'bg-success',
                                                     'Rechazada' => 'bg-danger',
+                                                    'Cancelada' => 'bg-secondary',
                                                     'Documentos Aprobados' => 'bg-info',
                                                     default => 'bg-secondary'
                                                 };
@@ -215,24 +214,18 @@
                                             </td>
                                             <td>
                                                 <div class="btn-group btn-group-sm">
-                                                    <button class="btn btn-outline-primary" onclick="verDetalleSolicitud(<?= $solicitud['id'] ?>)">
+                                                    <button class="btn btn-outline-primary" onclick="verDetalleSolicitud(<?= $solicitud['id'] ?>)" title="Ver detalles">
                                                         <i class="bi bi-eye"></i>
                                                     </button>
-                                                    <!-- Debug: Estado actual: <?= $solicitud['estado'] ?> -->
-                                                    <?php if (in_array($solicitud['estado'], ['Postulada', 'En Revisión'])): ?>
-                                                        <button class="btn btn-outline-secondary" onclick="subirDocumentos(<?= $solicitud['id'] ?>)">
+                                                    <?php if (in_array($solicitud['estado'], ['Postulada', 'En Revisión', 'Pendiente'])): ?>
+                                                        <button class="btn btn-outline-secondary" onclick="subirDocumentos(<?= $solicitud['id'] ?>)" title="Subir documentos">
                                                             <i class="bi bi-upload"></i>
                                                         </button>
-                                                        <?php if ($solicitud['estado'] === 'Postulada'): ?>
-                                                            <button class="btn btn-outline-danger" onclick="cancelarSolicitud(<?= $solicitud['id'] ?>)">
+                                                        <?php if (in_array($solicitud['estado'], ['Postulada', 'Pendiente'])): ?>
+                                                            <button class="btn btn-outline-danger" onclick="mostrarModalCancelar(<?= $solicitud['id'] ?>, '<?= esc($solicitud['beca_nombre']) ?>')" title="Cancelar solicitud">
                                                                 <i class="bi bi-x"></i>
                                                             </button>
                                                         <?php endif; ?>
-                                                    <?php else: ?>
-                                                        <!-- Botón de prueba para debug -->
-                                                        <button class="btn btn-outline-warning btn-sm" onclick="subirDocumentos(<?= $solicitud['id'] ?>)" title="Debug: Estado actual: <?= $solicitud['estado'] ?>">
-                                                            <i class="bi bi-bug"></i> Debug
-                                                        </button>
                                                     <?php endif; ?>
                                                 </div>
                                             </td>
@@ -509,6 +502,73 @@
     </div>
 </div>
 
+<!-- Modal para Detalle de Solicitud -->
+<div class="modal fade" id="modalDetalleSolicitud" tabindex="-1" aria-labelledby="modalDetalleSolicitudLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-primary text-white border-0">
+                <h5 class="modal-title" id="modalDetalleSolicitudLabel">
+                    <i class="bi bi-file-earmark-text me-2"></i>
+                    Detalle de Solicitud de Beca
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body py-4" id="contenidoDetalleSolicitud">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-3 text-muted">Cargando detalles de la solicitud...</p>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-1"></i>Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Confirmar Cancelación de Solicitud -->
+<div class="modal fade" id="modalCancelarSolicitud" tabindex="-1" aria-labelledby="modalCancelarSolicitudLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-danger text-white border-0">
+                <h5 class="modal-title" id="modalCancelarSolicitudLabel">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    Confirmar Cancelación
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="mb-3">
+                    <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3.5rem;"></i>
+                </div>
+                <h5 class="mb-3">¿Está seguro de que desea cancelar esta solicitud?</h5>
+                <div class="alert alert-danger text-start mb-3">
+                    <strong><i class="bi bi-info-circle me-1"></i> Beca:</strong>
+                    <span id="cancelar_beca_nombre" class="fw-bold"></span>
+                </div>
+                <div class="alert alert-warning text-start mb-0">
+                    <i class="bi bi-exclamation-diamond-fill me-2"></i>
+                    <strong>Advertencia importante:</strong>
+                    <p class="mb-1 mt-2">Al cancelar esta solicitud, <strong>ya no podrá formar parte del proceso de selección para este tipo de beca</strong> en el período actual.</p>
+                    <p class="mb-0">Esta acción <strong>no se puede deshacer</strong>. Si desea postularse nuevamente, deberá crear una nueva solicitud (sujeta a disponibilidad de cupos).</p>
+                </div>
+            </div>
+            <div class="modal-footer border-0 justify-content-center">
+                <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
+                    <i class="bi bi-arrow-left me-2"></i>No, mantener solicitud
+                </button>
+                <button type="button" class="btn btn-danger px-4" id="btnConfirmarCancelar" onclick="confirmarCancelacion()">
+                    <i class="bi bi-x-circle me-2"></i>Sí, cancelar solicitud
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 function mostrarModalSolicitud() {
     new bootstrap.Modal(document.getElementById('modalNuevaSolicitud')).show();
@@ -582,107 +642,172 @@ function verDetallesBeca(becaId) {
 }
 
 function verDetalleSolicitud(solicitudId) {
-    window.location.href = `<?= base_url('estudiante/solicitud-beca') ?>/${solicitudId}`;
+    // Mostrar modal con spinner de carga
+    const modalEl = document.getElementById('modalDetalleSolicitud');
+    const contenido = document.getElementById('contenidoDetalleSolicitud');
+    contenido.innerHTML = `
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-3 text-muted">Cargando detalles de la solicitud...</p>
+        </div>
+    `;
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+    
+    // Cargar datos vía AJAX
+    fetch(`<?= base_url('estudiante/estado-solicitud-beca') ?>/${solicitudId}`)
+    .then(response => response.json())
+    .then(result => {
+        if (result.success && result.data) {
+            const s = result.data;
+            let docsHTML = '';
+            
+            if (s.documentos && s.documentos.length > 0) {
+                docsHTML = `
+                    <h6 class="mt-4 mb-3"><i class="bi bi-file-earmark-text me-2"></i>Documentos</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Documento</th>
+                                    <th>Estado</th>
+                                    <th>Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${s.documentos.map(doc => {
+                                    let docBadge = 'bg-secondary';
+                                    if (doc.estado === 'Aprobado') docBadge = 'bg-success';
+                                    else if (doc.estado === 'Pendiente') docBadge = 'bg-warning text-dark';
+                                    else if (doc.estado === 'Rechazado') docBadge = 'bg-danger';
+                                    else if (doc.estado === 'En Revisión') docBadge = 'bg-info';
+                                    return `
+                                        <tr>
+                                            <td>${doc.nombre_documento || doc.nombre_archivo || 'Documento'}</td>
+                                            <td><span class="badge ${docBadge}">${doc.estado || 'Sin estado'}</span></td>
+                                            <td>${doc.fecha_subida ? new Date(doc.fecha_subida).toLocaleDateString('es-EC') : '-'}</td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else {
+                docsHTML = `
+                    <div class="alert alert-info mt-3">
+                        <i class="bi bi-info-circle me-2"></i>
+                        No hay documentos cargados aún. Utilice el botón <i class="bi bi-upload"></i> para subir los documentos requeridos.
+                    </div>
+                `;
+            }
+
+            let estadoBadge = 'bg-secondary';
+            if (s.estado === 'Postulada' || s.estado === 'Pendiente') estadoBadge = 'bg-warning text-dark';
+            else if (s.estado === 'Aprobada') estadoBadge = 'bg-success';
+            else if (s.estado === 'Rechazada') estadoBadge = 'bg-danger';
+            else if (s.estado === 'En Revisión') estadoBadge = 'bg-info';
+            else if (s.estado === 'Documentos Aprobados') estadoBadge = 'bg-info';
+
+            contenido.innerHTML = `
+                <div class="detalle-solicitud">
+                    <div class="text-center mb-4">
+                        <h4 class="text-primary mb-2">${s.beca_nombre || 'Beca'}</h4>
+                        <span class="badge ${estadoBadge} fs-6">${s.estado}</span>
+                    </div>
+                    <hr>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong><i class="bi bi-hash me-1"></i>ID Solicitud:</strong> ${s.id}</p>
+                            <p><strong><i class="bi bi-tag me-1"></i>Tipo de Beca:</strong> ${s.tipo_beca || 'N/A'}</p>
+                            <p><strong><i class="bi bi-calendar me-1"></i>Fecha de Solicitud:</strong> ${s.fecha_solicitud ? new Date(s.fecha_solicitud).toLocaleDateString('es-EC', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="bi bi-calendar-range me-1"></i>Período:</strong> ${s.periodo_nombre || 'N/A'}</p>
+                            <p><strong><i class="bi bi-bar-chart me-1"></i>Avance:</strong> ${s.porcentaje_avance || 0}%</p>
+                            <p><strong><i class="bi bi-file-check me-1"></i>Documentos:</strong> ${s.documentos_revisados || 0} / ${s.total_documentos || 0} revisados</p>
+                        </div>
+                    </div>
+                    ${s.observaciones ? `
+                        <div class="mb-3">
+                            <h6><i class="bi bi-chat-text me-2"></i>Observaciones</h6>
+                            <p class="text-muted bg-light p-3 rounded">${s.observaciones}</p>
+                        </div>
+                    ` : ''}
+                    ${docsHTML}
+                </div>
+            `;
+        } else {
+            contenido.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    ${result.message || 'No se pudieron cargar los detalles de la solicitud.'}
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Error cargando detalles:', error);
+        contenido.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                Error de conexión al cargar los detalles de la solicitud.
+            </div>
+        `;
+    });
 }
 
 function subirDocumentos(solicitudId) {
-    // Mostrar modal de confirmación personalizado
-    mostrarModalConfirmacion(solicitudId);
+    // Redirigir directamente a la página de gestión de documentos
+    window.location.href = `<?= base_url('estudiante/documentos-beca') ?>/${solicitudId}`;
 }
 
-function mostrarModalConfirmacion(solicitudId) {
-    // Crear el modal dinámicamente
-    const modalHTML = `
-        <div class="modal fade" id="modalConfirmacionDocumentos" tabindex="-1" aria-labelledby="modalConfirmacionDocumentosLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow-lg">
-                    <div class="modal-header bg-primary text-white border-0">
-                        <h5 class="modal-title" id="modalConfirmacionDocumentosLabel">
-                            <i class="bi bi-file-earmark-arrow-up me-2"></i>
-                            Gestionar Documentos
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center py-4">
-                        <div class="mb-3">
-                            <i class="bi bi-question-circle text-primary" style="font-size: 3rem;"></i>
-                        </div>
-                        <h6 class="mb-3">¿Deseas ir a la página de gestión de documentos?</h6>
-                        <div class="alert alert-info mb-0">
-                            <strong>Solicitud #${solicitudId}</strong>
-                            <br>
-                            <small class="text-muted">Podrás subir, revisar y gestionar todos los documentos requeridos para esta beca.</small>
-                        </div>
-                    </div>
-                    <div class="modal-footer border-0 justify-content-center">
-                        <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
-                            <i class="bi bi-x-circle me-2"></i>Cancelar
-                        </button>
-                        <button type="button" class="btn btn-primary px-4" onclick="confirmarRedireccion(${solicitudId})">
-                            <i class="bi bi-arrow-right me-2"></i>Continuar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    // Remover modal anterior si existe
-    const modalAnterior = document.getElementById('modalConfirmacionDocumentos');
-    if (modalAnterior) {
-        modalAnterior.remove();
-    }
-    
-    // Agregar el modal al body
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
-    
-    // Mostrar el modal
-    const modal = new bootstrap.Modal(document.getElementById('modalConfirmacionDocumentos'));
+// === Cancelar Solicitud ===
+let solicitudIdACancelar = null;
+
+function mostrarModalCancelar(solicitudId, becaNombre) {
+    solicitudIdACancelar = solicitudId;
+    document.getElementById('cancelar_beca_nombre').textContent = becaNombre;
+    const modal = new bootstrap.Modal(document.getElementById('modalCancelarSolicitud'));
     modal.show();
 }
 
-function confirmarRedireccion(solicitudId) {
-    const url = `<?= base_url('estudiante/documentos-beca') ?>/${solicitudId}`;
-    // Cerrar el modal
-    const modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmacionDocumentos'));
-    modal.hide();
+function confirmarCancelacion() {
+    if (!solicitudIdACancelar) return;
     
-    // Mostrar mensaje de redirección
-    mostrarNotificacion('Redirigiendo a gestión de documentos...', 'info');
+    const btnConfirmar = document.getElementById('btnConfirmarCancelar');
+    btnConfirmar.disabled = true;
+    btnConfirmar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Cancelando...';
     
-    // Redirigir después de un pequeño delay
-    setTimeout(() => {
-        window.location.href = url;
-    }, 1000);
-}
-
-function probarFuncion() {
-    alert('Función JavaScript funcionando correctamente');
-    
-    // Probar la función subirDocumentos con un ID de prueba
-    const solicitudId = 1; // ID de prueba
-    subirDocumentos(solicitudId);
-}
-
-function cancelarSolicitud(solicitudId) {
-    if (confirm('¿Está seguro de que desea cancelar esta solicitud de beca?')) {
-        fetch('<?= base_url('estudiante/cancelar-solicitud-beca') ?>', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ id: solicitudId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                mostrarNotificacion('Solicitud cancelada', 'success');
-                setTimeout(() => location.reload(), 1000);
-            } else {
-                mostrarNotificacion(data.error || 'Error cancelando la solicitud', 'error');
-            }
-        });
-    }
+    fetch('<?= base_url('estudiante/cancelar-solicitud-beca') ?>', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: solicitudIdACancelar })
+    })
+    .then(response => response.json())
+    .then(data => {
+        const modalEl = document.getElementById('modalCancelarSolicitud');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        modal.hide();
+        
+        if (data.success) {
+            mostrarNotificacion('Solicitud cancelada exitosamente. Ya no forma parte del proceso de selección para esta beca.', 'success');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            mostrarNotificacion(data.error || 'Error al cancelar la solicitud', 'error');
+            btnConfirmar.disabled = false;
+            btnConfirmar.innerHTML = '<i class="bi bi-x-circle me-2"></i>Sí, cancelar solicitud';
+        }
+    })
+    .catch(error => {
+        mostrarNotificacion('Error de conexión al cancelar la solicitud', 'error');
+        btnConfirmar.disabled = false;
+        btnConfirmar.innerHTML = '<i class="bi bi-x-circle me-2"></i>Sí, cancelar solicitud';
+    });
 }
 
 function actualizarEstado() {
@@ -792,50 +917,56 @@ function mostrarDocumentosRequeridos(becaId) {
     }
 }
 
-/* Estilos para el modal de confirmación */
-#modalConfirmacionDocumentos .modal-content {
+/* Estilos para modales de becas */
+#modalDetalleSolicitud .modal-content,
+#modalCancelarSolicitud .modal-content {
     border-radius: 15px;
     overflow: hidden;
 }
 
-#modalConfirmacionDocumentos .modal-header {
+#modalDetalleSolicitud .modal-header {
     background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
     padding: 1.5rem;
 }
 
-#modalConfirmacionDocumentos .modal-title {
+#modalCancelarSolicitud .modal-header {
+    background: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%);
+    padding: 1.5rem;
+}
+
+#modalDetalleSolicitud .modal-title,
+#modalCancelarSolicitud .modal-title {
     font-weight: 600;
     font-size: 1.25rem;
 }
 
-#modalConfirmacionDocumentos .modal-body {
+#modalDetalleSolicitud .modal-body,
+#modalCancelarSolicitud .modal-body {
     padding: 2rem 1.5rem;
 }
 
-#modalConfirmacionDocumentos .bi-question-circle {
+#modalCancelarSolicitud .bi-exclamation-triangle {
     animation: pulse 2s infinite;
 }
 
-#modalConfirmacionDocumentos .alert-info {
-    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
-    border: 1px solid #bee5eb;
-    border-radius: 10px;
-}
-
-#modalConfirmacionDocumentos .modal-footer {
+#modalCancelarSolicitud .modal-footer {
     padding: 1.5rem;
     gap: 1rem;
 }
 
-#modalConfirmacionDocumentos .btn {
+#modalCancelarSolicitud .btn {
     border-radius: 25px;
     font-weight: 500;
     transition: all 0.3s ease;
 }
 
-#modalConfirmacionDocumentos .btn:hover {
+#modalCancelarSolicitud .btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.detalle-solicitud p {
+    margin-bottom: 0.5rem;
 }
 
 @keyframes pulse {

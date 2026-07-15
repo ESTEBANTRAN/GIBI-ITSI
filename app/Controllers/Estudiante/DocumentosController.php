@@ -36,7 +36,9 @@ class DocumentosController extends BaseController
             ->join('becas b', 'b.id = sb.beca_id')
             ->join('periodos_academicos p', 'p.id = sb.periodo_id')
             ->where('sb.estudiante_id', session('id'))
+            ->where('sb.estado !=', 'Rechazada')
             ->where('dsb.ruta_archivo IS NOT NULL')
+            ->where('dsb.ruta_archivo !=', '/temp/pendiente_subida.tmp')
             ->countAllResults();
 
         // Obtener documentos con paginación
@@ -47,7 +49,9 @@ class DocumentosController extends BaseController
             ->join('becas b', 'b.id = sb.beca_id')
             ->join('periodos_academicos p', 'p.id = sb.periodo_id')
             ->where('sb.estudiante_id', session('id'))
+            ->where('sb.estado !=', 'Rechazada')
             ->where('dsb.ruta_archivo IS NOT NULL')
+            ->where('dsb.ruta_archivo !=', '/temp/pendiente_subida.tmp')
             ->orderBy('sb.periodo_id', 'DESC')
             ->orderBy('dsb.orden_revision', 'ASC')
             ->limit($perPage, $offset)

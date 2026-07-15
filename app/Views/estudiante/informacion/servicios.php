@@ -1,4 +1,4 @@
-﻿<?= $this->extend('layouts/mainEstudiante') ?>
+<?= $this->extend('layouts/mainEstudiante') ?>
 
 <?= $this->section('content') ?>
 <div class="page-wrapper">
@@ -29,7 +29,7 @@
                                 
                                 <div class="mb-4">
                                     <h6 class="fw-bold text-dark">Caracterización</h6>
-                                    <p>La Unidad de Bienestar Institucional es un órgano fundamental en el Instituto Superior Tecnológico Ibarra, encargado de promover el bienestar integral de la comunidad educativa mediante la implementación de programas y estrategias que favorezcan la equidad, la inclusión y el desarrollo personal y académico de los estudiantes.</p>
+                                    <p>La Unidad de Bienestar Institucional es un órgano fundamental en el Instituto Tecnologico Superior Ibarra, encargado de promover el bienestar integral de la comunidad educativa mediante la implementación de programas y estrategias que favorezcan la equidad, la inclusión y el desarrollo personal y académico de los estudiantes.</p>
                                 </div>
 
                                 <div class="mb-4">
@@ -97,7 +97,7 @@
                                         <h6 class="card-title text-primary">Información de Contacto</h6>
                                         <div class="mb-3">
                                             <h6 class="fw-bold">Unidad de Bienestar Institucional</h6>
-                                            <p class="mb-1"><i class="bi bi-geo-alt me-2"></i>Instituto Superior Tecnológico Ibarra</p>
+                                            <p class="mb-1"><i class="bi bi-geo-alt me-2"></i>Instituto Tecnologico Superior Ibarra</p>
                                             <p class="mb-1"><i class="bi bi-telephone me-2"></i>062-952-535</p>
                                             <p class="mb-1"><i class="bi bi-envelope me-2"></i>bienestar@itsi.edu.ec</p>
                                         </div>

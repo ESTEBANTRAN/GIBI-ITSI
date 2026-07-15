@@ -53,7 +53,8 @@ $routes->post('profile/cambiar-foto', 'PerfilController::cambiarFoto', ['filter'
 $routes->get('cuenta/configuracion', 'CuentaController::configuracion', ['filter' => 'auth']);
 $routes->post('cuenta/cambiarPassword', 'CuentaController::cambiarPassword', ['filter' => ['csrf', 'auth', 'ratelimit:5,900']]);
 $routes->post('cuenta/configuracionNotificaciones', 'CuentaController::configuracionNotificaciones', ['filter' => ['csrf', 'auth']]);
-$routes->post('cuenta/eliminarCuenta', 'CuentaController::eliminarCuenta', ['filter' => ['csrf', 'auth', 'ratelimit:3,3600']]);
+// DESHABILITADO: Los usuarios no pueden eliminar su propia cuenta
+    // $routes->post('cuenta/eliminarCuenta', 'CuentaController::eliminarCuenta', ['filter' => ['csrf', 'auth', 'ratelimit:3,3600']]);
 $routes->get('cuenta/exportarDatos', 'CuentaController::exportarDatos', ['filter' => 'auth']);
 
 // Rutas legacy para compatibilidad (Admin Bienestar)
@@ -125,6 +126,7 @@ $routes->group('admin-bienestar', ['filter' => ['auth', 'role:2']], function($ro
     $routes->post('aprobar-solicitud-beca', 'AdminBienestarController::aprobarSolicitudBeca', ['filter' => ['auth', 'ratelimit:10,900']]);
     $routes->post('rechazar-solicitud-beca', 'AdminBienestarController::rechazarSolicitudBeca', ['filter' => ['auth', 'ratelimit:10,900']]);
     $routes->get('generar-constancia', 'AdminBienestarController::generarConstancia');
+    $routes->get('exportar-solicitudes-becas', 'AdminBienestarController::exportarSolicitudesBecas');
 
     // ─── Revisión de Documentos ────────────────────────────────────────────
     $routes->get('revision-documentos/(:num)', 'AdminBienestarController::revisionDocumentos/$1');
@@ -259,7 +261,8 @@ $routes->group('estudiante', ['filter' => ['auth', 'role:1']], function($routes)
     $routes->post('cambiar-password', 'Estudiante\PerfilController::cambiarPassword', ['filter' => ['csrf', 'auth', 'ratelimit:5,900']]);
     $routes->post('configurar-notificaciones', 'Estudiante\PerfilController::configurarNotificaciones', ['filter' => ['csrf', 'auth']]);
     $routes->get('exportar-datos', 'Estudiante\PerfilController::exportarDatos');
-    $routes->post('eliminar-cuenta', 'Estudiante\PerfilController::eliminarCuenta', ['filter' => ['csrf', 'auth', 'ratelimit:3,3600']]);
+    // DESHABILITADO: Los estudiantes no pueden eliminar su propia cuenta
+    // $routes->post('eliminar-cuenta', 'Estudiante\PerfilController::eliminarCuenta', ['filter' => ['csrf', 'auth', 'ratelimit:3,3600']]);
 
     // Información
     $routes->get('informacion/servicios', 'Estudiante\InformacionController::informacionServicios');

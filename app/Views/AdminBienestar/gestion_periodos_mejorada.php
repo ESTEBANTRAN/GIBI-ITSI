@@ -8,7 +8,7 @@
         <div class="col-12">
             <div class="page-title-box d-flex align-items-center justify-content-between">
                 <div>
-                    <h4 class="mb-0">📅 Gestión de Períodos Académicos</h4>
+                    <h4 class="mb-0">Gestión de Períodos Académicos</h4>
                     <p class="text-muted mb-0">Administra los períodos académicos, sus configuraciones y límites</p>
                 </div>
                 <div class="page-title-right">
@@ -516,8 +516,8 @@ function guardarPeriodo() {
     datos.vigente_estudiantes = document.getElementById('vigente_estudiantes').checked ? 1 : 0;
     
     const url = datos.periodo_id ? 
-        `<?= base_url('admin-bienestar/actualizarPeriodo') ?>` : 
-        `<?= base_url('admin-bienestar/crearPeriodo') ?>`;
+        `<?= base_url('admin-bienestar/actualizar-periodo') ?>` : 
+        `<?= base_url('admin-bienestar/crear-periodo') ?>`;
     
     fetch(url, {
         method: 'POST',
@@ -579,25 +579,50 @@ function actualizarLimites() {
 }
 
 function toggleConfiguracion(periodoId, campo, valor) {
-    fetch(`<?= base_url('admin-bienestar/toggleConfiguracionPeriodo') ?>`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            periodo_id: periodoId,
-            campo: campo,
-            valor: valor ? 1 : 0
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            mostrarNotificacion(`Configuración actualizada`, 'success');
-        } else {
-            mostrarNotificacion(data.error || 'Error actualizando configuración', 'error');
-            // Revertir el checkbox
-            document.getElementById(`${campo.replace('activo_', '')}_${periodoId}`).checked = !valor;
+    // Revertir temporalmente el estado visual para que el usuario confirme primero
+    const checkbox = document.getElementById(`${campo.replace('activo_', '')}_${periodoId}`);
+    checkbox.checked = !valor;
+
+    const label = campo === 'activo_fichas' ? 'Fichas Socioeconómicas' : 'Solicitudes de Becas';
+    const accion = valor ? 'activar' : 'desactivar';
+
+    Swal.fire({
+        title: `¿Confirmar acción?`,
+        text: `¿Estás seguro de que deseas ${accion} las ${label} para este período académico?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, confirmar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            checkbox.checked = valor;
+            
+            fetch(`<?= base_url('admin-bienestar/toggleConfiguracionPeriodo') ?>`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    periodo_id: periodoId,
+                    campo: campo,
+                    valor: valor ? 1 : 0
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    mostrarNotificacion(`Configuración actualizada`, 'success');
+                } else {
+                    mostrarNotificacion(data.error || 'Error actualizando configuración', 'error');
+                    checkbox.checked = !valor;
+                }
+            })
+            .catch(error => {
+                mostrarNotificacion('Error de conexión', 'error');
+                checkbox.checked = !valor;
+            });
         }
     });
 }

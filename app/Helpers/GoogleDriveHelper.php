@@ -270,7 +270,7 @@ class GoogleDriveHelper
                     ->where('clave', $clave)
                     ->get()
                     ->getRowArray();
-                if ($row && !empty($row['valor'])) {
+                if ($row && isset($row['valor']) && $row['valor'] !== '') {
                     return $row['valor'];
                 }
             }

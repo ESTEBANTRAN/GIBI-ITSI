@@ -4,7 +4,7 @@
         <div class="brand-logo d-flex align-items-center justify-content-between">
             <a href="<?= base_url('estudiante') ?>" class="text-nowrap logo-img">
                 <img src="<?= base_url('sistema/assets/images/logos/logo2.jpg?v=2') ?>" alt="Logo" />
-                <span class="ms-2 fw-bold" style="font-size: 1.3rem; color: #000;">Estudiante Bienestar <br> Estudiantil <br></span>
+                <span class="ms-2 fw-bold" style="font-size: 1.3rem; color: #000;">Estudiante Bienestar <br> Institucional <br></span>
             </a>
             <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
                 <i class="ti ti-x fs-8"></i> 

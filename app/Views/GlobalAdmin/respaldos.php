@@ -608,7 +608,7 @@ function guardarConfiguracion() {
 function limpiarRespaldos() {
     Swal.fire({
         title: 'Limpiar Respaldos Antiguos',
-        text: '¿Estás seguro de que quieres eliminar los respaldos antiguos?',
+        text: '¿Estás seguro de que quieres eliminar los respaldos antiguos? Esta acción eliminará únicamente las copias con más de 30 días de antigüedad.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -671,62 +671,17 @@ function descargarArchivoConDialogo(url, filename = '') {
         showConfirmButton: true,
         confirmButtonText: 'Entendido'
     }).then(() => {
-        // Método 1: Usar fetch para descargar con más control
-        fetch(url)
-            .then(response => {
-                if (response.ok) {
-                    return response.blob();
-                }
-                throw new Error('Error en la descarga');
-            })
-            .then(blob => {
-                // Crear URL del blob
-                const blobUrl = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = blobUrl;
-                link.download = filename || 'respaldo.sql';
-                link.style.display = 'none';
-                
-                // Agregar al DOM, hacer clic y remover
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                // Limpiar URL del blob
-                setTimeout(() => {
-                    window.URL.revokeObjectURL(blobUrl);
-                }, 100);
-                
-                // Mostrar confirmación
-                Swal.fire({
-                    title: '¡Descarga Iniciada!',
-                    text: 'El archivo se está descargando. Revisa tu carpeta de descargas.',
-                    icon: 'success',
-                    timer: 3000,
-                    showConfirmButton: false
-                });
-            })
-            .catch(error => {
-                
-                // Método 2: Fallback con elemento <a> directo
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = filename || 'respaldo.sql';
-                link.target = '_blank';
-                link.style.display = 'none';
-                
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                Swal.fire({
-                    title: 'Descarga Iniciada',
-                    text: 'Se abrió una nueva ventana para la descarga.',
-                    icon: 'info',
-                    timer: 3000,
-                    showConfirmButton: false
-                });
-            });
+        // Trigger download directly using window.location.href
+        window.location.href = url;
+        
+        // Mostrar confirmación de descarga iniciada
+        Swal.fire({
+            title: '¡Descarga Iniciada!',
+            text: 'El archivo se está descargando. Revisa tu carpeta de descargas.',
+            icon: 'success',
+            timer: 3000,
+            showConfirmButton: false
+        });
     });
 }
 

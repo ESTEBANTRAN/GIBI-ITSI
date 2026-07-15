@@ -436,6 +436,11 @@ class DocumentoBecaController extends BaseController
                 return $this->response->setJSON(['success' => false, 'message' => 'El archivo no puede superar 2MB']);
             }
 
+            // Obtener propiedades del archivo antes de moverlo
+            $mimeType = $archivo->getMimeType();
+            $fileSize = $archivo->getSize();
+            $clientName = $archivo->getClientName();
+
             // Generar nombre único para el archivo
             $nombreArchivo = 'doc_' . $solicitudId . '_' . $documentoId . '_' . time() . '.pdf';
             $rutaDestino = 'uploads/documentos_becas/' . $nombreArchivo;
@@ -454,19 +459,19 @@ class DocumentoBecaController extends BaseController
             // Subir a Google Drive si la integración está activa
             $googleDriveId = null;
             try {
-                $googleDriveId = GoogleDriveHelper::subirArchivo($rutaDestino, $archivo->getClientName(), $archivo->getMimeType());
+                $googleDriveId = GoogleDriveHelper::subirArchivo($rutaDestino, $clientName, $mimeType);
             } catch (\Exception $ex) {
                 log_message('error', 'Error al subir a Google Drive en DocumentoBecaController::subirDocumento: ' . $ex->getMessage());
             }
 
             // Actualizar documento en la base de datos
             $updateData = [
-                'nombre_archivo' => $archivo->getClientName(),
+                'nombre_archivo' => $clientName,
                 'ruta_archivo' => $rutaDestino,
                 'estado' => 'En Revision',
                 'fecha_subida' => date('Y-m-d H:i:s'),
-                'tamaño_archivo' => $archivo->getSize(),
-                'tipo_mime' => $archivo->getMimeType()
+                'tamano_archivo' => $fileSize,
+                'tipo_mime' => $mimeType
             ];
 
             if ($googleDriveId) {
@@ -567,7 +572,7 @@ class DocumentoBecaController extends BaseController
                     'ruta_archivo' => '/temp/pendiente_subida.tmp',
                     'estado' => 'Pendiente',
                     'fecha_subida' => null,
-                    'tamaño_archivo' => null,
+                    'tamano_archivo' => null,
                     'tipo_mime' => null
                 ]);
 

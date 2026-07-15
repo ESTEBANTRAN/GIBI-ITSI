@@ -291,7 +291,14 @@
                 </div>
                 <div class="col-md-3 mb-3">
                     <label for="carrera" class="form-label">Carrera *</label>
-                    <input type="text" class="form-control" id="carrera" name="carrera" value="<?= $estudiante['carrera'] ?>" required>
+                    <select class="form-select" id="carrera" name="carrera" required>
+                        <option value="">Seleccionar carrera</option>
+                        <?php foreach ($carreras as $c): ?>
+                            <option value="<?= esc($c['nombre']) ?>" <?= (isset($estudiante['carrera']) && $estudiante['carrera'] == $c['nombre']) ? 'selected' : '' ?>>
+                                <?= esc($c['nombre']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
             </div>
             <div class="row">

@@ -194,8 +194,9 @@
                         <th>Período</th>
                         <th>Fechas</th>
                         <th class="text-center">Estado</th>
-                        <th class="text-center">Fichas</th>
-                        <th class="text-center">Solicitudes</th>
+                        <th class="text-center">Fichas Activas</th>
+                        <th class="text-center">Becas Activas</th>
+                        <th class="text-center">Contadores</th>
                         <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
@@ -240,13 +241,27 @@
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge bg-soft-primary text-primary">
-                                        <?= $periodo['total_fichas'] ?? 0 ?>
-                                    </span>
+                                    <div class="form-check form-switch d-flex justify-content-center">
+                                        <input class="form-check-input" type="checkbox" 
+                                            id="fichas_<?= $periodo['id'] ?>" 
+                                            <?= (!empty($periodo['activo_fichas'])) ? 'checked' : '' ?>
+                                            onchange="toggleConfiguracion(<?= $periodo['id'] ?>, 'activo_fichas', this.checked)">
+                                    </div>
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge bg-soft-warning text-warning">
-                                        <?= $periodo['total_solicitudes'] ?? 0 ?>
+                                    <div class="form-check form-switch d-flex justify-content-center">
+                                        <input class="form-check-input" type="checkbox" 
+                                            id="becas_<?= $periodo['id'] ?>" 
+                                            <?= (!empty($periodo['activo_becas'])) ? 'checked' : '' ?>
+                                            onchange="toggleConfiguracion(<?= $periodo['id'] ?>, 'activo_becas', this.checked)">
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-soft-primary text-primary me-1" title="Fichas">
+                                        <i class="bi bi-file-earmark-text"></i> <?= $periodo['total_fichas'] ?? 0 ?>
+                                    </span>
+                                    <span class="badge bg-soft-warning text-warning" title="Solicitudes">
+                                        <i class="bi bi-award"></i> <?= $periodo['total_solicitudes'] ?? 0 ?>
                                     </span>
                                 </td>
                                 <td class="text-center">
@@ -266,7 +281,7 @@
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="7" class="text-center py-4">
+                            <td colspan="8" class="text-center py-4">
                                 <div class="text-muted">
                                     <i class="bi bi-inbox display-6 d-block mb-2"></i>
                                     No se encontraron períodos académicos
@@ -420,6 +435,13 @@
 let modalPeriodo;
 let isEditing = false;
 
+// Configurar CSRF token para todas las peticiones AJAX
+$.ajaxSetup({
+    headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+    }
+});
+
 $(document).ready(function() {
     modalPeriodo = new bootstrap.Modal(document.getElementById('modalPeriodo'));
     
@@ -427,7 +449,64 @@ $(document).ready(function() {
         e.preventDefault();
         guardarPeriodo();
     });
+
+    // Filtro de búsqueda rápida
+    $('#btnBuscar').on('click', function() {
+        const query = $('#busquedaRapida').val().toLowerCase().trim();
+        $('#tbodyPeriodos tr').each(function() {
+            const row = $(this);
+            const text = row.text().toLowerCase();
+            if (!query || text.includes(query)) {
+                row.show();
+            } else {
+                row.hide();
+            }
+        });
+    });
+    
+    $('#busquedaRapida').on('keyup', function(e) {
+        if (e.key === 'Enter') {
+            $('#btnBuscar').click();
+        }
+    });
 });
+
+function aplicarFiltros() {
+    const busqueda = $('#filtroBusqueda').val().toLowerCase().trim();
+    const estado = $('#filtroEstado').val().toLowerCase().trim();
+    
+    $('#tbodyPeriodos tr').each(function() {
+        const row = $(this);
+        const text = row.text().toLowerCase();
+        const estadoCol = row.find('td').eq(3).text().toLowerCase().trim();
+        
+        let matchBusqueda = true;
+        let matchEstado = true;
+        
+        if (busqueda && !text.includes(busqueda)) {
+            matchBusqueda = false;
+        }
+        
+        if (estado) {
+            if (!estadoCol.includes(estado)) {
+                matchEstado = false;
+            }
+        }
+        
+        if (matchBusqueda && matchEstado) {
+            row.show();
+        } else {
+            row.hide();
+        }
+    });
+}
+
+function limpiarFiltros() {
+    $('#filtroBusqueda').val('');
+    $('#filtroEstado').val('');
+    $('#busquedaRapida').val('');
+    $('#tbodyPeriodos tr').show();
+}
 
 function abrirModalCrear() {
     isEditing = false;
@@ -645,17 +724,34 @@ function verPeriodo(id) {
 }
 
 function guardarPeriodo() {
-    const formData = new FormData($('#formPeriodo')[0]);
+    // Construir objeto JSON con los datos del formulario
+    const datos = {
+        nombre: $('#nombre').val(),
+        descripcion: $('#descripcion').val(),
+        fecha_inicio: $('#fecha_inicio').val(),
+        fecha_fin: $('#fecha_fin').val(),
+        limite_fichas: $('#limite_fichas').val() || null,
+        limite_becas: $('#limite_becas').val() || null,
+        vigente_estudiantes: $('#vigente_estudiantes').is(':checked') ? 1 : 0,
+        activo_fichas: $('#activo_fichas').is(':checked') ? 1 : 0,
+        activo_becas: $('#activo_becas').is(':checked') ? 1 : 0,
+        activo: 1
+    };
+
+    // Para edición, usar periodo_id (lo que espera el backend)
+    if (isEditing) {
+        datos.periodo_id = $('#periodo_id').val();
+    }
     
     $.ajax({
         url: isEditing ? '<?= base_url('admin-bienestar/actualizar-periodo') ?>' : '<?= base_url('admin-bienestar/crear-periodo') ?>',
         type: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
+        data: JSON.stringify(datos),
+        contentType: 'application/json',
         dataType: 'json',
         success: function(response) {
             if (response.success) {
+                modalPeriodo.hide();
                 Swal.fire('Éxito', response.message, 'success').then(() => {
                     location.reload();
                 });
@@ -663,7 +759,46 @@ function guardarPeriodo() {
                 Swal.fire('Error', response.error, 'error');
             }
         },
+        error: function(xhr) {
+            console.error('Error:', xhr.responseText);
+            Swal.fire('Error', 'Error de conexión al servidor', 'error');
+        }
+    });
+}
+
+function toggleConfiguracion(periodoId, campo, valor) {
+    $.ajax({
+        url: '<?= base_url('admin-bienestar/toggleConfiguracionPeriodo') ?>',
+        type: 'POST',
+        data: JSON.stringify({
+            periodo_id: periodoId,
+            campo: campo,
+            valor: valor ? 1 : 0
+        }),
+        contentType: 'application/json',
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                // Mostrar toast de éxito
+                const label = campo === 'activo_fichas' ? 'Fichas' : 'Becas';
+                const estado = valor ? 'activadas' : 'desactivadas';
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: `${label} ${estado} exitosamente`,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            } else {
+                // Revertir el checkbox si falla
+                $(`#${campo === 'activo_fichas' ? 'fichas' : 'becas'}_${periodoId}`).prop('checked', !valor);
+                Swal.fire('Error', response.error, 'error');
+            }
+        },
         error: function() {
+            // Revertir el checkbox si falla
+            $(`#${campo === 'activo_fichas' ? 'fichas' : 'becas'}_${periodoId}`).prop('checked', !valor);
             Swal.fire('Error', 'Error de conexión', 'error');
         }
     });

@@ -371,6 +371,10 @@ class AdminBienestarService
             $builder->where('fecha_creacion <=', $filtros['fecha_hasta']);
         }
 
+        if (isset($filtros['relacionada_beca']) && $filtros['relacionada_beca'] !== '') {
+            $builder->where('relacionada_beca', (int)$filtros['relacionada_beca']);
+        }
+
         // Ordenamiento
         $orden = $filtros['orden'] ?? 'fecha_creacion DESC';
         $builder->orderBy($orden);
